@@ -72,9 +72,9 @@ for(var i = 0;i <= edge_count+1;i++){
 	var rad = (radius + 30)
 
 
-	var x = Math.cos(a*Math.cos(Math.sin(multi_circle))) * rad + x_variation
-	var y =	Math.sin(a*Math.sin(Math.sin(multi_circle2))) * rad *Math.sin(a) + y_variation
-	var z = 10*Math.cos(Math.tan(multi_circle2*multi_circle)*i/g2) + 20*offset
+	var x = Math.cos(a*Math.cos(Math.cos(multi_circle))) * rad * Math.sin(a) + x_variation
+	var y =	Math.sin(a*Math.sin(Math.sin(multi_circle2)*Math.sin(multi_circle))) * rad * Math.sin(a) + y_variation
+	var z = 10*Math.cos(Math.tan(multi_circle2*multi_circle*i)*i/g2) + 20*offset
 	b_pos.push([x,y,z]);
 	
 }
@@ -133,7 +133,7 @@ var Creature = function(radius,edge_count,hair_segments,hair_length){
 
 			uniforms.amplitude.value =  amp_min + amp_var * Math.sin(time_sq);
 
-			uniforms.color.value.offsetHSL( 0.002*Math.sin(time/3), 0.003*Math.sin(time/2) ,0.003*Math.sin(time/2) );
+			uniforms.color.value.offsetHSL( 0.003*Math.sin(time/3), 0.001*Math.sin(time/2) ,0.003*Math.sin(time/2) );
 
 
 			var array = dAttr.array;
