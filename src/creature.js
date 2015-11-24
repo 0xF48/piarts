@@ -65,15 +65,15 @@ for(var i = 0;i <= edge_count+1;i++){
 	var z_variation = Math.sin(i/g3);
 
 
-	var multi_circle = makec(5,i)
-	var multi_circle2 = makec(3,i)
+	var multi_circle = makec(4,i)
+	var multi_circle2 = makec(20,i)
 
-	var rad = (radius + 30*Math.sin(multi_circle2))*Math.sin(Math.tan(a))
+	var rad = (radius + 30)
 
 
-	var x = Math.sin(a) * rad + x_variation
-	var y =	Math.sin(a*Math.cos(Math.cos(multi_circle2))) * rad + y_variation
-	var z = 10*Math.cos(Math.sin(multi_circle2)) + 20*offset
+	var x = Math.cos(a*Math.cos(Math.sin(multi_circle))) * rad + x_variation
+	var y =	Math.sin(a*Math.sin(Math.sin(multi_circle2))) * rad *Math.sin(a) + y_variation
+	var z = 10*Math.cos(Math.tan(multi_circle2*multi_circle)*i/g2) + 20*offset
 	b_pos.push([x,y,z]);
 	
 }
@@ -94,7 +94,7 @@ var cAttr = new t3.Float32Attribute( b_pos.length * 3, 3 );
 
 var color = new t3.Color( 0xffffff );
 for( var i = 0, l =  cAttr.count; i < l; i ++ ) {
-	color.setHSL( i/l, i/l , 0.5 );
+	color.setHSL( i/l, i/l , 0.4 );
 	color.toArray(  cAttr.array, i *  cAttr.itemSize );
 }
 
@@ -117,7 +117,7 @@ var Creature = function(radius,edge_count,hair_segments,hair_length){
 	var circle = new t3.Line(b_geometry, shaderMaterial);
 	
 	var amp_min = 10;
-	var amp_var = 0.1;
+	var amp_var = 0.01;
 	return {
 		obj: circle,
 		loop: function(){
@@ -132,17 +132,17 @@ var Creature = function(radius,edge_count,hair_segments,hair_length){
 
 			uniforms.amplitude.value =  amp_min + amp_var * Math.sin(time_sq);
 
-			uniforms.color.value.offsetHSL( 0.002*Math.sin(time/3), 0 ,0 );
+			uniforms.color.value.offsetHSL( 0.002*Math.sin(time/3), 0.003*Math.sin(time/2) ,0.003*Math.sin(time/2) );
 
 
 			var array = dAttr.array;
 
-			// for ( var i = 0, l = array.length; i < l; i += 3 ) {
-			// 	//var a = (Math.PI*2)/edge_count*i
-			// 	array[ i     ] += 4*Math.sin(time)
-			// 	array[ i + 1 ] += 4*Math.sin(time)
-			// 	array[ i + 2 ] += 4*Math.sin(time)
-			// }
+			for ( var i = 0, l = array.length; i < l; i += 3 ) {
+				var a = (Math.PI*2)/edge_count*i
+					array[ i     ] += 0.01*Math.sin(Math.cos(time/3))
+					array[ i + 1 ] += 0.01*Math.cos(Math.cos(time/3))
+					array[ i + 2 ] += 0.01*Math.cos(Math.cos(time/3))
+			}
 
 			dAttr.needsUpdate = true;
 		}

@@ -21,9 +21,17 @@ var center = new t3.Vector3(0,0,0);
 var cam_play1 = function(){
 	var rad = 3000;
 	return function(){
-		var time = Date.now()/2000;
+		var time = Date.now() / ( 2000 * 2 );
 		cam.position.set(Math.cos(time/20)*rad,Math.sin(time/20)*rad,0)
 		cam.lookAt(center);
+	}
+}
+
+var rotate_piece = function(piece){
+	
+	return function(){
+		var time = Date.now() / ( 2000 * 30 );
+		piece.rotation.set(Math.sin(time),Math.sin(time),Math.sin(time));
 	}
 }
 
@@ -41,12 +49,14 @@ var init = function(){
 
 	renderer.setSize(window.innerWidth/resolution,window.innerHeight/resolution,false);
 	
-	cam.position.z = 7000;
+	cam.position.z = 10000;
 	cam.lookAt(new t3.Vector3(0,0,0)); 
 
 	var creatures = [];
 
-	var spread = 0;
+	var piece = new t3.Object3D()
+
+	var spread = 600;
 
 	for(var i = 0;i<100;i++){
 		var creature = Creature(20,7,5,20);
@@ -54,14 +64,18 @@ var init = function(){
 		creature.obj.rotation.set(Math.PI*2*Math.random(),Math.PI*2*Math.random(),Math.PI*2*Math.random());
 		//creature.obj.rotation.set(0.1,0.3,Math.PI*2*Math.random());
 		//console.log(creature.obj);
-		scene.add(creature.obj);
+		piece.add(creature.obj);
 		if(i == 0){
 			loop.loops.push(creature.loop);		
 		}
-
 	}
 
-	loop.loops.push(cam_play1());
+	scene.add(piece);
+
+	loop.loops.push(rotate_piece(piece));
+	
+
+	//loop.loops.push(cam_play1());
 
 	
 
