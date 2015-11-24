@@ -1,9 +1,9 @@
 var express = require('express'); //express for routing
 var debug = require('debug')('api');
-
+var colors = require('colors');
 
 var app  = express();
-app.use(express.static('client'));
+app.use(express.static('public'));
 
 
 
@@ -13,8 +13,8 @@ app.use(function(req, res, next) {
     next(err);
 });
 
-app.set('port', process.env.PORT || 2000);
+app.set('port', process.env.PORT || 300);
 
 var server = app.listen(app.get('port'), function() {
-  debug('Express server listening on port ' + server.address().port);
+  console.log('on port '.green + String(server.address().port).magenta);
 });

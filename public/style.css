@@ -1,0 +1,22 @@
+html,*{
+	padding:0;
+	margin:0;
+	
+}
+
+html{
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+}
+
+body{
+	width: 100%;
+	height: 100%;
+	background: #FF0000;
+}
+
+body,body > #main{
+	width: 100%;
+	height: 100%;
+}

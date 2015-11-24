@@ -1,0 +1,28 @@
+{
+  "name": "teragrid",
+  "version": "1.0.0",
+  "description": "resource conquest and trading",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/arxii/teragrid.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arxii/teragrid/issues"
+  },
+  "homepage": "https://github.com/arxii/teragrid#readme",
+  "devDependencies": {
+    "gulp-browserify": "^0.5.1",
+    "gulp-watch": "^4.3.5"
+  },
+  "dependencies": {
+    "colors": "^1.1.2",
+    "debug": "^2.2.0",
+    "express": "^4.13.3"
+  }
+}
