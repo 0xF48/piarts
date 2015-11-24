@@ -118,6 +118,7 @@ var Creature = function(radius,edge_count,hair_segments,hair_length){
 	
 	var amp_min = 10;
 	var amp_var = 0.01;
+	var dissipate = false;
 	return {
 		obj: circle,
 		loop: function(){
@@ -136,15 +137,36 @@ var Creature = function(radius,edge_count,hair_segments,hair_length){
 
 
 			var array = dAttr.array;
+			if(dissipate){
+				for ( var i = 0, l = array.length; i < l; i += 3 ) {
+					var a = pi2/edge_count*i
 
-			for ( var i = 0, l = array.length; i < l; i += 3 ) {
-				var a = (Math.PI*2)/edge_count*i
-					array[ i     ] += 0.01*Math.sin(Math.cos(time/3))
-					array[ i + 1 ] += 0.01*Math.cos(Math.cos(time/3))
-					array[ i + 2 ] += 0.01*Math.cos(Math.cos(time/3))
+					var offset = 5*Math.sin(i/500);
+
+
+					var x_variation = Math.sin(i/g1);
+					var y_variation = Math.sin(i/g2);
+					var z_variation = Math.sin(i/g3);
+
+
+					var multi_circle = makec(4,i)
+					var multi_circle2 = makec(20,i)
+
+					var rad = (radius + 30)
+
+
+					var x = Math.cos(a*Math.cos(Math.cos(multi_circle))) * rad * Math.sin(a) + x_variation
+					var y =	Math.sin(a*Math.sin(Math.sin(multi_circle2)*Math.sin(multi_circle))) * rad * Math.sin(a) + y_variation
+					var z = 10*Math.cos(Math.tan(multi_circle2*multi_circle*i)*i/g2) + 20*offset
+					array[ i     ] += Math.sin(x)/5
+					array[ i + 1 ] += Math.sin(y)/5
+					array[ i + 2 ] += Math.sin(z)/5
+				}
+				dAttr.needsUpdate = true;
 			}
-
-			dAttr.needsUpdate = true;
+		},
+		end: function(){
+			dissipate = !dissipate;
 		}
 	}
 

@@ -67,14 +67,16 @@ var init = function(){
 		piece.add(creature.obj);
 		if(i == 0){
 			loop.loops.push(creature.loop);		
+			setTimeout(creature.end, 5000);
+			setTimeout(creature.end, 7000);
 		}
 	}
 
 	scene.add(piece);
 
 	loop.loops.push(rotate_piece(piece));
-	
 
+	
 	//loop.loops.push(cam_play1());
 
 	
