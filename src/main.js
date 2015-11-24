@@ -33,17 +33,18 @@ var init = function(){
 
 	renderer.setSize(window.innerWidth/resolution,window.innerHeight/resolution,false);
 	
-	cam.position.z = 10000;
+	cam.position.z = 7000;
 	cam.lookAt(new t3.Vector3(0,0,0)); 
 
 	var creatures = [];
 
-	var spread = 500;
+	var spread = 0;
 
-	for(var i = 0;i<1;i++){
+	for(var i = 0;i<100;i++){
 		var creature = Creature(20,7,5,20);
 		creature.obj.position.set(-spread/2+Math.random(63125613414)*spread,-spread/2+Math.random(112312323)*spread,-spread/2+Math.random(767777777)*spread);
 		creature.obj.rotation.set(Math.PI*2*Math.random(),Math.PI*2*Math.random(),Math.PI*2*Math.random());
+		//creature.obj.rotation.set(0.1,0.3,Math.PI*2*Math.random());
 		//console.log(creature.obj);
 		scene.add(creature.obj);
 		if(i == 0){

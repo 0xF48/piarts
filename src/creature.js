@@ -36,23 +36,46 @@ var g1 = Math.random()*1000
 var g2 = Math.random()*1000
 var g3 = Math.random()*1000
 
-var radius= 200 ,edge_count=8000,hair_segments=100,hair_length=15;
+var radius= 200 ,edge_count=5000,hair_segments=100,hair_length=15;
 
 var b_geometry = new t3.BufferGeometry();
 var b_pos = [];
+
+
+
+
+var pi2 =Math.PI*2;
+var inner_circle_count = 200;
+
+
+function makec(amount,i){
+	return (Math.PI*(amount))/edge_count*i
+}
+
 for(var i = 0;i <= edge_count+1;i++){
-	var a = (Math.PI*2)/edge_count*i
-	var x = Math.sin(a*Math.sin(i/edge_count*g1*0.5))*Math.sin(a*Math.sin(i/edge_count*g2*0.5))*(radius*Math.sin(i/g3+0.1*Math.random()))
-	var y =	Math.sin(a*Math.sin(i/edge_count*g1*0.5))*Math.cos(a*Math.sin(i/edge_count*g2*0.5))*(radius*Math.sin(i/g3+0.1*Math.random()))
-	var z = Math.cos(a*Math.sin(i/edge_count*g3*0.5))*Math.cos(a*Math.sin(i/edge_count*g1*0.5))*(radius*Math.sin(i/g3+0.1*Math.random()))
+
+	var a = pi2/edge_count*i
+
+	var offset = 5*Math.sin(i/500);
+
+	var randoms = [Math.random(8710),Math.random(5431),Math.random(1234)]
+
+	var x_variation = Math.sin(i/g1);
+	var y_variation = Math.sin(i/g2);
+	var z_variation = Math.sin(i/g3);
+
+
+	var multi_circle = makec(5,i)
+	var multi_circle2 = makec(3,i)
+
+	var rad = (radius + 30*Math.sin(multi_circle2))*Math.sin(i/g1)
+
+
+	var x = Math.cos(a) * rad + x_variation
+	var y =	Math.sin(a*Math.cos(Math.cos(multi_circle2))) * rad + y_variation
+	var z = 20*Math.cos(Math.tan(multi_circle)*Math.cos(multi_circle2)) + 20*offset
 	b_pos.push([x,y,z]);
 	
-
-
-	// var hair = new t3.Line(hair_geom,line_material);
-	// hair.rotation.set(0,0,a);
-	// //console.log(hair)
-	// creature.add(hair);
 }
 
 var b_vertices = new Float32Array( b_pos.length * 3 )
@@ -71,7 +94,7 @@ var cAttr = new t3.Float32Attribute( b_pos.length * 3, 3 );
 
 var color = new t3.Color( 0xffffff );
 for( var i = 0, l =  cAttr.count; i < l; i ++ ) {
-	color.setHSL( i / l, Math.random(), 0.15 );
+	color.setHSL( i/l, i/l , 0.5 );
 	color.toArray(  cAttr.array, i *  cAttr.itemSize );
 }
 
@@ -92,24 +115,33 @@ console.log(b_geometry)
 var Creature = function(radius,edge_count,hair_segments,hair_length){
 
 	var circle = new t3.Line(b_geometry, shaderMaterial);
+	
+	var amp_min = 10;
+	var amp_var = 0.1;
 	return {
 		obj: circle,
 		loop: function(){
 			
-			var time = Date.now();
+			var time = Date.now()/700;
 
-			//uniforms.amplitude.value =  0.5 * Math.sin(time/800);
-			uniforms.color.value.offsetHSL( 0.002*Math.sin(1*Math.random()*Math.sin(time/g1)), 0 ,0 );
+			var time_sq = time + 2*Math.sin(time)
+
+
+
+
+
+			uniforms.amplitude.value =  amp_min + amp_var * Math.sin(time_sq);
+
+			uniforms.color.value.offsetHSL( 0.002*Math.sin(time/3), 0 ,0 );
 
 
 			var array = dAttr.array;
 
 			// for ( var i = 0, l = array.length; i < l; i += 3 ) {
-
-			// 	array[ i     ] += Math.sin( Math.cos(time/500))
-			// 	array[ i + 1 ] += Math.sin( Math.cos(time/500))
-			// 	array[ i + 2 ] += Math.sin( Math.cos(time/500))
-
+			// 	//var a = (Math.PI*2)/edge_count*i
+			// 	array[ i     ] += 4*Math.sin(time)
+			// 	array[ i + 1 ] += 4*Math.sin(time)
+			// 	array[ i + 2 ] += 4*Math.sin(time)
 			// }
 
 			dAttr.needsUpdate = true;
