@@ -12,12 +12,20 @@ var OrbitControls = require('three-orbit-controls')(t3)
 var controls = new OrbitControls(cam)
 
 var Creature = require('./creature.js')
+controls.autoRotate = true;
+controls.update();
 
+console.log(controls)
+var center = new t3.Vector3(0,0,0);
 
-
-
-
-
+var cam_play1 = function(){
+	var rad = 3000;
+	return function(){
+		var time = Date.now()/2000;
+		cam.position.set(Math.cos(time/20)*rad,Math.sin(time/20)*rad,0)
+		cam.lookAt(center);
+	}
+}
 
 
 
@@ -52,6 +60,8 @@ var init = function(){
 		}
 
 	}
+
+	loop.loops.push(cam_play1());
 
 	
 

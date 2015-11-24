@@ -69,12 +69,12 @@ for(var i = 0;i <= edge_count+1;i++){
 	var multi_circle = makec(5,i)
 	var multi_circle2 = makec(3,i)
 
-	var rad = (radius + 30*Math.sin(multi_circle2))*Math.sin(i/g1)
+	var rad = (radius + 30*Math.sin(multi_circle2))*Math.sin(Math.tan(a))
 
 
-	var x = Math.cos(a) * rad + x_variation
+	var x = Math.sin(a) * rad + x_variation
 	var y =	Math.sin(a*Math.cos(Math.cos(multi_circle2))) * rad + y_variation
-	var z = 20*Math.cos(Math.tan(multi_circle)*Math.cos(multi_circle2)) + 20*offset
+	var z = 10*Math.cos(Math.sin(multi_circle2)) + 20*offset
 	b_pos.push([x,y,z]);
 	
 }
@@ -212,12 +212,20 @@ var OrbitControls = require('three-orbit-controls')(t3)
 var controls = new OrbitControls(cam)
 
 var Creature = require('./creature.js')
+controls.autoRotate = true;
+controls.update();
 
+console.log(controls)
+var center = new t3.Vector3(0,0,0);
 
-
-
-
-
+var cam_play1 = function(){
+	var rad = 3000;
+	return function(){
+		var time = Date.now()/2000;
+		cam.position.set(Math.cos(time/20)*rad,Math.sin(time/20)*rad,0)
+		cam.lookAt(center);
+	}
+}
 
 
 
@@ -252,6 +260,8 @@ var init = function(){
 		}
 
 	}
+
+	loop.loops.push(cam_play1());
 
 	
 
