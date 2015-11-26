@@ -1,5 +1,5 @@
 var t3 = require('three');
-
+var tl = require('gsap');
 
 
 var scene = new t3.Scene();
@@ -30,7 +30,7 @@ var cam_play1 = function(){
 var rotate_piece = function(piece){
 	
 	return function(){
-		var time = Date.now() / ( 2000 * 30 );
+		var time = Date.now() / ( 2000 * 20 );
 		piece.rotation.set(Math.sin(time),Math.sin(time),Math.sin(time));
 	}
 }
@@ -58,7 +58,7 @@ var init = function(){
 
 	var spread = 600;
 
-	for(var i = 0;i<100;i++){
+	for(var i = 0;i<50;i++){
 		var creature = Creature(20,7,5,20);
 		creature.obj.position.set(-spread/2+Math.random(63125613414)*spread,-spread/2+Math.random(112312323)*spread,-spread/2+Math.random(767777777)*spread);
 		creature.obj.rotation.set(Math.PI*2*Math.random(),Math.PI*2*Math.random(),Math.PI*2*Math.random());
@@ -66,9 +66,14 @@ var init = function(){
 		//console.log(creature.obj);
 		piece.add(creature.obj);
 		if(i == 0){
-			loop.loops.push(creature.loop);		
-			setTimeout(creature.end, 5000);
-			setTimeout(creature.end, 7000);
+			loop.loops.push(creature.loop);
+			setTimeout(function(){
+				creature.fazeout()
+			},1000)
+			//setTimeout(creature.fazein,4000)
+
+			//setTimeout(creature.end, 5000);
+			//setTimeout(creature.end, 7000);
 		}
 	}
 

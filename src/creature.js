@@ -1,6 +1,6 @@
 
 var t3 = require('three');
-
+var tl = require('gsap')
 
 
 var attributes = {
@@ -32,11 +32,15 @@ var shaderMaterial = new t3.ShaderMaterial( {
 
 
 //var circle_geometry = new THREE.BufferGeometry();
-var g1 = Math.random()*1000
-var g2 = Math.random()*1000
-var g3 = Math.random()*1000
+var g1,g2,g3;
+var setG = function(a,b,c){
+	g1 = Math.random()*a
+	g2 = Math.random()*b
+	g3 = Math.random()*c
+}
+setG(1000,1000,1000);
 
-var radius= 200 ,edge_count=5000,hair_segments=100,hair_length=15;
+var radius= 200 ,edge_count=10000,hair_segments=100,hair_length=15;
 
 var b_geometry = new t3.BufferGeometry();
 var b_pos = [];
@@ -52,31 +56,35 @@ function makec(amount,i){
 	return (Math.PI*(amount))/edge_count*i
 }
 
-for(var i = 0;i <= edge_count+1;i++){
+var setB = function(){
+	b_pos = [];
+	for(var i = 0;i <= edge_count+1;i++){
 
-	var a = pi2/edge_count*i
+		var a = pi2/edge_count*i
 
-	var offset = 5*Math.sin(i/500);
+		var offset = 5*Math.sin(i/500);
 
-	var randoms = [Math.random(8710),Math.random(5431),Math.random(1234)]
-
-	var x_variation = Math.sin(i/g1);
-	var y_variation = Math.sin(i/g2);
-	var z_variation = Math.sin(i/g3);
-
-
-	var multi_circle = makec(4,i)
-	var multi_circle2 = makec(20,i)
-
-	var rad = (radius + 30)
-
-
-	var x = Math.cos(a*Math.cos(Math.cos(multi_circle))) * rad * Math.sin(a) + x_variation
-	var y =	Math.sin(a*Math.sin(Math.sin(multi_circle2)*Math.sin(multi_circle))) * rad * Math.sin(a) + y_variation
-	var z = 10*Math.cos(Math.tan(multi_circle2*multi_circle*i)*i/g2) + 20*offset
-	b_pos.push([x,y,z]);
 	
+
+		var x_variation = Math.sin(i/g1);
+		var y_variation = Math.sin(i/g2);
+		var z_variation = Math.sin(i/g3);
+
+
+		var multi_circle = makec(5+g2/g3,i)
+		var multi_circle2 = makec(20+g1/g2,i)
+
+		var rad = (radius + 30)
+
+
+		var x = Math.cos(a*Math.cos(Math.cos(multi_circle))) * rad/g2*g1 * Math.sin(a) + x_variation
+		var y =	Math.sin(a*Math.sin(Math.sin(multi_circle2)*Math.cos(multi_circle))) * rad * Math.sin(a) + y_variation
+		var z = 10*Math.cos(Math.tan(multi_circle2*multi_circle*i/g1)*i/g2) + 20*offset
+		b_pos.push([x,y,z]);
+	}	
 }
+setB();
+
 
 var b_vertices = new Float32Array( b_pos.length * 3 )
 for ( var i = 0; i < b_pos.length; i++ )
@@ -94,7 +102,7 @@ var cAttr = new t3.Float32Attribute( b_pos.length * 3, 3 );
 
 var color = new t3.Color( 0xffffff );
 for( var i = 0, l =  cAttr.count; i < l; i ++ ) {
-	color.setHSL( i/l, i/l , 0.4 );
+	color.setHSL( i/l, i/l , 0.2 );
 	color.toArray(  cAttr.array, i *  cAttr.itemSize );
 }
 
@@ -103,7 +111,9 @@ b_geometry.addAttribute( 'displacement', dAttr);
 
 console.log(b_geometry)
 
-
+var stage = {
+	a: 0
+}
 
 
 
@@ -113,14 +123,58 @@ console.log(b_geometry)
 	
 // });
 var Creature = function(radius,edge_count,hair_segments,hair_length){
-
+	
 	var circle = new t3.Line(b_geometry, shaderMaterial);
 	
 	var amp_min = 10;
 	var amp_var = 0.01;
 	var dissipate = false;
-	return {
+	var creat = {
 		obj: circle,
+
+		fazeout: function(cb){
+			var array = dAttr.array;
+			setG(1000,1000,1000);
+			tl.fromTo(stage,3,{a:0},{
+				a: 5,
+				ease: Cubic.EaseOut,
+				onUpdate: function(){
+					var time = Date.now();
+					for ( var i = 0, l = b_pos.length; i < l; i ++ ) {
+						array[ i*3 + 0 ] += (-0.5+Math.random())*stage.a
+						array[ i*3 + 1 ] += (-0.5+Math.random())*stage.a
+						array[ i*3 + 2 ] += (-0.5+Math.random())*stage.a					
+					}
+					dAttr.needsUpdate = true;
+				},
+				onComplete: creat.fazein
+			})
+		},
+		fazein: function(cb){
+			var array = dAttr.array;
+
+			tl.fromTo(stage,3,{a:0},{
+				a: 1,
+				ease: Power1.easeOut,
+				onStart: function(){
+					setG(1000,1000,1000);
+					setB();
+				},
+				onUpdate: function(){
+					for ( var i = 0, l = b_pos.length; i < l; i ++ ) {
+						array[ i*3 + 0  ] +=  ( b_pos[i][0] - array[ i*3 + 0  ] )*stage.a
+						array[ i*3 + 1 ]  +=  ( b_pos[i][1] - array[ i*3 + 1  ] )*stage.a
+						array[ i*3 + 2 ]  +=  ( b_pos[i][2] - array[ i*3 + 2  ] )*stage.a
+					}
+					dAttr.needsUpdate = true;
+				},
+				onComplete: function(){
+					
+					creat.fazeout();
+				}
+			});
+		},
+
 		loop: function(){
 			
 			var time = Date.now()/700;
@@ -133,7 +187,7 @@ var Creature = function(radius,edge_count,hair_segments,hair_length){
 
 			uniforms.amplitude.value =  amp_min + amp_var * Math.sin(time_sq);
 
-			uniforms.color.value.offsetHSL( 0.003*Math.sin(time/3), 0.001*Math.sin(time/2) ,0.003*Math.sin(time/2) );
+			uniforms.color.value.offsetHSL( 0.003*Math.sin(time/3), 0.001*Math.sin(time/2) ,0.001*Math.sin(time/2) );
 
 
 			var array = dAttr.array;
@@ -158,9 +212,9 @@ var Creature = function(radius,edge_count,hair_segments,hair_length){
 					var x = Math.cos(a*Math.cos(Math.cos(multi_circle))) * rad * Math.sin(a) + x_variation
 					var y =	Math.sin(a*Math.sin(Math.sin(multi_circle2)*Math.sin(multi_circle))) * rad * Math.sin(a) + y_variation
 					var z = 10*Math.cos(Math.tan(multi_circle2*multi_circle*i)*i/g2) + 20*offset
-					array[ i     ] += Math.sin(x)/5
-					array[ i + 1 ] += Math.sin(y)/5
-					array[ i + 2 ] += Math.sin(z)/5
+					array[ i     ] += Math.sin(x)/(i)
+					array[ i + 1 ] += Math.sin(y)/(i)
+					array[ i + 2 ] += Math.sin(z)/(i)
 				}
 				dAttr.needsUpdate = true;
 			}
@@ -169,6 +223,8 @@ var Creature = function(radius,edge_count,hair_segments,hair_length){
 			dissipate = !dissipate;
 		}
 	}
+
+	return creat
 
 	var circle_verts = [];
 	var circle_geom = new t3.Geometry();
