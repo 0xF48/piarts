@@ -7,6 +7,7 @@
 <body></body>
 <script type="x-shader/x-vertex" id="vertexshader">
 	uniform float amplitude;
+	uniform float time;
 
 	attribute vec3 displacement;
 	attribute vec3 customColor;
@@ -26,7 +27,9 @@
 
 <script type="x-shader/x-fragment" id="fragmentshader">
 	uniform vec3 color;
+	uniform float time;
 	uniform float opacity;
+
 
 	varying vec3 vColor;
 

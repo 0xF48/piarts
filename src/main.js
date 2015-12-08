@@ -30,7 +30,7 @@ var cam_play1 = function(){
 var rotate_piece = function(piece){
 	
 	return function(){
-		var time = Date.now() / ( 2000 * 20 );
+		var time = Date.now() / ( 2000 * 10 );
 		piece.rotation.set(Math.sin(time),Math.sin(time),Math.sin(time));
 	}
 }
@@ -66,7 +66,7 @@ var init = function(){
 		//console.log(creature.obj);
 		piece.add(creature.obj);
 		if(i == 0){
-			loop.loops.push(creature.loop);
+			loop.loops.push(creature.colors);
 			setTimeout(function(){
 				creature.fazeout()
 			},1000)

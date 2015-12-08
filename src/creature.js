@@ -3,19 +3,12 @@ var t3 = require('three');
 var tl = require('gsap')
 
 
-var attributes = {
-
-	displacement: {	type: 'v3', value: [] },
-	customColor: {	type: 'c', value: [] }
-
-};
 
 var uniforms = {
-
+	time: 		{ type: "f", value: 1.0 },
 	amplitude: { type: "f", value: 5.0 },
 	opacity:   { type: "f", value: 0.3 },
 	color:     { type: "c", value: new t3.Color( 0xff0000 ) }
-
 };
 
 
@@ -29,8 +22,9 @@ var shaderMaterial = new t3.ShaderMaterial( {
 	depthTest:		false,
 	transparent:	true
 });
-
-
+var time = Date.now()
+//uniforms.color.value.offsetHSL( 0.002*Math.sin(time/3), 0.1*Math.sin(time/2) ,0.001*Math.sin(time/3) );
+			//uniforms.amplitude.value =  amp_min + amp_var * Math.sin(time_sq);
 //var circle_geometry = new THREE.BufferGeometry();
 var g1,g2,g3;
 var setG = function(a,b,c){
@@ -62,7 +56,7 @@ var setB = function(){
 
 		var a = pi2/edge_count*i
 
-		var offset = 5*Math.sin(i/500);
+		var offset = 5*Math.sin(i/500/g2*g3);
 
 	
 
@@ -83,6 +77,30 @@ var setB = function(){
 		b_pos.push([x,y,z]);
 	}	
 }
+
+var c_pos = [];
+var setC = function(){
+	c_pos = [];
+	
+	for(var i = 0;i< 10;i++){
+
+	}
+
+	for(var i = 0;i <= edge_count+1;i++){
+
+	}
+}
+
+// var postA = function(){
+
+
+
+// 	for(var i = 0,l = b_pos.length;i < l;i++){
+// 		b_pos[i][0] += 
+// 		b_pos[i][1] += 
+// 		b_pos[i][2] += 
+// 	}
+// }
 setB();
 
 
@@ -96,9 +114,9 @@ for ( var i = 0; i < b_pos.length; i++ )
 
 var cAttr = new t3.BufferAttribute( b_vertices, 3 );
 var dAttr = new t3.BufferAttribute( b_vertices,3 )
-b_geometry.addAttribute( 'position', new t3.BufferAttribute( b_vertices, 3 ) );
+b_geometry.addAttribute( 'position', dAttr );
+b_geometry.addAttribute( 'customColor',  cAttr);
 
-var cAttr = new t3.Float32Attribute( b_pos.length * 3, 3 );
 
 var color = new t3.Color( 0xffffff );
 for( var i = 0, l =  cAttr.count; i < l; i ++ ) {
@@ -106,7 +124,7 @@ for( var i = 0, l =  cAttr.count; i < l; i ++ ) {
 	color.toArray(  cAttr.array, i *  cAttr.itemSize );
 }
 
-b_geometry.addAttribute( 'customColor',  cAttr);
+
 b_geometry.addAttribute( 'displacement', dAttr);
 
 console.log(b_geometry)
@@ -137,13 +155,13 @@ var Creature = function(radius,edge_count,hair_segments,hair_length){
 			setG(1000,1000,1000);
 			tl.fromTo(stage,3,{a:0},{
 				a: 5,
-				ease: Cubic.EaseOut,
+				ease: Cubic.EaseIn,
 				onUpdate: function(){
 					var time = Date.now();
 					for ( var i = 0, l = b_pos.length; i < l; i ++ ) {
-						array[ i*3 + 0 ] += (-0.5+Math.random())*stage.a
-						array[ i*3 + 1 ] += (-0.5+Math.random())*stage.a
-						array[ i*3 + 2 ] += (-0.5+Math.random())*stage.a					
+						array[ i*3 + 0 ] += (-0.5+Math.random())*((i/l))*stage.a
+						array[ i*3 + 1 ] += (-0.5+Math.random())*((i/l))*stage.a
+						array[ i*3 + 2 ] += (-0.5+Math.random())*((i/l))*stage.a					
 					}
 					dAttr.needsUpdate = true;
 				},
@@ -155,7 +173,7 @@ var Creature = function(radius,edge_count,hair_segments,hair_length){
 
 			tl.fromTo(stage,3,{a:0},{
 				a: 1,
-				ease: Power1.easeOut,
+				ease: Power1.easeIn,
 				onStart: function(){
 					setG(1000,1000,1000);
 					setB();
@@ -175,53 +193,15 @@ var Creature = function(radius,edge_count,hair_segments,hair_length){
 			});
 		},
 
-		loop: function(){
-			
+		colors: function(){
+			uniforms.time = Date.now()/700;
 			var time = Date.now()/700;
-
 			var time_sq = time + 2*Math.sin(time)
-
-
-
-
-
-			uniforms.amplitude.value =  amp_min + amp_var * Math.sin(time_sq);
-
-			uniforms.color.value.offsetHSL( 0.003*Math.sin(time/3), 0.001*Math.sin(time/2) ,0.001*Math.sin(time/2) );
-
-
-			var array = dAttr.array;
-			if(dissipate){
-				for ( var i = 0, l = array.length; i < l; i += 3 ) {
-					var a = pi2/edge_count*i
-
-					var offset = 5*Math.sin(i/500);
-
-
-					var x_variation = Math.sin(i/g1);
-					var y_variation = Math.sin(i/g2);
-					var z_variation = Math.sin(i/g3);
-
-
-					var multi_circle = makec(4,i)
-					var multi_circle2 = makec(20,i)
-
-					var rad = (radius + 30)
-
-
-					var x = Math.cos(a*Math.cos(Math.cos(multi_circle))) * rad * Math.sin(a) + x_variation
-					var y =	Math.sin(a*Math.sin(Math.sin(multi_circle2)*Math.sin(multi_circle))) * rad * Math.sin(a) + y_variation
-					var z = 10*Math.cos(Math.tan(multi_circle2*multi_circle*i)*i/g2) + 20*offset
-					array[ i     ] += Math.sin(x)/(i)
-					array[ i + 1 ] += Math.sin(y)/(i)
-					array[ i + 2 ] += Math.sin(z)/(i)
-				}
-				dAttr.needsUpdate = true;
-			}
+			uniforms.color.value.offsetHSL( 0.002*Math.sin(time/3), 0.1*Math.sin(time/2) ,0.001*Math.sin(time/3) );
+			//uniforms.amplitude.value =  amp_min + amp_var * Math.sin(time_sq);
 		},
-		end: function(){
-			dissipate = !dissipate;
-		}
+
+
 	}
 
 	return creat
