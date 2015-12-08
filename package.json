@@ -18,6 +18,7 @@
   "homepage": "https://github.com/arxii/teragrid#readme",
   "devDependencies": {
     "gulp-browserify": "^0.5.1",
+    "gulp-uglify": "^1.5.1",
     "gulp-watch": "^4.3.5"
   },
   "dependencies": {

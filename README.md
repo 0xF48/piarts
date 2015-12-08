@@ -10,11 +10,8 @@ resource conquest and trading
 
 
 
-#references
+#notes
 [pixi]http://www.pixijs.com/resources/
-
-[dicewars]http://www.gamedesign.jp/flash/dice/dice.html
-
 
 
 ```glsl
