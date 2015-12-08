@@ -49,7 +49,7 @@ var init = function(){
 
 	renderer.setSize(window.innerWidth/resolution,window.innerHeight/resolution,false);
 	
-	cam.position.z = 10000;
+	cam.position.z = 6000;
 	cam.lookAt(new t3.Vector3(0,0,0)); 
 
 	var creatures = [];
