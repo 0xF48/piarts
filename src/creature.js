@@ -118,9 +118,12 @@ b_geometry.addAttribute( 'position', dAttr );
 b_geometry.addAttribute( 'customColor',  cAttr);
 
 
+
 var color = new t3.Color( 0xffffff );
+var d = Date.now();
 for( var i = 0, l =  cAttr.count; i < l; i ++ ) {
-	color.setHSL( i/l, i/l , 0.2 );
+	
+	color.setHSL( i/l, i/l , 0.3+0.12*Math.sin(d) );
 	color.toArray(  cAttr.array, i *  cAttr.itemSize );
 }
 

@@ -19,7 +19,7 @@ console.log(controls)
 var center = new t3.Vector3(0,0,0);
 
 var cam_play1 = function(){
-	var rad = 2000;
+	var rad = 4000;
 	return function(){
 		var time = Date.now() / ( 2000 * 2 );
 		cam.position.set(Math.cos(time/20)*rad,Math.sin(time/20)*rad,0)
@@ -49,7 +49,7 @@ var init = function(){
 
 	renderer.setSize(window.innerWidth/resolution,window.innerHeight/resolution,false);
 	
-	cam.position.z = 2000;
+	cam.position.z = 4000;
 	cam.lookAt(new t3.Vector3(0,0,0)); 
 
 	var creatures = [];
