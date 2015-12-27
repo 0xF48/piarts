@@ -41,7 +41,7 @@ var init = function(){
 
 
 	var resolution = 1;
-	renderer.domElement.setAttribute('id','main');
+	renderer.domElement.setAttribute('id','canvas');
 	document.body.appendChild(renderer.domElement);
 	cam.aspect = window.innerWidth/window.innerHeight;
 	cam.updateProjectionMatrix();
@@ -58,7 +58,7 @@ var init = function(){
 
 	var spread = 600;
 
-	for(var i = 0;i<50;i++){
+	for(var i = 0;i<30;i++){
 		var creature = Creature(20,7,5,20);
 		creature.obj.position.set(-spread/2+Math.random(63125613414)*spread,-spread/2+Math.random(112312323)*spread,-spread/2+Math.random(767777777)*spread);
 		creature.obj.rotation.set(Math.PI*2*Math.random(),Math.PI*2*Math.random(),Math.PI*2*Math.random());
@@ -91,8 +91,6 @@ var init = function(){
 
 
 
-
-
 var loop = {
 	main: function(){
 		requestAnimationFrame(loop.main);
@@ -103,6 +101,12 @@ var loop = {
 	},
 	loops: []
 }
+
+
+
+window.ui = require('./interface.js');
+
+
 
 
 init();

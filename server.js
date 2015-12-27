@@ -6,6 +6,7 @@ var app  = express();
 app.use(express.static('public'));
 
 
+require('./data/main.js')(app);
 
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
@@ -18,3 +19,4 @@ app.set('port', process.env.PORT || 4000);
 var server = app.listen(app.get('port'), function() {
   console.log('on port '.green + String(server.address().port).magenta);
 });
+

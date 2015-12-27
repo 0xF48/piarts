@@ -18,16 +18,21 @@
   "homepage": "https://github.com/arxii/teragrid#readme",
   "devDependencies": {
     "gulp-browserify": "^0.5.1",
+    "gulp-sass": "^2.1.1",
     "gulp-uglify": "^1.5.1",
-    "gulp-watch": "^4.3.5"
+    "gulp-watch": "^4.3.5",
+    "reactify": "^1.1.1"
   },
   "dependencies": {
+    "bluebird": "^3.1.1",
     "colors": "^1.1.2",
     "debug": "^2.2.0",
     "express": "^4.13.3",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",
+    "lodash": "^3.10.1",
     "lodash.assign": "^3.2.0",
+    "mongoose": "^4.3.4",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }

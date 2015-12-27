@@ -14,7 +14,7 @@ var uniforms = {
 
 
 
-var shaderMaterial = new t3.ShaderMaterial( {
+var shaderMaterial = new t3.ShaderMaterial({
 	uniforms: 		uniforms,
 	vertexShader:   document.getElementById( 'vertexshader' ).textContent,
 	fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
@@ -34,7 +34,7 @@ var setG = function(a,b,c){
 }
 setG(1000,1000,1000);
 
-var radius= 200 ,edge_count=10000,hair_segments=100,hair_length=15;
+var radius= 200 ,edge_count=20000,hair_segments=100,hair_length=15;
 
 var b_geometry = new t3.BufferGeometry();
 var b_pos = [];
