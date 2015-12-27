@@ -1,8 +1,5 @@
 var C = require('circui');
 var React = require('react');
-var store = require('../store')
-
-
 
 var Widget = React.createClass({
 	render: function(){

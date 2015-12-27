@@ -15,7 +15,7 @@ var Creature = require('./creature.js')
 controls.autoRotate = true;
 controls.update();
 
-console.log(controls)
+// console.log(controls)
 var center = new t3.Vector3(0,0,0);
 
 var cam_play1 = function(){
@@ -28,7 +28,6 @@ var cam_play1 = function(){
 }
 
 var rotate_piece = function(piece){
-	
 	return function(){
 		var time = Date.now() / ( 2000 * 10 );
 		piece.rotation.set(Math.sin(time),Math.sin(time),Math.sin(time));
@@ -37,15 +36,17 @@ var rotate_piece = function(piece){
 
 
 
-var init = function(){
+var init = function(el,loop){
 
 
 	var resolution = 1;
-	renderer.domElement.setAttribute('id','canvas');
-	document.body.appendChild(renderer.domElement);
+
+
+	
+	el.appendChild(renderer.domElement);
 	cam.aspect = window.innerWidth/window.innerHeight;
 	cam.updateProjectionMatrix();
-	console.log(cam)
+	//console.log(cam)
 
 	renderer.setSize(window.innerWidth/resolution,window.innerHeight/resolution,false);
 	
@@ -81,32 +82,22 @@ var init = function(){
 
 	loop.loops.push(rotate_piece(piece));
 
-	
-	//loop.loops.push(cam_play1());
-
-	
-
 	loop.main();
 }
 
 
 
-var loop = {
-	main: function(){
+
+
+module.exports = function(container,loop){
+	loop.main = function(){
 		requestAnimationFrame(loop.main);
 		for(var i = 0;i<loop.loops.length;i++){
 			loop.loops[i]();
 		}
 		renderer.render(scene, cam);
-	},
-	loops: []
+	}
+	loop.loops = [];
+
+	init(container,loop);
 }
-
-
-
-window.ui = require('./interface.js');
-
-
-
-
-init();

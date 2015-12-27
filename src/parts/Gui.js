@@ -2,9 +2,8 @@ var I = require('intui');
 var React = require('react');
 var store = require('../store');
 
-var Browser = React.createClass({
+var Gui = React.createClass({
 	getInitialState: function(){
-		store.key('MAIN').add('BROWSER',this);
 
 	},
 
@@ -14,9 +13,9 @@ var Browser = React.createClass({
 		}
 	},
 	updatePopular: function(){
-		store.actions.getList('popular',opt).then(function(){
+		// store.actions.getList('popular',opt).then(function(){
 
-		})
+		// })
 	},
 	render: function(){
 		return (
@@ -25,4 +24,4 @@ var Browser = React.createClass({
 	}
 })
 
-module.exports = Browser;
+module.exports = Gui;

@@ -6,7 +6,7 @@ var createStore = require('redux').createStore;
 
 
 const default_state = {
-	creatures: [],
+	creatures: ["TEST","TEST"],
 	error: null,
 	type: 'canvas',
 }
@@ -68,7 +68,7 @@ function reducer(state, action) {}{
   		    return Object.assign({}, state, {
         		visibilityFilter: action.list_type
       		})
-      	case 'GET_'
+
   	}
 
   	return state

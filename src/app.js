@@ -1,21 +1,41 @@
-var ReactDOM = require('react-dom');
+
 var Browser = require('./parts/browser');
-var Widget = require('./parts/widget');
-var View = require('./pars/view')
+var Provider = require('react-redux').provider;
+var render = require('react-dom').render;
+
+
+var store = require('./store');
+
+// var Widget = require('./parts/Widget');
+var PieceView = require('./pars/PieceView');
+var Gui = require('./parts/Gui');
+
 
 
 
 
 var App = React.createClass({
+
+	componentDidMount: function(){
+		console.log('MOUNTED',this.props.creatures);
+	},
 	render: function(){
-		<App>
-			<View />
-			<Gui />
-		</App>
-		widget: ReactDOM.render((<Widget/>),document.getElementById('canvas')),
-		browser: ReactDOM.render((<Browser/>),document.getElementById('interface'))		
+		return (
+			<App>
+				<PieceView/>
+				<Gui/>
+			</App>
+
+		)
 	}
 })
+
+render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('webpiece')
+)
 
 
 module.exports = connect(function(state){return state})(App);
