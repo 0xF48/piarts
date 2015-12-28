@@ -1,13 +1,19 @@
+/*globals*/
+require('gsap');
 
-var Browser = require('./parts/browser');
-var Provider = require('react-redux').provider;
+
+/*deps*/
+var react_redux = require('react-redux');
+var Provider = react_redux.Provider;
 var render = require('react-dom').render;
-
+var React = require('react');
+var connect = react_redux.connect;
 
 var store = require('./store');
 
+/*containers*/
 // var Widget = require('./parts/Widget');
-var PieceView = require('./pars/PieceView');
+var PieceView = require('./parts/PieceView');
 var Gui = require('./parts/Gui');
 
 
@@ -15,27 +21,40 @@ var Gui = require('./parts/Gui');
 
 
 var App = React.createClass({
-
 	componentDidMount: function(){
-		console.log('MOUNTED',this.props.creatures);
+		
 	},
 	render: function(){
+		console.log("APP PROPS",this.props);
 		return (
-			<App>
+			<div id='root'>
 				<PieceView/>
 				<Gui/>
-			</App>
-
+			</div>
 		)
 	}
 })
 
+
+function select(state){
+	console.log("STATE IS",state)
+	return {
+		pieces: {
+			all: state.pieces,
+			recent: [],
+			most_viewed: [],
+			most_liked: [],
+			picked: [],
+		}
+	}
+}
+
+var BoundApp = connect(select)(App);
+
+
 render(
   <Provider store={store}>
-    <App />
+    <BoundApp />
   </Provider>,
   document.getElementById('webpiece')
 )
-
-
-module.exports = connect(function(state){return state})(App);

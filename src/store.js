@@ -6,74 +6,73 @@ var createStore = require('redux').createStore;
 
 
 const default_state = {
-	creatures: ["TEST","TEST"],
+	pieces: ["TEST","TEST"],
 	error: null,
 	type: 'canvas',
+	thread_active: true
 }
 
-var store = createStore(manager,default_state);
+
 
 
 
 
 
 var getList = function(type,cursor){
-
-	req.get('/data/'+type+'/'+cursor)
-	.end(function(err,res){
-		if(err){
-			store.dispatch({
-				type: 'ERROR',
-				err.msg
-			})
-			return
-		}else{
-			store.dispatch({
-				type: 'UPDATE_LIST',
-				err.msg
-			})
-		}
-	})
+	return req.get('/data/'+type+'/'+cursor)
 }
 
 
-function manager(state, action) {
-	if(!state) return default_state
-
-	switch(action.type){
-		case 'ADD_TODO':
-			return _.merge(action.items,state.creatures)
-	}
-}
-
-
-
-var getList = dispatch.bind(null,function(){
-	return {
-		type: 'UPDATE_LIST',
-		list_type: opt.type,
-		cursor: opt.cursor
-	}
-})
+// var getList = dispatch.bind(null,function(){
+// 	return {
+// 		type: 'UPDATE_LIST',
+// 		list_type: opt.type,
+// 		cursor: opt.cursor
+// 	}
+// })
 
 
 
-function reducer(state, action) {}{
-	if (typeof state === 'undefined') {
-    	return initialState
-  	}
-  	switch (action.type) {
-  		case 'GET_LIST':
-  			get('/')
-  		    return Object.assign({}, state, {
-        		visibilityFilter: action.list_type
-      		})
+function manager(state, action){
+	if ( !state ) return default_state
+  	
 
-  	}
+  	// switch (action.type) {
+  	// 	case 'GET_LIST':
+  	// 		getList().end(function(err,res){
+			// 	if(err){
+			// 		Object.assign({}, state, {
+		 //        		err: err.msg
+		 //      		})	
+			// 	}else{
+			// 		Object.assign({},state, {
+		 //        		pieces: _.merge(res.body,state.pieces)
+		 //      		})
+			// 	}
+			// })
+  	// 	    return
+
+  	// }
 
   	return state
 }
 
+var store = createStore(manager,default_state);
+var loops = [];
+var thread = function(){
+	if(store.getState().thread_active == false) return
+	requestAnimationFrame(thread);
+	for(var i = 0;i<loops.length;i++){
+		loops[i]();
+	}
+}
 
-module.exports = store
+if(store.getState().thread_active == true) thread();
+
+
+module.exports = {
+	getList: getList,
+	loops: loops,
+	store: store,
+}
 

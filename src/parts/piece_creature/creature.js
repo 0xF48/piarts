@@ -123,7 +123,7 @@ var color = new t3.Color( 0xffffff );
 var d = Date.now();
 for( var i = 0, l =  cAttr.count; i < l; i ++ ) {
 	
-	color.setHSL( i/l, i/l , 0.3+0.12*Math.sin(d) );
+	color.setHSL( i/l, i/l/1.5 , 0.3+0.12*Math.sin(d) );
 	color.toArray(  cAttr.array, i *  cAttr.itemSize );
 }
 
@@ -136,13 +136,6 @@ var stage = {
 	a: 0
 }
 
-
-
-// var line_material = new t3.LineBasicMaterial({
-// 	color:  new t3.Color( 0.2+Math.sin(1*Math.random()*Math.sin(time/g1)), 0.8+Math.random()*0.2, 0.00+Math.random()*0.3 )
-
-	
-// });
 var Creature = function(radius,edge_count,hair_segments,hair_length){
 	
 	var circle = new t3.Line(b_geometry, shaderMaterial);

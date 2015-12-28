@@ -44,11 +44,11 @@ var init = function(el,loop){
 
 	
 	el.appendChild(renderer.domElement);
-	cam.aspect = window.innerWidth/window.innerHeight;
+	cam.aspect = el.clientWidth/el.clientHeight;
 	cam.updateProjectionMatrix();
 	//console.log(cam)
 
-	renderer.setSize(window.innerWidth/resolution,window.innerHeight/resolution,false);
+	renderer.setSize(el.clientWidth/resolution,el.clientHeight/resolution,false);
 	
 	cam.position.z = 4000;
 	cam.lookAt(new t3.Vector3(0,0,0)); 
@@ -79,19 +79,16 @@ var init = function(el,loop){
 	}
 
 	scene.add(piece);
-
 	loop.loops.push(rotate_piece(piece));
-
 	loop.main();
 }
 
 
+var loop = {};
 
 
-
-module.exports = function(container,loop){
+module.exports = function(container,loops){
 	loop.main = function(){
-		requestAnimationFrame(loop.main);
 		for(var i = 0;i<loop.loops.length;i++){
 			loop.loops[i]();
 		}

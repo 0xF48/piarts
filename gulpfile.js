@@ -13,7 +13,7 @@ var reactify = require('reactify');
 var sass = require('gulp-sass')
 // add custom browserify options here
 var customOpts = {
-  entries: ['./src/main.js'],
+  entries: ['./src/app.js'],
   transform: [reactify/*,stringify(['.glsl'])*/],
   debug: true
 };
@@ -41,6 +41,7 @@ b.on('log', gutil.log); // output build logs to terminal
 
 
 
+
 function bundle() {
   gulp.watch('./src/scss/**/*.scss', ['sass']);
   return b.bundle()
@@ -49,7 +50,7 @@ function bundle() {
     .pipe(source('bundle.js'))
     // optional, remove if you don't need to buffer file contents
     .pipe(buffer())
-    .pipe(uglify())
+    // .pipe(uglify())
     // optional, remove if you dont want sourcemaps
     .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
        // Add transformation tasks to the pipeline here.

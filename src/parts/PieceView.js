@@ -1,8 +1,12 @@
-var Widget = require('./Widget');
+var Widget = require('./Widget')
+var React = require('react');
 
 var pieces = {
-	creature: require('./piece_creature');
-}
+	creature: require('./piece_creature')
+};
+
+var s = require('../store.js');
+
 
 
 var PieceView = React.createClass({
@@ -19,14 +23,14 @@ var PieceView = React.createClass({
 		while (	this.refs.piece.firstChild) {
 			this.refs.piece.removeChild(myNode.firstChild);
 		}
-	}
+	},
 
 	loadPiece: function(piece){
 		this.pause();
 		this.clear();
 
 		this.loop = {}; //TEMPORARY LOOP HANDLER;
-		piece(this.refs.piece,loop);	
+		piece(this.refs.piece,store.loops);	
 	},
 
 	componentDidMount: function(){
@@ -35,10 +39,12 @@ var PieceView = React.createClass({
 
 	render: function(){
 		return (
-			<div ref = "piece">
-				<div ref = "piece" />
-				<Widget/>			
+			<div id = "view">
+				<div className='view-piece' ref = "piece" />
+				<Widget />			
 			</div>
 		)
 	}
 })
+
+module.exports = PieceView;
