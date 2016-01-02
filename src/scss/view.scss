@@ -10,6 +10,7 @@
 }
 
 #widget{
+	transform: translate3d(0,0,0);
 	position: absolute;
 	top:100%;
 	left: 50%;
@@ -25,7 +26,7 @@
 
 	.share-slide-share{
 		@include center;
-		color: #2F8BAD;
+		//color: #2F8BAD;
 	}
 
 	.share-slide-container{
@@ -38,7 +39,10 @@
 			width: 100%;
 			position: absolute;
 		}
-		.slide {
+		.share_slide {
+			// border-radius : 50% 50% 50% 50%;
+			// background: #fff;
+			// overflow: hidden;
 			position: relative;
 		}
 	}
@@ -49,14 +53,17 @@
 	}
 
 	.c_node{
+		transform: translate3d(0,0,0);
 		@include center;
-		box-shadow : 0px 0px 10px rgba(0,0,0,0.5);
+		// box-shadow : 0px 0px 10px rgba(0,0,0,0.5);
 		border-radius : 50% 50% 50% 50%;
 		background: #fff;
 		overflow: hidden;
 	}
 	.share_node{
-		
+		// background: #fff;
+		// border-radius : 50%;
+		// background: none;	
 	}
 
 	.icon-facebook-1, .icon-twitter{

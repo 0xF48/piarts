@@ -1,5 +1,25 @@
-#gui{
+.gui{
+	position: relative;
 	background: #fff;
-	width: 200px;
 	flex-shrink:0;
+	.gui-header{
+		background: #1A1A1A;
+		color: #fff;
+		
+	}
+	.gui-content{
+		background: #FAF4AF
+	}
+
+	.gui-button{
+		font-size: 20px;
+		@include center;
+	}
+
+	#gui-item-list{
+		min-height: 100%;
+		height: auto;
+		width: 100%;
+		
+	}
 }

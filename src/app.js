@@ -1,5 +1,6 @@
 /*globals*/
-require('gsap');
+require('gsap/src/uncompressed/TweenMax.js');
+require('gsap/src/uncompressed/easing/EasePack.js');
 
 
 /*deps*/
@@ -9,7 +10,7 @@ var render = require('react-dom').render;
 var React = require('react');
 var connect = react_redux.connect;
 
-var store = require('./store');
+var s = require('./store');
 
 /*containers*/
 // var Widget = require('./parts/Widget');
@@ -22,24 +23,34 @@ var Gui = require('./parts/Gui');
 
 var App = React.createClass({
 	componentDidMount: function(){
-		
+		window.app = this;
 	},
+	// childContextTypes: {
+	// 	state: React.PropTypes.object,
+	// },
+	// getChildContext: function() {
+	// 	return {
+	// 		state: s.store.getState()
+	// 	}
+	// },
 	render: function(){
-		console.log("APP PROPS",this.props);
+		console.log("APP PROPS");
 		return (
 			<div id='root'>
 				<PieceView/>
-				<Gui/>
+				<Gui items={this.props.pieces}/>
 			</div>
 		)
 	}
 })
 
 
+
 function select(state){
-	console.log("STATE IS",state)
+	console.log("SELECT",state);
 	return {
 		pieces: {
+			saving_piece: state.saving_piece,
 			all: state.pieces,
 			recent: [],
 			most_viewed: [],
@@ -53,7 +64,7 @@ var BoundApp = connect(select)(App);
 
 
 render(
-  <Provider store={store}>
+  <Provider store={s.store}>
     <BoundApp />
   </Provider>,
   document.getElementById('webpiece')

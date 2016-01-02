@@ -1,15 +1,22 @@
 var Widget = require('./Widget')
 var React = require('react');
+var connect = require('react-redux').connect;
 
-var pieces = {
-	creature: require('./piece_creature')
-};
+var pieces = require('../pieces');
 
 var s = require('../store.js');
 
 
 
 var PieceView = React.createClass({
+
+
+	getInitialState: function(){
+		return {
+			cfg: {}, //piece configuration object.
+			type: null //type of piece.
+		}
+	},
 
 	pause: function(){
 
@@ -21,30 +28,45 @@ var PieceView = React.createClass({
 
 	clear: function(){
 		while (	this.refs.piece.firstChild) {
-			this.refs.piece.removeChild(myNode.firstChild);
+			this.refs.piece.removeChild(this.refs.piece.firstChild);
 		}
 	},
 
-	loadPiece: function(piece){
-		this.pause();
+	// savePiece: function(){
+	// 	s.saveCurrentPiece();
+	// },
+
+	loadPiece: function(type,cfg){
 		this.clear();
 
-		this.loop = {}; //TEMPORARY LOOP HANDLER;
-		piece(this.refs.piece,store.loops);	
+		var piece = pieces[type]({
+			canvas: this.refs.piece,
+			cfg: cfg
+		});
+
+		s.setCurrentPiece({
+			cfg: cfg,
+			type: type,
+			loop: piece.loop
+		})
+
 	},
 
 	componentDidMount: function(){
-		this.loadPiece(pieces.creature);
+		this.loadPiece("creature",{a:0.2,b:0.04,c:0.001});
 	},
 
 	render: function(){
+		console.log("RENDER PIECEVIEW",this.props,this.context)
 		return (
 			<div id = "view">
-				<div className='view-piece' ref = "piece" />
-				<Widget />			
+				<canvas className='view-piece' ref = "piece" />
+				<Widget />
 			</div>
 		)
 	}
 })
+
+
 
 module.exports = PieceView;

@@ -1,10 +1,16 @@
 var C = require('circui').Circle;
 var I = require('intui').Slide;
 var React = require('react');
-
+var connect = require('react-redux').connect;
 var CLoader = require('circui').Loader;
-
+var s = require('../store.js');
 var Widget = React.createClass({
+
+	getDefaultProps: function(){
+		return {
+			size: 120
+		}
+	},
 	componentDidMount: function(){
 		window.root_node = this.refs.root_node;
 		window.widget = this;
@@ -18,7 +24,12 @@ var Widget = React.createClass({
 			unique: false,
 			saving: false,
 			sharing: false,
+			root_expanded: false,
 		}
+	},
+
+	contextTypes: {
+		state: React.PropTypes.object,
 	},
 
 	toggle: function(){
@@ -27,79 +38,106 @@ var Widget = React.createClass({
 		})
 	},
 
-
 	shouldComponentUpdate: function(props,state){
-		if(state.saving != this.state.saving){
-			if(state.saving == true){
-				this.refs.share_startSave();
-			}else{
-				this.refs.share_endSave();
-			}
-			
+		if(props.saving_piece && !this.state.saving){
+			this.setState(Object.assign(state,{
+				saving: true,
+				sharing: false
+			}))
+			return false
 		}
-		if(state.sharing != this.state.sharing){
-
+		if(!props.saving_piece && this.state.saving){
+			this.setState(Object.assign(state,{
+				saving: false,
+				sharing: true
+			}))
+			return false
 		}
+		return true
+		//console.log("SHOULD WIDGET UPDATE???",this.props.saving_piece);
 	},
 
-	componentWillUpdate: function(state){
-		if(state.saving && !this.state.saving) this.refs.loader.to({
-			start_angle:0,
-			end_angle: Math.PI
-		},1)
-
-		if(!state.saving && this.state.saving){
-			this.refs.loader.to({
-				end_angle: Math.PI*2
-			},0.3)
+	componentWillUpdate: function(props,state){
+		if(state.root_expanded != this.state.root_expanded){
+			if(!state.root_expanded){
+				state.sharing = false;
+				state.saving = false
+			}
+			this.refs.root_node.setState({expanded:state.root_expanded ? true : false})
 		}
+		//this.refs.slide.forceUpdate();
+		//console.log(state,this.state)
+		if(state.saving == true && !this.state.saving){
+			console.log("SAVING")
+			this.refs.loader.setState({
+				c_r: 0,
+				c_g: 255,
+				c_b: 255,
+				d: 5,
+				angle_start:0,
+				angle_end: Math.PI,
+			})
+
+			// setTimeout(function() {
+			// 	this.setState({
+			// 		sharing: true
+			// 	})
+			// }.bind(this), 1000);
+		}
+
+
+
 
 		if(this.state.sharing != state.sharing){
+
+			this.refs.share_node.setState({
+				expanded: state.sharing ? true : false
+			})
+		
+			this.refs.loader.setState({
+				c_r: 0,
+				c_g: 255,
+				c_b: state.saving ? 255 : 0,
+				d: 0.3,
+				angle_start:0,
+				angle_end: state.saving ? Math.PI*2 : 0,
+			//	width: 3
+			})
+
 			this.refs.slide.to({
-				beta: state.sharing ? 100 : 0
+				ease: Elastic.easeOut,
+				beta: state.sharing ? 100 : 0,
+				dur: 0.5,
 			});
 		}
+
 	},
 
 	componentDidMount: function(){
 		window.node = this.refs.slide
 		window.widget = this;
+
+	//	this.saveShare();
 	},
 
-	share_startSave: function(){
+	saveShare: function(){
 
-	},
+		if(this.props.saving_piece) return
 
-	share_endSave: function(){
-
-	},
-
-	share: function(){
-		if(this.state.sharing || this.state.saving){
-			return this.setState({
-				saving: false,
-				sharing: false
-			})
-		}else{
-			this.setState({
-				saving: true,
-			})
-
-			setTimeout(function() {
-				this.setState({
-					saving: false,
-					sharing: true
-				})
-			}.bind(this), 1000);			
-		}
+		this.setState({
+			sharing: false,
+			saving: true
+		})
+		s.saveCurrentPiece()
 	},
 
 	share_render: function(){
+		console.log("RENDER WIDGET",this.props.saving_piece);
 		return (
-			<C padding={7} className='share_node' ref='share_node' beta={50} onClick={this.share}>
+			<C padding={7} className='share_node' ref='share_node' beta={50} onClick={this.saveShare}>
 				<div className='share-slide-container'>
-					<CLoader ref = 'loader' className='loader'/>
-					<I relative slide beta={100} ref='slide'>
+					<CLoader ref = 'loader' className='loader' color='#2F8BAD' c_r={0} c_g={255} c_b={0} radius={this.props.size/4} width={3} />
+					<I relative slide v beta={100} ref='slide' className='share_slide'>
 						<I beta={100} className='share-slide-favorite'>
 							<b className='icon-star' />
 						</I>
@@ -107,6 +145,7 @@ var Widget = React.createClass({
 							<b className='icon-paper-plane' />
 						</I>	
 					</I>
+					
 				</div>
 				<C ref='share_node_tr' beta={70}>
 					<b className='icon-twitter' />
@@ -118,10 +157,16 @@ var Widget = React.createClass({
 		)
 	},
 
+	toggle_root: function(){
+		this.setState({
+			root_expanded: !this.state.root_expanded
+		})
+	},
+
 	render: function(){
 		return (
 			<div id = 'widget'>
-				<C ref='root_node' size={100} angle = {-Math.PI/2} >
+				<C ref='root_node' onClick={this.toggle_root} size={this.props.size} angle = {-Math.PI/2} width={4} >
 					<b className='icon-cog' />
 					<C className="love_node" ref='love_node' beta={50}>
 						<b className='icon-heart' />
@@ -137,4 +182,9 @@ var Widget = React.createClass({
 	}
 });
 
-module.exports = Widget;
+module.exports = connect(function(state){
+	return {
+		saving_piece: state.saving_piece
+	}
+})(Widget)
+

@@ -4,7 +4,7 @@ var pack = require('../package');
 var Piece = require('./Piece');
 
 
-const LIMIT = 20;
+const LIMIT = 2;
 
 
 function serializePiece(piece){
@@ -14,6 +14,7 @@ function serializePiece(piece){
 		likes: piece.likes,
 		views: piece.views,
 		cfg: piece.cfg,
+		type: piece.type,
 		created: piece.created,
 		picked: piece.picked,
 	}
@@ -41,69 +42,75 @@ function likeCheck(req,res,next){
 
 
 router
-.get('/new/:cursor/',function(req,res){
-	var cursor = req.params.cursor;
-	if(cursor) var q = { _id: {$lt: cursor} };
-	else var q = {};
+.get('/pieces/list',function(req,res){
+	var cursor = req.query.cursor;
+	var sort = req.query.sort;
+	console.log("CURSOR",cursor);
+	console.log("QUERY",req.query)
 	
-	Piece.find(q).sort({_id: -1 }).limit(LIMIT)
-	.exec(function(piece){
-		res.json(serializePiece(piece))
-	})
-})
+	var sort_q = {};
+	var q = {};
 
-.get('/pop/likes/:cursor/',function(req,res){
-	var cursor = req.params.cursor;
-	if(cursor) var q = { likes: {$lt: cursor} };
-	else var q = {};
-
-	Piece.find(q).sort({likes: -1}).limit(LIMIT)
-	.exec(function(piece){
-		res.json(serializePiece(piece))
-	})
-})
-
-.get('/pop/views/:cursor/',function(req,res){
-	var cursor = req.params.cursor;
-	if(cursor) var q = {views: {$lt: cursor} };
-	else var q = {};
-
-	Piece.find(q).sort({views: -1}).limit(LIMIT)
-	.exec(function(piece){
-		res.json(serializePiece(piece))
-	})
-})
-
-.get('/picked/:cursor/',function(req,res){
-	var cursor = req.params.cursor;
-	if(cursor) var q = {views: {$lt: cursor} };
-	else var q = {};
-	var q = {
-		picked: true,
+	switch(sort){
+		case 'likes':
+			q = cursor ? { likes: {$lt: cursor} } : {}
+			sort_q = {likes: -1}
+			break
+		case 'views':
+			q = cursor ? { views: {$lt: cursor} } : {}
+			sort_q = {views: -1}
+			break
+		case 'picked':
+			q = cursor ? { _id: {$lt: cursor} , picked: true} : {picked: true}
+			sort_q = {_id: -1 }
+			break
+		case 'recent':
+			q = cursor ? { _id: {$lt: cursor} } : {};
+			sort_q = {_id: -1}
+			break
+		default:
+			return res.json({status:'bad_query'})
 	}
-	Piece.find(q).sort({_id: -1 }).limit(LIMIT)
-	.exec(function(piece){
-		res.json(serializePiece(piece))
+
+	
+	Piece.find(q)
+	.sort(sort_q)
+	.limit(LIMIT)
+	.exec(function(err,pieces){
+		if(err) return res.sendStatus(500);
+		res.json(pieces.map(serializePiece))
 	})
 })
 
-.get('/get/:piece_id/',function(req,res){
+.get('/pieces/get/:piece_id/',function(req,res){
 	res.send(serializePiece(req.piece));
 })
 
+.post('/pieces/add',addCheck,function(req,res){
+
+	req.on('data',function(data){
+
+		try {
+			var body = JSON.parse(data);
+			body.cfg = JSON.stringify(body.cfg);
+		}catch(e){
+			res.sendStatus(300);
+		}
+		
+
+		var piece = new Piece({
+			cfg: body.cfg,
+			type: body.type,
+			views: 1,
+		})
 
 
-.post('/add',addCheck,function(req,res){
-	var piece = new Piece({
-		cfg: req.body.cfg,
-		tags: req.body.tags,
-		views: 1,
-	})
 
-	piece.saveAsnyc().then(function(){
-		res.json(serializePiece(piece)).status(200);
-	}).catch(function(){
-		res.sendStatus(500)
+		piece.saveAsync().then(function(){
+			res.json(serializePiece(piece)).status(200);
+		}).catch(function(e){
+			res.sendStatus(500)
+		})
 	})
 })
 

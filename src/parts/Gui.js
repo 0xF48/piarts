@@ -1,31 +1,55 @@
-var I = require('intui');
+var I = require('intui').Slide;
 var React = require('react');
-//var store = require('../store');
-
-// var Browser = React.createClass({
-
-// })
-
+var PieceList = require('./PieceList');
+var connect = require('react-redux').connect;
 
 var Gui = React.createClass({
-	// getInitialState: function(){
-
-	// },
-
-	// getInitialProps: function(){
-
-	// },
+	componentDidMount: function(){
+		window.gui = this.refs.root	
+		s.getRecent();
+	},
 
 	render: function(){
-		console.log("GUI PROPS",this.props)
+		console.log("GUI PROPS",this.props,this.props.dispatch)
 		return (
-			<div id='gui'>
-				<div className='gui-name'>
+			<I v className="gui" width="200px" id="gui" ref="root">
+				<I className="gui-header"  beta={10}>
+					<I className="gui-button"  beta={50}>
+						<b className='icon-isight'></b>
+					</I>
+					<I className="gui-button"  beta={50}>
+						<b className='icon-heart-1'></b>
+					</I>
 					
-				</div>
-			</div>
+				</I>
+				<I className="gui-content"  beta={90}>
+					<PieceList items={this.props.items} />
+				</I>
+			</I>
 		)
 	}
 })
 
-module.exports =  Gui;
+
+var select = function(state){
+	console.log("HEAVY SORT / FILTER");
+	return {
+		pieces: {
+			saving_piece: state.saving_piece,
+			recent: state.pieces.sort(function(piece){
+				return -Date.parse(piece.created_at)
+			}),
+			viewed: state.pieces.sort(function(piece){
+				return piece.views
+			}),
+			liked: state.pieces.sort(function(piece){
+				return piece.likes
+			}),
+			picked: state.pieces.filter(function(piece){
+				return piece.picked;
+			})
+		}
+	}
+}
+
+module.exports = connect(select)(Gui)

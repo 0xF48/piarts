@@ -14,17 +14,16 @@
 
 	attribute vec3 displacement;
 	attribute vec3 customColor;
+	attribute float customOpacity;
 
 	varying vec3 vColor;
+	varying float vOpacity;
 
 	void main() {
-
-		vec3 newPosition = position + amplitude * displacement;
-
 		vColor = customColor;
+		vOpacity = customOpacity;
 
-		gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
-
+		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, time );
 	}
 </script>
 
@@ -35,11 +34,10 @@
 
 
 	varying vec3 vColor;
+	varying float vOpacity;
 
 	void main() {
-
-		gl_FragColor = vec4( vColor * color, opacity );
-
+		gl_FragColor = vec4( vColor, vOpacity );
 	}
 </script>
 <script src="bundle.js"></script>
