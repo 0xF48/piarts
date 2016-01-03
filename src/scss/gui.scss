@@ -4,6 +4,7 @@
 	flex-shrink:0;
 	box-shadow: -1px 0px 0px rgba(255, 255, 255, 0.13);
 	.gui-header{
+		font-size: 20px;
 		background: #1A1A1A;
 		color: #fff;
 	}
@@ -11,12 +12,27 @@
 		background: linear-gradient(90deg,#D12500,#D10041);
 	}
 
+	.gui-store-button{
+		background: #00FFED;
+		color: #000;
+		
+	}
+	.gui-store-button-top{
+		@include center;
+		background: #000;
+		color: #00FFED;
+	}
+
+	.gui-store-button-bottom{
+		@include center;
+
+	}
+
 	.gui-button-top{
-		font-size: 20px;
 		@include center;
 	}
 	.gui-button-bottom{
-		background: #00FF5C;
+		@include center;
 	}
 
 	.gui-content{

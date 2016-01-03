@@ -182,8 +182,8 @@ module.exports.updateList = function(filter){
 
 
 var snap_canvas = document.createElement('canvas');
-snap_canvas.width = 500;
-snap_canvas.height = 500;
+snap_canvas.width = 400;
+snap_canvas.height = 400;
 var snap_creature = pieces['creature']({
 	canvas: snap_canvas,
 	cfg:{a:0.5,b:0.5,c:0.5}

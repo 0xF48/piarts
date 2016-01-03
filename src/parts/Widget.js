@@ -8,7 +8,7 @@ var Widget = React.createClass({
 
 	getDefaultProps: function(){
 		return {
-			size: 120
+			size: 100
 		}
 	},
 	componentDidMount: function(){

@@ -45,9 +45,8 @@ var PieceList = React.createClass({
 		return(
 			<div key={this.props.item._id} className='preview-container' ref='container'>
 				<img src={url} />
-				<C className='preview-widget' beta={10}>
-					<b className='icon-play'/>
-				</C>	
+				<I v beta={100} />
+				
 			</div>
 		)
 	}

@@ -98,7 +98,18 @@ var Gui = React.createClass({
 		console.log("ONHOVER",active)
 		slide.to({ 
 			beta: (active ? 4 : 0),
-			dur: 0.3,
+			dur: 0.4,
+			ease: Power4.easeOut
+		})
+	},
+
+
+	toggleStoreHover: function(slide,active){
+
+		console.log("ONHOVER",active)
+		slide.to({ 
+			beta: (active ? 100 : 0),
+			dur: 0.4,
 			ease: Power4.easeOut
 		})
 	},
@@ -114,28 +125,44 @@ var Gui = React.createClass({
 
 		return (
 			<I v className="gui" width="200px" id="gui" ref="root">
-				<I slide v ref="header_slide" className="gui-header"  beta={10}>
+				<I slide v ref="header_slide" className="gui-header"  beta={8}>
 					<I beta={100}>
-						<I v slide className="gui-button"  beta={50} onHover={this.toggleHover}>
+						<I v ref="button" slide className="gui-button"  beta={50} onHover={this.toggleHover}>
 							<I beta={100} className="gui-button-top" >
 								<b className='icon-isight'></b>
 							</I>
-							<I beta={50} className="gui-button-bottom">
-								<p></p>
+							<I ref="button-child" beta={50} className="gui-button-bottom" style={{background:'#FFDC00'}}>
+								<b className='icon-isight'></b>
+							</I>
+						</I>
+						<I v ref="button" slide className="gui-button"  beta={50} onHover={this.toggleHover}>
+							<I beta={100} className="gui-button-top" >
+								<b className='icon-leaf-1'></b>
+							</I>
+							<I ref="button-child" beta={50} className="gui-button-bottom" style={{background:'#00FF55'}}>
+								<b className='icon-leaf-1'></b>
 							</I>
 						</I>
 						<I v slide className="gui-button"  beta={50} onHover={this.toggleHover}>
 							<I beta={100} className="gui-button-top" >
 								<b className='icon-heart-1'></b>
 							</I>
-							<I beta={50} className="gui-button-bottom">
-								<p></p>
+							<I beta={50} className="gui-button-bottom"  style={{background:'#FF5D47'}}>
+								<b className='icon-heart-1'></b>
+							</I>
+						</I>
+						<I  slide className="gui-store-button"  beta={50} onHover={this.toggleStoreHover}>
+							<I beta={100} className="gui-store-button-top" >
+								<b className='icon-picture'></b>
+							</I>
+							<I beta={100} className="gui-store-button-bottom">
+								<b className='icon-picture'></b>
 							</I>
 						</I>
 					</I>
 					<I beta={50} className ='gui-header-loader' />
 				</I>
-				<I scroll v className="gui-content" ref = 'content' beta={90}>
+				<I scroll v className="gui-content" ref = 'content' beta={92}>
 					{items.map(function(item){
 						return (<PiecePreview key={item._id} item={item} />)
 					})}
