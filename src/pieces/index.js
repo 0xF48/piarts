@@ -1,7 +1,7 @@
 
 module.exports = 
 {
-	creature: require('./pieces/creature')
+	creature: require('./creature')
 	//thread:require('./pieces/thread') /*TODO*/
 };
 

@@ -85,15 +85,15 @@ var Creature = function(radius,edge_count,hair_segments,hair_length,cfg){
 			var z = 10*Math.cos(Math.sin(multi_circle2*multi_circle*i/g1)*i/g2) + offset
 			
 
-			var r = Math.sin(i/g1);
-			var g = Math.sin(i/g2);
-			var b = Math.sin(i/g3);
+			var r = Math.sin(i/(g1*500));
+			var g = Math.sin(i/(g2*800));
+			var b = Math.sin(i/(g3*600));
 
 			var vpos = new t3.Vector3(x,y,z);
 
 			var d = vpos.distanceTo(vcenter);
 
-			var opacity = opacity = d/2000*Math.sin(i/(g1*1000));
+			var opacity =  d/2000*Math.sin(i/(1000));
 
 		//	if(i%2) opacity = d/3000;
 
@@ -157,7 +157,7 @@ var Creature = function(radius,edge_count,hair_segments,hair_length,cfg){
 
 	b_geometry.addAttribute( 'displacement', dAttr);
 
-	console.log(b_geometry)
+	//console.log(b_geometry)
 
 	var stage = {
 		a: 0
@@ -174,7 +174,7 @@ var Creature = function(radius,edge_count,hair_segments,hair_length,cfg){
 			obj: circle,
 
 			reset: function(cfg){
-				console.log("RESET")
+				//console.log("RESET")
 				setG(cfg)
 				setB();
 				var array = dAttr.array;
@@ -185,6 +185,7 @@ var Creature = function(radius,edge_count,hair_segments,hair_length,cfg){
 				}
 				dAttr.needsUpdate = true;
 			},
+
 
 			fazeout: function(cfg){
 				//console.log("FAZEOUT",cfg)

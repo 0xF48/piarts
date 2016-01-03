@@ -39,79 +39,121 @@ var Widget = React.createClass({
 	},
 
 	shouldComponentUpdate: function(props,state){
-		if(props.saving_piece && !this.state.saving){
-			this.setState(Object.assign(state,{
-				saving: true,
-				sharing: false
-			}))
+
+		if(state.root_expanded != this.state.root_expanded){
+			this.refs.root_node.setState({expanded:state.root_expanded ? true : false})
+
+			if(state.root_expanded == false && state.sharing){
+				this.toDefault(state);
+				return false;
+			} 
+			
+
+			if(state.saving) this.toSaving(state);
+
+			if(state.sharing) this.toSharing(state);
 			return false
 		}
-		if(!props.saving_piece && this.state.saving){
-			this.setState(Object.assign(state,{
-				saving: false,
-				sharing: true
-			}))
+
+		if(props.saving_piece && !this.props.saving_piece){
+			console.log("UPDATE- SAVING")
+
+			this.toSaving(state);
+
+
 			return false
+		}
+		if(!props.saving_piece && this.props.saving_piece){
+
+			this.toSharing(state);
+			console.log("UPDATE- SHARING")
+
+			return false
+		}
+		if(state.sharing == false && state.saving == false && (this.state.sharing != false || this.state.saving != false)){
+			this.toDefault(state);
+			return false;
 		}
 		return true
 		//console.log("SHOULD WIDGET UPDATE???",this.props.saving_piece);
 	},
 
-	componentWillUpdate: function(props,state){
-		if(state.root_expanded != this.state.root_expanded){
-			if(!state.root_expanded){
-				state.sharing = false;
-				state.saving = false
-			}
-			this.refs.root_node.setState({expanded:state.root_expanded ? true : false})
-		}
-		//this.refs.slide.forceUpdate();
-		//console.log(state,this.state)
-		if(state.saving == true && !this.state.saving){
-			console.log("SAVING")
-			this.refs.loader.setState({
-				c_r: 0,
-				c_g: 255,
-				c_b: 255,
-				d: 5,
-				angle_start:0,
-				angle_end: Math.PI,
-			})
 
-			// setTimeout(function() {
-			// 	this.setState({
-			// 		sharing: true
-			// 	})
-			// }.bind(this), 1000);
-		}
+	toSaving: function(state){
+		this.refs.loader.setState({
+			ease:Power4.easeOut,
+			c_r: 0,
+			c_g: 255,
+			c_b: 255,
+			d: 1,
+			angle_start:0,
+			angle_end: Math.PI,
+		})
 
-
-
-
-		if(this.state.sharing != state.sharing){
-
-			this.refs.share_node.setState({
-				expanded: state.sharing ? true : false
-			})
-		
-			this.refs.loader.setState({
-				c_r: 0,
-				c_g: 255,
-				c_b: state.saving ? 255 : 0,
-				d: 0.3,
-				angle_start:0,
-				angle_end: state.saving ? Math.PI*2 : 0,
-			//	width: 3
-			})
-
-			this.refs.slide.to({
-				ease: Elastic.easeOut,
-				beta: state.sharing ? 100 : 0,
-				dur: 0.5,
-			});
-		}
-
+		this.setState(Object.assign(state,{
+			saving: true,
+			sharing: false
+		}))
 	},
+
+	toSharing: function(state){
+		this.refs.share_node.setState({
+			expanded: true
+		})
+	
+		this.refs.loader.setState({
+			c_r: 0,
+			c_g: 255,
+			c_b: 0,
+			d: 0.5,
+			angle_start:0,
+			angle_end: Math.PI*2,
+		//	width: 3
+		})
+
+		this.refs.slide.to({
+			ease: Elastic.easeOut,
+			beta: 100,
+			dur: 0.5,
+		});
+
+		this.setState(Object.assign(state,{
+			saving: false,
+			sharing: true
+		}))
+	},
+
+	toDefault: function(state){
+		this.refs.share_node.setState({
+			expanded: false
+		})
+	
+		this.refs.loader.setState({
+			c_r: 255,
+			c_g: 255,
+			c_b: 255,
+			d: 0.5,
+			angle_start:0,
+			angle_end: 0,
+		})
+
+		this.refs.slide.to({
+			ease: Power3.easeOut,
+			beta: 0,
+			dur: 0.5,
+		});
+
+		this.setState(Object.assign(state,{
+			saving: false,
+			sharing: false
+		}))
+	},
+
+	// componentWillUpdate: function(props,state){
+	// 	console.log("WILL UPDATE",this.state,'->',state);
+	
+
+	// },
 
 	componentDidMount: function(){
 		window.node = this.refs.slide
@@ -122,13 +164,16 @@ var Widget = React.createClass({
 
 	saveShare: function(){
 
-		if(this.props.saving_piece) return
+		if(this.props.saving_piece || this.state.sharing) return
+		this.toSaving(this.state);
+		// this.setState({
+		// 	sharing: false,
+		// 	saving: true
+		// })
 
-		this.setState({
-			sharing: false,
-			saving: true
-		})
 		s.saveCurrentPiece()
+
+		
 	},
 
 	share_render: function(){

@@ -1,7 +1,7 @@
 var q = require('bluebird');
 var req = require('superagent');
 var redux = require('redux');
-//var _ = require('lodash');
+var _uniq = require('lodash/array/uniq');
 var createStore = require('redux').createStore;
 var pieces = require('./pieces');
 window.pieces = pieces;
@@ -9,7 +9,12 @@ var merge = Object.assign;
 
 const default_state = {
 	current_piece: null,
-	piece_items: [],
+	piece_items: {
+		recent: [],
+		picked: [],
+		liked: 	[],
+		viewed: []
+	},
 	error: null,
 	type: 'canvas',
 	thread_active: true,
@@ -41,6 +46,33 @@ function getBase64Image(imgElem) {
 // })
 
 
+function mergeToFilters(state,pieces){
+	if(pieces.length == null){
+		pieces = [pieces];
+	}
+
+	var all =  _uniq(pieces.concat(state.piece_items.recent),function(piece){
+		return piece._id;
+	})
+
+	console.log("ALL",all)
+
+	return {
+		recent : all.sort(function(piece){
+			return -Date.parse(piece.created_at)
+		}),
+		picked: all.sort(function(piece){
+			return -Date.parse(piece.created_at)
+		}),
+		liked: all.sort(function(piece){
+			return -piece.likes
+		}),
+		viewed: all.sort(function(piece){
+			return -piece.views
+		}),					
+	};
+}
+
 
 function manager(state, action){
 	var n = {};
@@ -48,20 +80,30 @@ function manager(state, action){
 	if ( !state ) return default_state
   
   	switch (action.type) {
-  		case 'GET_LIST':
-  			getList().end(function(err,res){
-				if(err){
-					Object.assign({}, state, {
-		        		err: err.msg
-		      		})	
-				}else{
-					Object.assign({},state, {
-						pieces: _.merge(res.body,state.pieces)
-		      		})
-				}
+  		case 'UPDATE_LIST':
+  			//console.log('UPDATE LIST',action.piece_items)
+  			
+
+  			if(!action.piece_items){
+  				return merge(n,state,{
+  					fetching_list: true,
+  				})
+  			}
+  		
+			if(action.filter == null){
+				return merge(n, state, {
+					fetching_list: false,
+	        		error: "cant update list with no filter"
+	      		})
+			}
+
+			//asign new items.
+			return merge(n,state, {
+				piece_items: mergeToFilters(state,action.piece_items)
 			})
+		
   		case 'ADD_PIECE':
-			console.log("ADD_PIECE",action.piece)
+		//	console.log("ADD_PIECE",action.piece)
 			if(!action.piece_item){
 				return merge(n,state,{
 					saving_piece : true
@@ -69,7 +111,7 @@ function manager(state, action){
 			}else{
 				return merge(n,state,{
 					saving_piece : false,
-					piece_items: merge(action.piece_item,piece_items),
+					piece_items: mergeToFilters(state,action.piece_item)
 				});					
 			}
 		case 'SET_CURRENT_PIECE':
@@ -109,9 +151,25 @@ module.exports.piece_loop = piece_loop;
 /*STORE METHODS*/
 
 
-module.exports.getList = function(type,cursor){
-	return req.get('/data/'+type+'/'+cursor).data(function(){
+module.exports.updateList = function(filter){
+	store.dispatch({
+		type: 'UPDATE_LIST'
+	})
 
+	var state = store.getState();
+	var arr = state.piece_items[filter];
+
+	console.log('/data/pieces/list?filter='+filter+'&skip='+arr.length)
+
+	return req.get('/data/pieces/list?filter='+filter+'&skip='+arr.length)
+	.end(function(err,res){
+		if(!res.body.length) throw "bad array : "+JSON.stringify(res.body)
+		//console.log("GOT LIST BODY",res.body);
+		store.dispatch({
+			type: 'UPDATE_LIST',
+			filter: filter,
+			piece_items: res.body,
+		})
 	})
 }
 
@@ -122,34 +180,24 @@ module.exports.getList = function(type,cursor){
 
 
 
+
+var snap_canvas = document.createElement('canvas');
+snap_canvas.width = 500;
+snap_canvas.height = 500;
+var snap_creature = pieces['creature']({
+	canvas: snap_canvas,
+	cfg:{a:0.5,b:0.5,c:0.5}
+});
+
 function getPieceSnapURL(opt){
-	var canvas = document.createElement('canvas');
-	canvas.width = 2000;
-	canvas.height = 2000;
-		var piece = pieces[opt.type]
 	
-	if(!piece) throw "PIECE_TYPE: failed to snapshot piece, type: "+opt.type;
-
-	var piece = piece({
-		canvas: canvas,
-		cfg:opt.cfg
-	});
-
-	var url = canvas.toDataURL();
-	console.log(url);
-	var img = document.createElement('img');
-	img.src = url;
-	img.style.zIndex = 20;
-
-	img.style.position = 'absolute';
-	img.style.left = 0
-	img.style.top = 0
-	//document.body.appendChild(img);
-
+	snap_creature.set(opt.cfg);
+	var url = snap_canvas.toDataURL();
+	//console.log(url)
 	return url;
 }
 
-window.getPieceSnapURL = getPieceSnapURL;
+module.exports.getPieceSnapURL = getPieceSnapURL;
 
 
 var savePiece = function(opt){
@@ -161,7 +209,7 @@ var savePiece = function(opt){
 		picked: false,
 	}
 
-	piece_item.img_url = getPieceSnapURL(opt);
+	//piece_item.img_url = getPieceSnapURL(opt);
 
 	if( !opt.cfg || !opt.type ){
 		throw "can't save piece with no cfg/type"
@@ -171,7 +219,7 @@ var savePiece = function(opt){
 		type: 'ADD_PIECE',
 	})
 
-	req.post('/data/add/').send({
+	req.post('/data/pieces/add').send({
 		cfg: opt.cfg,
 		type: opt.type,
 	}).end(function(err,res){

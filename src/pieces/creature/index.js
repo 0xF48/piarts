@@ -44,7 +44,7 @@ var init = function(el,cfg){
 	var loop = {};
 	var cam = new t3.PerspectiveCamera(45,1.5,1,1000000);
 	var scene = new t3.Scene();
-	var controls = new OrbitControls(cam);
+	var controls = new OrbitControls(cam,el);
 	controls.autoRotate = true;
 	controls.update();
 
@@ -141,7 +141,8 @@ module.exports = function(opt){
 	return {
 		loop: main_loop,
 		set: function(cfg){
-			main_creature.fazeout(cfg);
+			main_creature.reset(cfg);
+			main_loop();
 		}
 	};
 }

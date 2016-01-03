@@ -1,29 +1,144 @@
 var I = require('intui').Slide;
 var React = require('react');
-var PieceList = require('./PieceList');
+var PiecePreview = require('./PiecePreview');
 var connect = require('react-redux').connect;
+var C = require('circui').Circle;
+var s = require('../store')
 
 var Gui = React.createClass({
+
+	PIECE_HEIGHT: 200,
+
 	componentDidMount: function(){
-		window.gui = this.refs.root	
-		s.getRecent();
+		window.gui = this
+		s.updateList(this.state.filter);
+
+		//this.checker = setInterval(this.checkForUpdate, 500);
+		window.header_slide = this.refs.header_slide
+		window.list = this.refs.test;
 	},
 
+	getInitialState: function(){
+		return {
+			filter: 'recent'
+		}
+	},
+
+	loadList: function(filter){
+		if(this.props.items[filter] == null) throw "cant load list, bad filter"
+
+		this.setState({
+			filter:filter
+		})
+	},
+
+	checkForUpdate: function(){
+		if(this.props.fetching_list) return;
+		if(!this.state.filter) return;
+
+		var scroll = this.refs.content.scrollTop;
+		var height = this.refs.content.clientHeight;
+
+		var length = this.props.items[this.state.filter].length;
+
+
+		if(scroll > PIECE_HEIGHT*length-height/2){
+			console.log("CHECK FOR UPDATE");
+			s.checkForUpdate(this.state.filter);
+		}
+	},
+
+	shouldComponentUpdate: function(props,state){
+		if(!this.props.fetching_list && props.fetching_list){
+			this.setState(Object.assign(state,{
+				loading: true
+			}))
+			return false
+		}else if(this.props.fetching_list && !props.fetching_list){
+			this.setState(Object.assign(state,{
+				loading: false
+			}))
+			return false
+		}
+
+		return true;
+	},
+
+	componentWillUpdate: function(props,state){
+
+		if(state.loading && !this.state.loading){
+			if(!props.items[state.filter].length){
+				console.log("LOADING NEW");
+				this.refs.header_slide.slide({
+					beta: 50
+				})			
+			}else{
+				console.log("LOADING OLD");
+				this.refs.header_slide.slide({
+					beta: 5
+				})				
+			}
+
+		}else if(!state.loading && this.state.loading){
+			console.log("DONE LOADING.");
+			this.refs.header_slide.slide({
+				beta: 0
+			})		
+		}
+
+
+		if(!props.fetching_list && !props.items[state.filter].length){
+			console.log("LIST EMPTY, FETCH NEW.");
+			s.updateList(state.filter);
+		}
+	},
+
+	toggleHover: function(slide,active){
+
+		console.log("ONHOVER",active)
+		slide.to({ 
+			beta: (active ? 4 : 0),
+			dur: 0.3,
+			ease: Power4.easeOut
+		})
+	},
+
+
 	render: function(){
-		console.log("GUI PROPS",this.props,this.props.dispatch)
+
+		console.log("GUI ARR SIZE",this.props.items.recent.length)
+
+
+		var items = this.props.items.recent;
+	
+
 		return (
 			<I v className="gui" width="200px" id="gui" ref="root">
-				<I className="gui-header"  beta={10}>
-					<I className="gui-button"  beta={50}>
-						<b className='icon-isight'></b>
+				<I slide v ref="header_slide" className="gui-header"  beta={10}>
+					<I beta={100}>
+						<I v slide className="gui-button"  beta={50} onHover={this.toggleHover}>
+							<I beta={100} className="gui-button-top" >
+								<b className='icon-isight'></b>
+							</I>
+							<I beta={50} className="gui-button-bottom">
+								<p></p>
+							</I>
+						</I>
+						<I v slide className="gui-button"  beta={50} onHover={this.toggleHover}>
+							<I beta={100} className="gui-button-top" >
+								<b className='icon-heart-1'></b>
+							</I>
+							<I beta={50} className="gui-button-bottom">
+								<p></p>
+							</I>
+						</I>
 					</I>
-					<I className="gui-button"  beta={50}>
-						<b className='icon-heart-1'></b>
-					</I>
-					
+					<I beta={50} className ='gui-header-loader' />
 				</I>
-				<I className="gui-content"  beta={90}>
-					<PieceList items={this.props.items} />
+				<I scroll v className="gui-content" ref = 'content' beta={90}>
+					{items.map(function(item){
+						return (<PiecePreview key={item._id} item={item} />)
+					})}
 				</I>
 			</I>
 		)
@@ -32,23 +147,9 @@ var Gui = React.createClass({
 
 
 var select = function(state){
-	console.log("HEAVY SORT / FILTER");
 	return {
-		pieces: {
-			saving_piece: state.saving_piece,
-			recent: state.pieces.sort(function(piece){
-				return -Date.parse(piece.created_at)
-			}),
-			viewed: state.pieces.sort(function(piece){
-				return piece.views
-			}),
-			liked: state.pieces.sort(function(piece){
-				return piece.likes
-			}),
-			picked: state.pieces.filter(function(piece){
-				return piece.picked;
-			})
-		}
+		fetching_list: state.fetching_list,
+		items: state.piece_items
 	}
 }
 

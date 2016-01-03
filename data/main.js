@@ -4,7 +4,7 @@ var pack = require('../package');
 var Piece = require('./Piece');
 
 
-const LIMIT = 2;
+const LIMIT = 5;
 
 
 function serializePiece(piece){
@@ -43,37 +43,40 @@ function likeCheck(req,res,next){
 
 router
 .get('/pieces/list',function(req,res){
-	var cursor = req.query.cursor;
-	var sort = req.query.sort;
-	console.log("CURSOR",cursor);
+	var skip = req.query.skip;
+	var filter = req.query.filter;
+	console.log("FILTER",filter);
 	console.log("QUERY",req.query)
 	
 	var sort_q = {};
 	var q = {};
 
-	switch(sort){
+	if(skip == null) skip = 0;
+
+	switch(filter){
 		case 'likes':
-			q = cursor ? { likes: {$lt: cursor} } : {}
+			//q = cursor ? { likes: {$lt: cursor} } : {}
 			sort_q = {likes: -1}
-			break
+			break;
 		case 'views':
-			q = cursor ? { views: {$lt: cursor} } : {}
+			//q = cursor ? { views: {$lt: cursor} } : {}
 			sort_q = {views: -1}
-			break
+			break;
 		case 'picked':
-			q = cursor ? { _id: {$lt: cursor} , picked: true} : {picked: true}
+			//q = cursor ? { _id: {$lt: cursor} , picked: true} : {picked: true}
 			sort_q = {_id: -1 }
-			break
+			break;
 		case 'recent':
-			q = cursor ? { _id: {$lt: cursor} } : {};
+			//q = cursor ? { _id: {$lt: cursor} } : {};
 			sort_q = {_id: -1}
-			break
+			break;
 		default:
 			return res.json({status:'bad_query'})
 	}
 
 	
 	Piece.find(q)
+	.skip(skip)
 	.sort(sort_q)
 	.limit(LIMIT)
 	.exec(function(err,pieces){
@@ -82,7 +85,7 @@ router
 	})
 })
 
-.get('/pieces/get/:piece_id/',function(req,res){
+.get('/pieces/get/:piece_id',function(req,res){
 	res.send(serializePiece(req.piece));
 })
 

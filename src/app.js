@@ -34,7 +34,6 @@ var App = React.createClass({
 	// 	}
 	// },
 	render: function(){
-		console.log("APP PROPS");
 		return (
 			<div id='root'>
 				<PieceView/>
@@ -47,7 +46,6 @@ var App = React.createClass({
 
 
 function select(state){
-	console.log("SELECT",state);
 	return {
 		pieces: {
 			saving_piece: state.saving_piece,
