@@ -1,0 +1,1 @@
+var pieces = require('../src/pieces');

@@ -9,6 +9,7 @@ var Provider = react_redux.Provider;
 var render = require('react-dom').render;
 var React = require('react');
 var connect = react_redux.connect;
+var I = require('intui').Slide;
 
 var s = require('./store');
 
@@ -25,18 +26,30 @@ var App = React.createClass({
 	componentDidMount: function(){
 		window.app = this;
 	},
-	// childContextTypes: {
-	// 	state: React.PropTypes.object,
-	// },
-	// getChildContext: function() {
-	// 	return {
-	// 		state: s.store.getState()
-	// 	}
-	// },
+
+	componentWillUpdate: function(){
+		console.log("APP SHOW STORE",this.props.show_store)
+		if(this.props.show_store){
+			this.refs.left.to({
+				beta: 100
+			})
+		}else{
+			this.refs.left.to({
+				beta: 0
+			})
+		}
+	},
+
 	render: function(){
 		return (
 			<div id='root'>
-				<PieceView/>
+				<I slide ref='left'>
+					<I beta={100} ref='view' style={{background:'#000'}}>
+						<PieceView/>
+					</I>
+					<I beta={100} ref='store' style={{background:'#fff'}}>
+					</I>
+				</I>
 				<Gui items={this.props.pieces}/>
 			</div>
 		)
@@ -47,6 +60,7 @@ var App = React.createClass({
 
 function select(state){
 	return {
+		show_store: state.show_store,
 		pieces: {
 			saving_piece: state.saving_piece,
 			all: state.pieces,

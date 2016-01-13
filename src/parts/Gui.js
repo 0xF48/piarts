@@ -151,7 +151,7 @@ var Gui = React.createClass({
 								<b className='icon-heart-1'></b>
 							</I>
 						</I>
-						<I  slide className="gui-store-button"  beta={50} onHover={this.toggleStoreHover}>
+						<I slide className="gui-store-button"  beta={50} onClick={s.showStore} onHover={this.toggleStoreHover}>
 							<I beta={100} className="gui-store-button-top" >
 								<b className='icon-picture'></b>
 							</I>

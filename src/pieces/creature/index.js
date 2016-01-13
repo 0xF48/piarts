@@ -89,7 +89,7 @@ var init = function(el,cfg){
 	for(var i = 0;i<20;i++){
 		var creature = creature_templ(20,7,5,20,cfg)
 		creature.obj.position.set(-spread/2+Math.random(63125613414)*spread,-spread/2+Math.random(112312323)*spread,-spread/2+Math.random(767777777)*spread);
-		creature.obj.rotation.set(Math.PI*2*Math.random(),Math.PI*2*Math.random(),Math.PI*2*Math.random());
+		creature.obj.rotation.set(Math.PI*5*Math.random(),Math.PI*5*Math.random(),Math.PI*5*Math.random());
 		piece.add(creature.obj);
 		if(i == 0) main_creature = creature;
 	}

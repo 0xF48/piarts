@@ -8,7 +8,7 @@ var ParamWidget = React.createClass({
 	render: function(){
 		return (
 			<div id='param-widget'>
-				<C beta={20} >
+				<C size={100} >
 					<b className="icon-sliders" />
 				</C>
 			</div>	

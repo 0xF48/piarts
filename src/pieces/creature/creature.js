@@ -59,6 +59,45 @@ var Creature = function(radius,edge_count,hair_segments,hair_length,cfg){
 
 	var vcenter = new t3.Vector3(0,0,0); 
 
+	var setB2 = function(){
+		b_pos = [];
+		for(var i = 0;i <= edge_count+1;i++){
+		var a = pi2/edge_count*i
+
+		var offset = 5*Math.sin(i/500/g2*g3);
+
+	
+
+		var x_variation = Math.sin(i/g1);
+		var y_variation = Math.sin(i/g2);
+		var z_variation = Math.sin(i/g3);
+
+
+		var multi_circle = makec(5+g2/g3,i)
+		var multi_circle2 = makec(20+g1/g2,i)
+
+		var rad = (radius + 30)
+
+
+		var x = Math.cos(a*Math.cos(Math.cos(multi_circle))) * rad/g2*g1 * Math.sin(a) + x_variation
+		var y =	Math.sin(a*Math.sin(Math.sin(multi_circle2)*Math.cos(multi_circle))) * rad * Math.sin(a) + y_variation
+		var z = 10*Math.cos(Math.tan(multi_circle2*multi_circle*i/g1)*i/g2) + 20*offset
+		var r = Math.sin(i/(g1*500));
+		var g = Math.sin(i/(g2*800));
+		var b = Math.sin(i/(g3*600));
+
+		var vpos = new t3.Vector3(x,y,z);
+
+		var d = vpos.distanceTo(vcenter);
+
+		var opacity =  d/2000*Math.sin(i/(1000));
+
+		b_pos.push([x,y,z]);
+		c_pos.push([r,g,b])
+		o_pos.push(opacity)
+		}
+	}
+
 	var setB = function(){
 		b_pos = [];
 		for(var i = 0;i <= edge_count+1;i++){
@@ -85,15 +124,15 @@ var Creature = function(radius,edge_count,hair_segments,hair_length,cfg){
 			var z = 10*Math.cos(Math.sin(multi_circle2*multi_circle*i/g1)*i/g2) + offset
 			
 
-			var r = Math.sin(i/(g1*500));
-			var g = Math.sin(i/(g2*800));
-			var b = Math.sin(i/(g3*600));
+			var r = Math.sin(i/(g1*3000));
+			var g = Math.sin(i/(g2*3000));
+			var b = Math.sin(i/(g3*3000));
 
 			var vpos = new t3.Vector3(x,y,z);
 
 			var d = vpos.distanceTo(vcenter);
 
-			var opacity =  d/2000*Math.sin(i/(1000));
+			var opacity =  d/4000*Math.sin(i/(g1*g2*g3*6000));
 
 		//	if(i%2) opacity = d/3000;
 

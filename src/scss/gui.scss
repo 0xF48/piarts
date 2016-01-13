@@ -13,19 +13,18 @@
 	}
 
 	.gui-store-button{
-		background: #00FFED;
-		color: #000;
 		
 	}
 	.gui-store-button-top{
 		@include center;
-		background: #000;
+		
 		color: #00FFED;
 	}
 
 	.gui-store-button-bottom{
 		@include center;
-
+		background: #00FFED;
+		color: #1A1A1A;
 	}
 
 	.gui-button-top{

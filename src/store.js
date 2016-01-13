@@ -15,6 +15,7 @@ const default_state = {
 		liked: 	[],
 		viewed: []
 	},
+	showStore: false,
 	error: null,
 	type: 'canvas',
 	thread_active: true,
@@ -117,7 +118,11 @@ function manager(state, action){
 		case 'SET_CURRENT_PIECE':
 			return merge(n,state,{
 				current_piece : action.current_piece,
-			});				
+			});
+		case 'SHOW_STORE':
+			return merge(n,state,{
+				show_store: !state.show_store
+			})
 
 	}
 	return state
@@ -230,6 +235,15 @@ var savePiece = function(opt){
 		})
 	})
 }
+
+var showStore = function(){
+	console.log("SHOW STORE")
+	store.dispatch({
+		type: 'SHOW_STORE',
+	})
+}
+
+module.exports.showStore = showStore;
 
 var setCurrentPiece = function(opt){
 	var i;
