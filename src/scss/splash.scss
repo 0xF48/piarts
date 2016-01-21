@@ -24,7 +24,7 @@ body{
 }
 
 #splash-wrapper{
-	transition: transform 0.3s cubic-bezier(.34,1.65,.58,.81);
+	transition: transform 0.3s ease;
 	height: calc(100%+50px);
 	display: flex;
 	align-items: stretch;
