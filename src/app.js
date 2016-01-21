@@ -25,10 +25,13 @@ var Gui = require('./parts/Gui');
 var App = React.createClass({
 	componentDidMount: function(){
 		window.app = this;
+		window.addEventListener('resize',function(){
+			this.forceUpdate();
+		}.bind(this)) 
 	},
 
 	componentWillUpdate: function(){
-		console.log("APP SHOW STORE",this.props.show_store)
+	//	console.log("APP SHOW STORE",this.props.show_store)
 		if(this.props.show_store){
 			this.refs.left.to({
 				beta: 100

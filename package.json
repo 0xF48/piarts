@@ -6,12 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-
-
+  "maintenance": true,
   "port": "4000",
   "db_url": "mongodb://localhost/pieceview",
-
-
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/arxii/teragrid.git"
@@ -33,6 +30,7 @@
     "bluebird": "^3.1.1",
     "colors": "^1.1.2",
     "debug": "^2.2.0",
+    "ejs": "^2.3.4",
     "express": "^4.13.3",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",

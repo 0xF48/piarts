@@ -4,7 +4,7 @@ var React = require('react');
 var connect = require('react-redux').connect;
 var CLoader = require('circui').Loader;
 var s = require('../store.js');
-var Widget = React.createClass({
+var UserWidget = React.createClass({
 
 	getDefaultProps: function(){
 		return {
@@ -41,7 +41,8 @@ var Widget = React.createClass({
 	shouldComponentUpdate: function(props,state){
 
 		if(state.root_expanded != this.state.root_expanded){
-			this.refs.root_node.setState({expanded:state.root_expanded ? true : false})
+			this.refs.root_node.setState({
+				expanded:state.root_expanded ? true : false})
 
 			if(state.root_expanded == false && state.sharing){
 				this.toDefault(state);
@@ -176,10 +177,10 @@ var Widget = React.createClass({
 		
 	},
 
-	share_render: function(){
-		console.log("RENDER WIDGET",this.props.saving_piece);
+	render_saver: function(){
+		console.log("RENDER USER WIDGET",this.props.saving_piece);
 		return (
-			<C padding={7} className='share_node' ref='share_node' beta={50} onClick={this.saveShare}>
+			<C padding={7} distance={1.1} className='share_node' ref='share_node' beta={50} onClick={this.saveShare}>
 				<div className='share-slide-container'>
 					<CLoader ref = 'loader' className='loader' color='#2F8BAD' c_r={0} c_g={255} c_b={0} radius={this.props.size/4} width={3} />
 					<I relative slide v beta={100} ref='slide' className='share_slide'>
@@ -192,10 +193,10 @@ var Widget = React.createClass({
 					</I>
 					
 				</div>
-				<C ref='share_node_tr' beta={70}>
+				<C distance={1} ref='share_node_tr' beta={70}>
 					<b className='icon-twitter' />
 				</C>
-				<C ref='share_node_fb' beta={70}>
+				<C distance={1} ref='share_node_fb' beta={70}>
 					<b className='icon-facebook-1' />
 				</C>
 			</C>
@@ -210,17 +211,17 @@ var Widget = React.createClass({
 
 	render: function(){
 		return (
-			<div id = 'widget'>
-				<C ref='root_node' onClick={this.toggle_root} size={this.props.size} angle = {-Math.PI/2} width={4} >
+			<div id = 'user-widget'>
+				<C  ref='root_node' onClick={this.toggle_root} size={this.props.size} angle = {-Math.PI/2} width={4} >
 					<b className='icon-cog' />
-					<C className="love_node" ref='love_node' beta={50}>
+					<C distance={1.1} className="love_node" ref='love_node' beta={50}>
 						<b className='icon-heart' />
 					</C>
-					<C ref='love_node' beta={50}>
+					<C distance={1.1} ref='love_node' beta={50}>
 						<b className='icon-pause' />
 					</C>
 
-					{this.share_render()}
+					{this.render_saver()}
 				</C>
 			</div>
 		)
@@ -231,5 +232,5 @@ module.exports = connect(function(state){
 	return {
 		saving_piece: state.saving_piece
 	}
-})(Widget)
+})(UserWidget)
 

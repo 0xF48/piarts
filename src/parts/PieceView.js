@@ -1,4 +1,4 @@
-var Widget = require('./Widget')
+var UserWidget = require('./UserWidget')
 var ParamWidget = require('./ParamWidget')
 var React = require('react');
 var connect = require('react-redux').connect;
@@ -33,10 +33,6 @@ var PieceView = React.createClass({
 		}
 	},
 
-	// savePiece: function(){
-	// 	s.saveCurrentPiece();
-	// },
-
 	loadPiece: function(type,cfg){
 		this.clear();
 
@@ -62,7 +58,7 @@ var PieceView = React.createClass({
 		return (
 			<div id = "view">
 				<canvas className='view-piece' ref = "piece" />
-				<Widget />
+				<UserWidget />
 				<ParamWidget />
 			</div>
 		)

@@ -27,7 +27,7 @@ gulp.task('sass', function () {
   console.log('start sass');
   gulp.src('./src/scss/main.scss')
     .pipe(sass().on('error', sass.logError))
-    .pipe(gulp.dest('./public/'));
+    .pipe(gulp.dest('./static/'));
 });
 
 // gulp.task('sass:watch', function () {
@@ -55,5 +55,5 @@ function bundle() {
     .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
        // Add transformation tasks to the pipeline here.
     .pipe(sourcemaps.write('./')) // writes .map file
-    .pipe(gulp.dest('./public'));
+    .pipe(gulp.dest('./static'));
 }

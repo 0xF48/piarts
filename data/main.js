@@ -1,24 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var pack = require('../package');
-var Piece = require('./Piece');
+var Piece = require('./models').Piece;
 
 
 const LIMIT = 5;
 
 
-function serializePiece(piece){
-	return {
-		_id: piece._id,
-		tags: piece.tags,
-		likes: piece.likes,
-		views: piece.views,
-		cfg: piece.cfg,
-		type: piece.type,
-		created: piece.created,
-		picked: piece.picked,
-	}
-}
 
 function getPiece(req,res,next,id){
 	if( ! id ) res.sendStatus(500);
@@ -55,19 +43,15 @@ router
 
 	switch(filter){
 		case 'likes':
-			//q = cursor ? { likes: {$lt: cursor} } : {}
 			sort_q = {likes: -1}
 			break;
 		case 'views':
-			//q = cursor ? { views: {$lt: cursor} } : {}
 			sort_q = {views: -1}
 			break;
 		case 'picked':
-			//q = cursor ? { _id: {$lt: cursor} , picked: true} : {picked: true}
 			sort_q = {_id: -1 }
 			break;
 		case 'recent':
-			//q = cursor ? { _id: {$lt: cursor} } : {};
 			sort_q = {_id: -1}
 			break;
 		default:
@@ -81,7 +65,9 @@ router
 	.limit(LIMIT)
 	.exec(function(err,pieces){
 		if(err) return res.sendStatus(500);
-		res.json(pieces.map(serializePiece))
+		res.json(pieces.map(function(piece){
+			return piece.public_json()
+		}))
 	})
 })
 
