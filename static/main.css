@@ -305,11 +305,55 @@ body {
   transform: rotate(90deg); }
 
 #splash-screen {
-  font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;
+  font-family: "Roboto";
   height: 100vh;
   width: 100vw;
   display: flex;
   align-items: center;
-  justify-content: center; }
+  justify-content: center;
+  flex-direction: column;
+  /* Keyframes */ }
+  #splash-screen .name {
+    width: 100px;
+    height: 100px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 50%;
+    font-size: 60px;
+    font-family: "Roboto";
+    color: #000;
+    margin-bottom: 60px; }
+    #splash-screen .name p {
+      margin-top: -7px; }
   #splash-screen .title {
-    color: #F18400; }
+    float: left;
+    background: cyan;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    font-weight: 200;
+    color: #000;
+    animation: wiggle 2s linear infinite;
+    transform-origin: 50% 5em; }
+  #splash-screen .title2 {
+    animation-delay: 0.3s; }
+
+@keyframes wiggle {
+  0%, 7% {
+    transform: rotateZ(0); }
+  15% {
+    transform: rotateZ(-7deg); }
+  20% {
+    transform: rotateZ(5deg); }
+  25% {
+    transform: rotateZ(-5deg); }
+  30% {
+    transform: rotateZ(3deg); }
+  35% {
+    transform: rotateZ(-2deg); }
+  40%, 100% {
+    transform: rotateZ(0); } }
