@@ -304,6 +304,9 @@ body {
   -ms-transform: rotate(90deg);
   transform: rotate(90deg); }
 
+body {
+  background: #0E0027 !important; }
+
 #splash-screen {
   font-family: "Roboto";
   height: 100vh;
@@ -314,6 +317,7 @@ body {
   flex-direction: column;
   /* Keyframes */ }
   #splash-screen .name {
+    box-shadow: 0px 0px 50px rgba(255, 255, 255, 0.4);
     width: 100px;
     height: 100px;
     background: #fff;
@@ -324,23 +328,33 @@ body {
     border-radius: 50%;
     font-size: 60px;
     font-family: "Roboto";
-    color: #000;
-    margin-bottom: 60px; }
+    color: #000; }
     #splash-screen .name p {
       margin-top: -7px; }
   #splash-screen .title {
     float: left;
-    background: cyan;
+    background: rgba(0, 179, 255, 0.13);
     padding: 10px;
     margin: 10px;
     border-radius: 2px;
     border: 1px solid rgba(255, 255, 255, 0.05);
     font-weight: 200;
-    color: #000;
-    animation: wiggle 2s linear infinite;
-    transform-origin: 50% 5em; }
+    color: #009DFF;
+    animation: wiggle 2s linear infinite; }
   #splash-screen .title2 {
     animation-delay: 0.3s; }
+  #splash-screen .release {
+    padding-top: 60px; }
+  #splash-screen .description {
+    font-weight: 100;
+    font-size: 13px;
+    padding-top: 60px;
+    color: #fff; }
+    #splash-screen .description .low {
+      color: #CACACA; }
+    #splash-screen .description .high {
+      font-size: 14px;
+      color: #009DFF; }
 
 @keyframes wiggle {
   0%, 7% {

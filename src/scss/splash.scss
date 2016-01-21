@@ -1,3 +1,7 @@
+body{
+	background: #0E0027 !important;
+
+}
 
 #splash-screen{
 	font-family: "Roboto";
@@ -10,6 +14,7 @@
 
 
 	.name{
+		box-shadow: 0px 0px 50px rgba(255,255,255,0.4);
 		width: 100px;
 		height: 100px;
 		background: #fff;
@@ -21,28 +26,47 @@
 		font-size: 60px;
 		font-family: "Roboto";
 		color: #000;
-		margin-bottom: 60px;
 		p{
 			margin-top: -7px;
 		}
 	}
 
+
 	.title{
+
 		float: left;
-		background: rgba(0,255,255,1);
+		background: rgba(0, 179, 255, 0.13);
 		padding: 10px;
 		margin: 10px;
 		border-radius: 2px;
 		border: 1px solid rgba(255,255,255,0.05);
 		font-weight: 200;
-		color: #000;
+		color: #009DFF;
 		animation: wiggle 2s linear infinite;
-		transform-origin: 50% 5em;
+		//transform-origin: 50% 5em;
 	}
 
 	.title2{
 		animation-delay: 0.3s;
 		//background: rgba(200,255,255,1);
+	}
+
+	.release{
+		padding-top: 60px;
+	}
+
+	.description{
+		font-weight: 100;
+		font-size: 13px;
+		padding-top: 60px;
+		color: #fff;
+		.low{
+			color: #CACACA;
+		}
+		.high{
+			font-size: 14px;
+			color: #009DFF;
+		}
 	}
 
 
