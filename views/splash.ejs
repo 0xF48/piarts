@@ -1,19 +1,41 @@
 <% include ./header %>
 
 <body>
+<div id='splash-wrapper'>
 	<div id='splash-screen'>
 		<div class='name'><p>π</p></div>
-
 		<div class = 'description'>
 			<p>
 				<span class='low'>Create, browse, save, and order prints of</span><span class='high'> digitally generated art pieces.</span>
 			</p>
-
 		</div>
 		<div class = 'release'>
 			<div class='title'>April</div>
 			<div class='title title2'> 2016</div>
 		</div>
-	
+		<div id='show-sub' class='float-button bleft'>
+			<b class = 'icon-sunrise'></b>
+		</div>
 	</div>
+	<div id = 'signup-screen'>
+		<form action="/launch_email" method="post">
+			<input type="email" name = "email" id="email" required="true" placeholder='enter your email to get notified'>
+			<input type="submit" name="subscribe" class="button icon-clock">
+		</form>
+	</div>
+</div>
+
+<script>
+
+
+
+document.getElementById('show-sub').addEventListener('click',function(){
+	if(document.getElementById('splash-wrapper').style.webkitTransform == ""){
+		document.getElementById('splash-wrapper').style.webkitTransform = 'translate3d(0, -50px, 0)'
+	}else{
+		document.getElementById('splash-wrapper').style.webkitTransform = ""
+	}
+})
+
+</script>
 </body>

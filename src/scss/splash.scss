@@ -3,7 +3,74 @@ body{
 
 }
 
+.float-button{
+	background: #fff;
+	margin: 20px;
+	border-radius: 50%;
+	height:30px;
+	width:30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;	
+	color:#000;
+	position: absolute;
+	cursor: pointer;
+}
+
+.bleft{
+	left:0;
+	bottom:0;
+}
+
+#splash-wrapper{
+	transition: transform 0.3s cubic-bezier(.34,1.65,.58,.81);
+	height: calc(100%+50px);
+	display: flex;
+	align-items: stretch;
+	justify-content: stretch;
+	flex-direction: column;	
+}
+#signup-screen{
+	height: 50px;
+	background: #000;
+	
+	form{
+		display: flex;
+		align-items: stretch;
+		justify-content: stretch;
+		flex-direction: row;
+		height: 100%;		
+	}
+	#email:focus{
+		box-shadow: none;
+		background: #000317;
+	}
+	#email{
+		outline: none;
+		font-family: "Roboto";
+		background: #000;
+		color:rgb(0, 157, 255);
+		border: none;
+		padding: 10px;
+		font-size: 20px;
+		height: auto;
+		width: 90%;
+	}
+	.button{
+		padding: 10px;
+		cursor: pointer;
+		background: #fff;
+		border:none;
+		height: 100%;
+		width: 10%;
+	}
+}
+
+
 #splash-screen{
+	position: relative;
+	height: 100%;
 	font-family: "Roboto";
 	height: 100vh;
 	width: 100vw;

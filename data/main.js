@@ -33,8 +33,8 @@ router
 .get('/pieces/list',function(req,res){
 	var skip = req.query.skip;
 	var filter = req.query.filter;
-	console.log("FILTER",filter);
-	console.log("QUERY",req.query)
+//	console.log("FILTER",filter);
+//	console.log("QUERY",req.query)
 	
 	var sort_q = {};
 	var q = {};
