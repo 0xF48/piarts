@@ -12,8 +12,7 @@ var ParamWidget = React.createClass({
 		}
 	},
 
-	expand: function(){
-		console.log("TEST")
+	toggle_expand: function(){
 		this.setState({
 			expanded: !this.state.expanded
 		})
@@ -36,11 +35,11 @@ var ParamWidget = React.createClass({
 
 
 	createKnobs: function(){
-		this.knobs = [<b className="icon-compass" />];
+		this.knobs = [<b className="icon-sliders" />];
 
-		for(var i = 0;i<6;i++){
+		for(var i = 0;i<5;i++){
 			this.knobs.push(
-				<C distance={1} beta={100}>
+				<C distance={1.6} beta={50}>
 					<Knob min={0} max={100} active={false}/>
 				</C>	
 			)		
@@ -55,11 +54,8 @@ var ParamWidget = React.createClass({
 
 		return (
 			<div id='param-widget'>
-				<C size={100} angle = {Math.PI/2} expanded={this.state.expanded} onClick={this.expand}>
-					<b className="icon-sliders" />
-					<C beta = {50} padding={2} distance = {1.7} angle = {Math.PI/2} expanded={this.state.expanded} ref='root'>
-						{this.knobs}
-					</C>
+				<C padding = {0} size={100} angle = {Math.PI/2} expanded={this.state.expanded} onClick={this.toggle_expand}>
+					{this.knobs}
 				</C>
 			</div>	
 		)

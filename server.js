@@ -47,6 +47,10 @@ if(pack.maintenance){
 	app.get('/', function(req, res) {
 	    res.render('splash');
 	});
+}else{
+	app.get('/', function(req, res) {
+	    res.render('index');
+	});
 }
 
 

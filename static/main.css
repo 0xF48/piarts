@@ -305,7 +305,7 @@ body {
   transform: rotate(90deg); }
 
 body {
-  background: #0E0027 !important; }
+  background: linear-gradient(45deg, #004F98, #7B0044); }
 
 .float-button {
   background: #fff;

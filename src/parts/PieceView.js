@@ -50,7 +50,7 @@ var PieceView = React.createClass({
 	},
 
 	componentDidMount: function(){
-		this.loadPiece("creature",{a:0.2,b:0.04,c:0.001});
+		//this.loadPiece("creature",{a:0.2,b:0.04,c:0.001});
 	},
 
 	render: function(){

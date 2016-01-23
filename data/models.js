@@ -11,14 +11,13 @@ var PieceSchema = mongoose.Schema({
 
 PieceSchema.methods.public_json = function(){
 	return {
-		_id: piece._id,
-		tags: piece.tags,
-		likes: piece.likes,
-		views: piece.views,
-		cfg: piece.cfg,
-		type: piece.type,
-		created: piece.created,
-		picked: piece.picked,
+		_id: this._id,
+		likes: this.likes,
+		views: this.views,
+		cfg: this.cfg,
+		type: this.type,
+		created: this.created,
+		picked: this.picked,
 	}	
 }
 

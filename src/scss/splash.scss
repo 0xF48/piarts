@@ -1,6 +1,5 @@
 body{
-	background: #0E0027 !important;
-
+	background: linear-gradient( 45deg, #004F98, #7B0044 );
 }
 
 .float-button{
@@ -31,6 +30,7 @@ body{
 	justify-content: stretch;
 	flex-direction: column;	
 }
+
 #signup-screen{
 	height: 50px;
 	background: #000;

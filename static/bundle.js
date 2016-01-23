@@ -5707,7 +5707,7 @@ module.exports = React.createClass({displayName: "exports",
 
 	shouldComponentUpdate: function(props,state){
 		var new_state = {};
-		console.log(props.expanded,this.props.expanded)
+		//console.log(props.expanded,this.props.expanded)
 
 		//console.log("SHOULD UPDATE",this.props.id,this.state.expanded,this.context.expanded);
 
@@ -5885,9 +5885,13 @@ module.exports = React.createClass({displayName: "exports",
 
 	},
 
+	componentDidMount:function(){
+
+	},
+
 	render: function(){
 		return (
-			React.createElement("div", null)
+			React.createElement("canvas", {ref: "canvas"})
 		)
 	},
 })
@@ -75393,8 +75397,7 @@ var ParamWidget = React.createClass({displayName: "ParamWidget",
 		}
 	},
 
-	expand: function(){
-		console.log("TEST")
+	toggle_expand: function(){
 		this.setState({
 			expanded: !this.state.expanded
 		})
@@ -75417,11 +75420,11 @@ var ParamWidget = React.createClass({displayName: "ParamWidget",
 
 
 	createKnobs: function(){
-		this.knobs = [React.createElement("b", {className: "icon-compass"})];
+		this.knobs = [React.createElement("b", {className: "icon-sliders"})];
 
-		for(var i = 0;i<6;i++){
+		for(var i = 0;i<5;i++){
 			this.knobs.push(
-				React.createElement(C, {distance: 1, beta: 100}, 
+				React.createElement(C, {distance: 1.6, beta: 50}, 
 					React.createElement(Knob, {min: 0, max: 100, active: false})
 				)	
 			)		
@@ -75436,11 +75439,8 @@ var ParamWidget = React.createClass({displayName: "ParamWidget",
 
 		return (
 			React.createElement("div", {id: "param-widget"}, 
-				React.createElement(C, {size: 100, angle: Math.PI/2, expanded: this.state.expanded, onClick: this.expand}, 
-					React.createElement("b", {className: "icon-sliders"}), 
-					React.createElement(C, {beta: 50, padding: 2, distance: 1.7, angle: Math.PI/2, expanded: this.state.expanded, ref: "root"}, 
-						this.knobs
-					)
+				React.createElement(C, {padding: 0, size: 100, angle: Math.PI/2, expanded: this.state.expanded, onClick: this.toggle_expand}, 
+					this.knobs
 				)
 			)	
 		)
@@ -75560,7 +75560,7 @@ var PieceView = React.createClass({displayName: "PieceView",
 	},
 
 	componentDidMount: function(){
-		this.loadPiece("creature",{a:0.2,b:0.04,c:0.001});
+		//this.loadPiece("creature",{a:0.2,b:0.04,c:0.001});
 	},
 
 	render: function(){
