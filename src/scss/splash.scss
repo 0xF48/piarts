@@ -3,16 +3,17 @@ body{
 }
 
 .float-button{
-	background: #fff;
+	font-size: 13px;
+	background: #000;
 	margin: 20px;
 	border-radius: 50%;
-	height:30px;
-	width:30px;
+	height:40px;
+	width:40px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	flex-direction: column;	
-	color:#000;
+	color:#00FF70;
 	position: absolute;
 	cursor: pointer;
 }
@@ -50,7 +51,7 @@ body{
 		outline: none;
 		font-family: "Roboto";
 		background: #000;
-		color:rgb(0, 157, 255);
+		color: #00FF70;
 		border: none;
 		padding: 10px;
 		font-size: 20px;
