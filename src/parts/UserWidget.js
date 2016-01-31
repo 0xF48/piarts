@@ -233,4 +233,3 @@ module.exports = connect(function(state){
 		saving_piece: state.saving_piece
 	}
 })(UserWidget)
-

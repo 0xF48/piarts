@@ -15,58 +15,78 @@ var s = require('./store');
 
 /*containers*/
 // var Widget = require('./parts/Widget');
-var PieceView = require('./parts/PieceView');
-var Gui = require('./parts/Gui');
+//var Viewer = require('./parts/Viewer');
+var Browser = require('./parts/Browser');
+var ParamWidget = require('./parts/ParamWidget');
 
-
+window.s = s
 
 
 
 var App = React.createClass({
+
+	getInitialState: function(){
+		return {
+			view_beta: 100
+		}
+	},
+
 	componentDidMount: function(){
 		window.app = this;
 		window.addEventListener('resize',function(){
 			this.forceUpdate();
-		}.bind(this)) 
+		}.bind(this))
+		this.forceUpdate();
 	},
 
-	componentWillUpdate: function(){
-	//	console.log("APP SHOW STORE",this.props.show_store)
-		if(this.props.show_store){
-			this.refs.left.to({
-				beta: 100
-			})
+	componentDidUpdate: function(){
+		//console.log("APP SHOW STORE",this.props.show_store)
+		// if(this.props.show_store){
+		// 	this.refs["root"].to({
+		// 		beta: 0,
+		// 		dur: 0.5
+		// 	})				
+		// }else{
+		// 	this.refs["root"].to({
+		// 		beta: 100,
+		// 		dur: 0.5
+		// 	})
+		// }
+	},
+
+	toggleSidebar: function(){
+		console.log("toggle")
+		if(this.state.view_beta == 100){
+			this.setState({view_beta:20})
 		}else{
-			this.refs.left.to({
-				beta: 0
-			})
+			this.setState({view_beta:100})
 		}
 	},
 
 	render: function(){
 		return (
-			<div id='root'>
-				<I slide ref='left'>
-					<I beta={100} ref='view' style={{background:'#000'}}>
-						<PieceView/>
-					</I>
-					<I beta={100} ref='store' style={{background:'#fff'}}>
-					</I>
+			<I slide beta={100} ref="root" >
+				<I width={100} ref='browser' style={{background:"#2C2C2D"}}>
+					
+					
 				</I>
-				<Gui items={this.props.pieces}/>
-			</div>
+				<I beta={100} offset={-100} ref='viewer' style={{background:"#8E8D91"}}>
+					<Viewer />
+				</I>
+			</I>
 		)
 	}
 })
 
 
 
+						
+
 function select(state){
 	return {
-		show_store: state.show_store,
 		pieces: {
-			saving_piece: state.saving_piece,
-			all: state.pieces,
+			saving_piece: state.app.saving_piece,
+			all: state.app.pieces,
 			recent: [],
 			most_viewed: [],
 			most_liked: [],
@@ -78,6 +98,8 @@ function select(state){
 var BoundApp = connect(select)(App);
 
 
+
+//var Example = require('intui').example;
 render(
   <Provider store={s.store}>
     <BoundApp />

@@ -1,3 +1,12 @@
+.sidebar-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 20px;
+  background: #fff;
+  width: 30px;
+  height: 30px; }
+
 html, * {
   padding: 0;
   margin: 0; }
@@ -19,6 +28,10 @@ body {
   flex-direction: row;
   align-items: stretch;
   align-content: stretch; }
+
+#webpiece {
+  height: 100%;
+  width: 100%; }
 
 .gui {
   position: relative;
@@ -137,30 +150,6 @@ body {
     overflow: hidden; }
   #user-widget .icon-facebook-1, #user-widget .icon-twitter {
     font-size: 10px; }
-
-#param-widget {
-  -webkit-filter: url("#goo");
-  filter: url("./index.html#goo");
-  transform: translate3d(0, 0, 0);
-  position: absolute;
-  top: 0%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  height: 100%;
-  pointer-events: none; }
-  #param-widget .c_node {
-    transform: translate3d(0, 0, 0);
-    align-items: center;
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    border-radius: 50% 50% 50% 50%;
-    color: #000;
-    background: #76FFB6;
-    overflow: hidden; }
-  #param-widget .icon-sliders {
-    margin-top: 35px; }
 
 ._intui_el {
   display: -webkit-box;
@@ -304,9 +293,6 @@ body {
   -ms-transform: rotate(90deg);
   transform: rotate(90deg); }
 
-body {
-  background: linear-gradient(45deg, #004F98, #7B0044); }
-
 .float-button {
   font-size: 13px;
   background: #000;
@@ -327,6 +313,7 @@ body {
   bottom: 0; }
 
 #splash-wrapper {
+  background: linear-gradient(45deg, #004F98, #7B0044);
   transition: transform 0.3s ease;
   height: calc(100%+50px);
   display: flex;
@@ -430,3 +417,63 @@ body {
     transform: rotateZ(-2deg); }
   40%, 100% {
     transform: rotateZ(0); } }
+
+.param-widget {
+  width: 100%;
+  height: 100%;
+  pointer-events: none; }
+  .param-widget .param-widget-select {
+    font-family: sans-serif;
+    cursor: default;
+    -webkit-filter: url("#goo");
+    filter: url("./index.html#goo");
+    position: absolute;
+    top: 0%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    pointer-events: all; }
+    .param-widget .param-widget-select .c_node {
+      -webkit-touch-callout: none;
+      /* iOS Safari */
+      -webkit-user-select: none;
+      /* Chrome/Safari/Opera */
+      -khtml-user-select: none;
+      /* Konqueror */
+      -moz-user-select: none;
+      /* Firefox */
+      -ms-user-select: none;
+      /* IE/Edge */
+      cursor: default;
+      font-size: 10px;
+      font-color: rgba(0, 0, 0, 0.5);
+      transform: translate3d(0, 0, 0);
+      align-items: center;
+      display: flex;
+      align-content: center;
+      justify-content: center;
+      border-radius: 50% 50% 50% 50%;
+      color: #000;
+      background: #FFFFFF;
+      overflow: hidden; }
+    .param-widget .param-widget-select .knob-root {
+      background: #F0FFFC; }
+    .param-widget .param-widget-select .knob-edit {
+      font-size: 13px;
+      background: cyan; }
+    .param-widget .param-widget-select .knob-random {
+      font-size: 13px;
+      background: cyan; }
+    .param-widget .param-widget-select .knob-reset {
+      font-size: 13px;
+      background: cyan; }
+    .param-widget .param-widget-select .param-root {
+      font-size: 18px; }
+      .param-widget .param-widget-select .param-root b {
+        margin-top: 35px; }
+  .param-widget .param-widget-canvas {
+    position: absolute;
+    top: 0;
+    left: 0; }

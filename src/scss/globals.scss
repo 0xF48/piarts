@@ -26,6 +26,11 @@ body{
     align-content: stretch;
 }
 
+#webpiece{
+	height: 100%;
+	width: 100%;
+}
+
 @mixin center {
 	align-items	: center;
 	display		: flex;

@@ -7,26 +7,44 @@ var pieces = require('./pieces');
 window.pieces = pieces;
 var merge = Object.assign;
 
-const default_state = {
-	current_piece: null,
-	piece_items: {
-		recent: [],
-		picked: [],
-		liked: 	[],
-		viewed: []
-	},
-	showStore: false,
-	error: null,
-	type: 'canvas',
-	thread_active: true,
-	saving_piece: false,
+
+
+
+
+
+var params = {
+	'length': 4,
+	1: Math.random(),
+	2: Math.random(),
+	3: Math.random(),
+	4: Math.random(),	
 }
 
 
 
+const default_state = {
+	app: {
+		piece_params: params,
+		current_piece: null,
+		piece_items: {
+			recent: [],
+			picked: [],
+			liked: 	[],
+			viewed: []
+		},
+		show_store: false,
+		error: null,
+		type: 'canvas',
+		render_active: true,
+		saving_piece: false,		
+	}
+}
+
+module.exports.default_state = default_state
 
 
-function getBase64Image(imgElem) {
+
+//function getBase64Image(imgElem) {
 // imgElem must be on the same server otherwise a cross-origin error will be thrown "SECURITY_ERR: DOM Exception 18"
     // var canvas = document.createElement("canvas");
     // canvas.width = imgElem.clientWidth;
@@ -35,7 +53,7 @@ function getBase64Image(imgElem) {
     // ctx.drawImage(imgElem, 0, 0);
     // var dataURL = canvas.toDataURL("image/png");
     // return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-}
+//}
 
 
 // var getList = dispatch.bind(null,function(){
@@ -47,116 +65,94 @@ function getBase64Image(imgElem) {
 // })
 
 
-function mergeToFilters(state,pieces){
-	if(pieces.length == null){
-		pieces = [pieces];
-	}
-
-	var all =  _uniq(pieces.concat(state.piece_items.recent),function(piece){
-		return piece._id;
-	})
-
-	console.log("ALL",all)
-
-	return {
-		recent : all.sort(function(piece){
-			return -Date.parse(piece.created_at)
-		}),
-		picked: all.sort(function(piece){
-			return -Date.parse(piece.created_at)
-		}),
-		liked: all.sort(function(piece){
-			return -piece.likes
-		}),
-		viewed: all.sort(function(piece){
-			return -piece.views
-		}),					
-	};
-}
 
 
-function manager(state, action){
-	var n = {};
-	var nstate = {};
-	if ( !state ) return default_state
-  
-  	switch (action.type) {
-  		case 'UPDATE_LIST':
-  			//console.log('UPDATE LIST',action.piece_items)
-  			
-
-  			if(!action.piece_items){
-  				return merge(n,state,{
-  					fetching_list: true,
-  				})
-  			}
-  		
-			if(action.filter == null){
-				return merge(n, state, {
-					fetching_list: false,
-	        		error: "cant update list with no filter"
-	      		})
-			}
-
-			//asign new items.
-			return merge(n,state, {
-				piece_items: mergeToFilters(state,action.piece_items)
-			})
-		
-  		case 'ADD_PIECE':
-		//	console.log("ADD_PIECE",action.piece)
-			if(!action.piece_item){
-				return merge(n,state,{
-					saving_piece : true
-				});			
-			}else{
-				return merge(n,state,{
-					saving_piece : false,
-					piece_items: mergeToFilters(state,action.piece_item)
-				});					
-			}
-		case 'SET_CURRENT_PIECE':
-			return merge(n,state,{
-				current_piece : action.current_piece,
-			});
-		case 'SHOW_STORE':
-			return merge(n,state,{
-				show_store: !state.show_store
-			})
-
-	}
-	return state
-}
 
 
-var store = createStore(manager,default_state);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var loops = []; //all the render loops currently running.
+var piece_loop = null; //reference to current piece loop function.
+
+var applyRouterMiddleware = require('redux-tiny-router').applyMiddleware; //router to bind middleware to state
+var mainReducer = require('./reducers/mainReducer');
+
+
+
+
+
+//create store with router middleware
+var store = applyRouterMiddleware()(createStore)({app:mainReducer},default_state)
+
 window.store = store //debug
-var loops = []; //render loops array.
-var piece_loop = null; //reference to piece loop function.
 
-var thread = function(){
-	if(store.getState().thread_active == false) return
-	requestAnimationFrame(thread);
-	for(var i = 0;i<loops.length;i++){
-		loops[i]();
-	}
-}
-if(store.getState().thread_active == true) thread();
-
-
+//globals
 module.exports.store = store;
 module.exports.loops = loops;
-module.exports.piece_loop = piece_loop;
+module.exports.piece_loop = piece_loop; 
+
+
+
+
+// render all loops. pause rendering with store.render_active
+function render(){
+	if(store.getState().render_active == false) return
+	requestAnimationFrame(render);
+	for(var i = 0;i<loops.length;i++){
+		if(loops[i] != null) loops[i]();
+	}
+}
+
+
+if(store.getState().app.render_active == true) render();
 
 
 
 
 
 
-/*STORE METHODS*/
 
 
-module.exports.updateList = function(filter){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*----------------------------------*/
+/*----------------------------------*/
+/*         STORE ACTIONS            */
+/*----------------------------------*/
+/*----------------------------------*/
+
+function updateList(filter){
 	store.dispatch({
 		type: 'UPDATE_LIST'
 	})
@@ -178,34 +174,25 @@ module.exports.updateList = function(filter){
 	})
 }
 
+// var snap_canvas = document.createElement('canvas');
+// snap_canvas.width = 400;
+// snap_canvas.height = 400;
+// var snap_creature = pieces['creature']({
+// 	canvas: snap_canvas,
+// 	cfg:{a:0.5,b:0.5,c:0.5}
+// });
 
-
-
-
-
-
-
-
-var snap_canvas = document.createElement('canvas');
-snap_canvas.width = 400;
-snap_canvas.height = 400;
-var snap_creature = pieces['creature']({
-	canvas: snap_canvas,
-	cfg:{a:0.5,b:0.5,c:0.5}
-});
-
-function getPieceSnapURL(opt){
+// function getPieceSnapURL(opt){
 	
-	snap_creature.set(opt.cfg);
-	//var url = snap_canvas.toDataURL();
-	//console.log(url)
-	return url;
-}
+// 	snap_creature.set(opt.cfg);
+// 	//var url = snap_canvas.toDataURL();
+// 	//console.log(url)
+// 	return url;
+// }
 
-module.exports.getPieceSnapURL = getPieceSnapURL;
+//module.exports.getPieceSnapURL = getPieceSnapURL;
 
-
-var savePiece = function(opt){
+function savePiece(opt){
 	var piece_item = 
 	{
 		type: opt.type,
@@ -236,16 +223,21 @@ var savePiece = function(opt){
 	})
 }
 
-var showStore = function(){
-	console.log("SHOW STORE")
+function saveParams(){
 	store.dispatch({
-		type: 'SHOW_STORE',
+		type: 'SAVE_PARAMS',
+		params: params
 	})
 }
 
-module.exports.showStore = showStore;
+function setParam(index,val){
+	params[index] = val
+}
 
-var setCurrentPiece = function(opt){
+module.exports.setParam = setParam
+module.exports.saveParams = saveParams
+
+function setCurrentPiece(opt){
 	var i;
 	if(piece_loop != null){
 		i = loops.indexOf(piece_loop);
@@ -269,11 +261,15 @@ var setCurrentPiece = function(opt){
 	})
 }
 
-var saveCurrentPiece = function(){
+function saveCurrentPiece(){
 	var state = store.getState();
 	savePiece(state.current_piece);
 }
 
+
+//export actions.
+module.exports.params = params;
+module.exports.updateList = updateList;
 module.exports.setCurrentPiece = setCurrentPiece;
 module.exports.savePiece = savePiece;
 module.exports.saveCurrentPiece = saveCurrentPiece;

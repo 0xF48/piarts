@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "maintenance": true,
+  "maintenance": false,
   "port": "4000",
   "db_url": "mongodb://localhost/pieceview",
   "repository": {
@@ -37,6 +37,7 @@
     "lodash": "^3.10.1",
     "lodash.assign": "^3.2.0",
     "mongoose": "^4.3.4",
+    "redux-tiny-router": "^0.6.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }
