@@ -4,190 +4,111 @@ var React = require('react');
 var connect = require('react-redux').connect;
 var CLoader = require('circui').Loader;
 var s = require('../store.js');
-var UserWidget = React.createClass({
+var ParamWidget = require('./ParamWidget');
+var CircleMixin = require('circui').Mixin;
 
-	getDefaultProps: function(){
-		return {
-			size: 100
-		}
-	},
-	componentDidMount: function(){
-		window.root_node = this.refs.root_node;
-		window.widget = this;
-		// window.addEventListener("resize",function(){
-		// 	this.forceUpdate()
-		// }.bind(this));
-	},
+
+var SaveWidget = React.createClass({
+
+	mixins: [CircleMixin],
 
 	getInitialState: function(){
 		return {
-			unique: false,
 			saving: false,
-			sharing: false,
-			root_expanded: false,
+			sharing: false
 		}
 	},
 
-	contextTypes: {
-		state: React.PropTypes.object,
-	},
-
-	toggle: function(){
-		this.setState({
-			saved: !this.state.saved
-		})
+	getDefaultProps: function(){
+		return {
+			saving: false
+		}
 	},
 
 	shouldComponentUpdate: function(props,state){
-
-		if(state.root_expanded != this.state.root_expanded){
-			this.refs.root_node.setState({
-				expanded:state.root_expanded ? true : false})
-
-			if(state.root_expanded == false && state.sharing){
-				this.toDefault(state);
-				return false;
-			} 
-			
-
-			if(state.saving) this.toSaving(state);
-
-			if(state.sharing) this.toSharing(state);
-			return false
+		if(props.saving != this.props.saving){
+			this.setState({
+				saving: props.saving,
+			})
+			return true
 		}
 
-		if(props.saving_piece && !this.props.saving_piece){
-			console.log("UPDATE- SAVING")
-
-			this.toSaving(state);
-
-
-			return false
+		else if(this.state.saving == true && state.saving == false && this.state.sharing == false){
+			this.setState({
+				sharing: true
+			})
+			return true
 		}
-		if(!props.saving_piece && this.props.saving_piece){
 
-			this.toSharing(state);
-			console.log("UPDATE- SHARING")
+		//save loader done
+		else if(state.sharing != this.state.sharing && state.saving == true && state.sharing == true){
+			this.refs.loader.setState({
+				c_r: 0,
+				c_g: 255,
+				c_b: 0,
+				d: 0.5,
+				angle_start:0,
+				angle_end: Math.PI*2,
+			})
 
-			return false
+		//save loader start
+		}else if(this.state.saving != state.saving && state.saving == true && state.sharing == false){
+			this.refs.loader.setState({
+				ease:Power4.easeOut,
+				c_r: 0,
+				c_g: 255,
+				c_b: 255,
+				d: 1,
+				angle_start:0,
+				angle_end: Math.PI,
+			})	
+
+		//default loader
+		}else if(this.state.saving != state.saving && state.sharing == false && state.saving == false){
+			this.refs.loader.setState({
+				c_r: 255,
+				c_g: 255,
+				c_b: 255,
+				d: 0.5,
+				angle_start:0,
+				angle_end: 0,
+			})
 		}
-		if(state.sharing == false && state.saving == false && (this.state.sharing != false || this.state.saving != false)){
-			this.toDefault(state);
-			return false;
-		}
+
 		return true
-		//console.log("SHOULD WIDGET UPDATE???",this.props.saving_piece);
-	},
-
-
-	toSaving: function(state){
-		this.refs.loader.setState({
-			ease:Power4.easeOut,
-			c_r: 0,
-			c_g: 255,
-			c_b: 255,
-			d: 1,
-			angle_start:0,
-			angle_end: Math.PI,
-		})
-
-		this.setState(Object.assign(state,{
-			saving: true,
-			sharing: false
-		}))
-	},
-
-	toSharing: function(state){
-		this.refs.share_node.setState({
-			expanded: true
-		})
-	
-		this.refs.loader.setState({
-			c_r: 0,
-			c_g: 255,
-			c_b: 0,
-			d: 0.5,
-			angle_start:0,
-			angle_end: Math.PI*2,
-		//	width: 3
-		})
-
-		this.refs.slide.to({
-			ease: Elastic.easeOut,
-			beta: 100,
-			dur: 0.5,
-		});
-
-		this.setState(Object.assign(state,{
-			saving: false,
-			sharing: true
-		}))
-	},
-
-	toDefault: function(state){
-		this.refs.share_node.setState({
-			expanded: false
-		})
-	
-		this.refs.loader.setState({
-			c_r: 255,
-			c_g: 255,
-			c_b: 255,
-			d: 0.5,
-			angle_start:0,
-			angle_end: 0,
-		})
-
-		this.refs.slide.to({
-			ease: Power3.easeOut,
-			beta: 0,
-			dur: 0.5,
-		});
-
-		this.setState(Object.assign(state,{
-			saving: false,
-			sharing: false
-		}))
-	},
-
-	// componentWillUpdate: function(props,state){
-	// 	console.log("WILL UPDATE",this.state,'->',state);
-	
-
-	// },
-
-	componentDidMount: function(){
-		window.node = this.refs.slide
-		window.widget = this;
-
-	//	this.saveShare();
-	},
+	},	
 
 	saveShare: function(){
+		if(this.props.saving_piece || this.state.sharing){
+			this.setState({
+				sharing: false
+			})
+		}
 
-		if(this.props.saving_piece || this.state.sharing) return
-		this.toSaving(this.state);
-		// this.setState({
-		// 	sharing: false,
-		// 	saving: true
-		// })
+		this.setState({
+		 	sharing: false,
+		 	saving: true
+		})
 
 		s.saveCurrentPiece()
-
-		
 	},
 
-	render_saver: function(){
-		console.log("RENDER USER WIDGET",this.props.saving_piece);
+	componentDidMount: function(){
+		console.log(this.refs['root'])
+		window.tt = this.refs['root']
+	},
+
+
+	render: function(){
 		return (
-			<C padding={7} distance={1.1} className='share_node' ref='share_node' beta={50} onClick={this.saveShare}>
+			<C {...this.props} padding={7}  className='share_node' ref='root' expanded={this.props.sharing}  onClick={this.saveShare}>
 				<div className='share-slide-container'>
-					<CLoader ref = 'loader' className='loader' color='#2F8BAD' c_r={0} c_g={255} c_b={0} radius={this.props.size/4} width={3} />
-					<I relative slide v beta={100} ref='slide' className='share_slide'>
-						<I beta={100} className='share-slide-favorite'>
+					<CLoader ref = 'loader' className='loader' color='#2F8BAD' c_r={0} c_g={255} c_b={0} radius={70/4} width={3} />
+					<I slide v beta={100} ref='slide' index = {this.sharing ? 1 : 0} className='share_slide'>
+						<I beta={100} classNameInner='share-slide-favorite'>
 							<b className='icon-star' />
 						</I>
-						<I beta={100} className='share-slide-share'>
+						<I beta={100} classNameInner='share-slide-share'>
 							<b className='icon-paper-plane' />
 						</I>	
 					</I>
@@ -201,28 +122,67 @@ var UserWidget = React.createClass({
 				</C>
 			</C>
 		)
+	}
+})
+
+
+
+
+
+
+
+
+
+
+
+var UserWidget = React.createClass({
+
+	componentDidMount: function(){
+		window.widget = this;
+		window.root_node = this.refs.root_node;
+		window.widget = this;
+		this.refs.param_widget.initDragger(this.refs.canvas);
 	},
 
-	toggle_root: function(){
+	componentDidUpdate: function(){
+		this.syncCanvasDragger();
+	},
+
+	syncCanvasDragger: function(){
+		var canvas_pos = this.refs.canvas.getBoundingClientRect();
+		this.refs.canvas.width = this.refs['root'].clientWidth;
+		this.refs.canvas.height = this.refs['root'].clientHeight;
+		this.refs.param_widget.dragger.stage['vertical'] = this.refs.canvas.height > this.refs.canvas.width ? true : false
+		this.refs.param_widget.dragger.stage['left'] = canvas_pos.left
+		this.refs.param_widget.dragger.stage['top'] = canvas_pos.top
+	},
+
+	getInitialState: function(){
+		return {
+			expanded: false,
+		}
+	},
+
+	toggleRoot: function(){
 		this.setState({
-			root_expanded: !this.state.root_expanded
+			expanded: !this.state.expanded
 		})
 	},
 
+
 	render: function(){
 		return (
-			<div id = 'user-widget'>
-				<C  ref='root_node' onClick={this.toggle_root} size={this.props.size} angle = {-Math.PI/2} width={4} >
+			<div className = 'user-widget' ref = 'root'>
+				<canvas  tabIndex='1' ref='canvas' className = 'user-widget-canvas' />
+				<C style={{top:'50%'}}rootClass = 'user-widget-dom' ref='root_node' expanded={this.state.expanded} onClick={this.toggleRoot} size={85} angle = {-Math.PI/2} >
 					<b className='icon-cog' />
-					<C distance={1.1} className="love_node" ref='love_node' beta={50}>
+					<C distance={1.3}  beta={45} selfClass="love_node" ref='love_node'>
 						<b className='icon-heart' />
 					</C>
-					<C distance={1.1} ref='love_node' beta={50}>
-						<b className='icon-pause' />
-					</C>
+					<ParamWidget distance={1.7} beta={100} ref='param_widget' expanded={this.state.expanded} params={this.props.params}/>
+					<SaveWidget distance={1.3} beta={45} ref='save_widget' saving={this.props.saving_piece} />
 
-					{this.render_saver()}
-				</C>
+				</C>		
 			</div>
 		)
 	}
@@ -230,6 +190,7 @@ var UserWidget = React.createClass({
 
 module.exports = connect(function(state){
 	return {
-		saving_piece: state.saving_piece
+		saving_piece: state.saving_piece,
+		params: state.app.piece_params
 	}
 })(UserWidget)

@@ -50,7 +50,7 @@ var PieceView = React.createClass({
 	},
 
 	componentDidMount: function(){
-		//this.loadPiece("creature",{a:0.2,b:0.04,c:0.001});
+		this.loadPiece("creature",s.params);
 	},
 
 	render: function(){
@@ -59,9 +59,7 @@ var PieceView = React.createClass({
 			<div id = "view">
 				<canvas className='view-piece' ref = "piece" />
 				<UserWidget />
-				<ParamWidget>
-					<ParamOption type='number' >
-				</ParamWidget>
+		
 			</div>
 		)
 	}

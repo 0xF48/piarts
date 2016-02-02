@@ -15,9 +15,8 @@ var s = require('./store');
 
 /*containers*/
 // var Widget = require('./parts/Widget');
-//var Viewer = require('./parts/Viewer');
+var Viewer = require('./parts/Viewer');
 var Browser = require('./parts/Browser');
-var ParamWidget = require('./parts/ParamWidget');
 
 window.s = s
 
@@ -40,7 +39,7 @@ var App = React.createClass({
 	},
 
 	componentDidUpdate: function(){
-		//console.log("APP SHOW STORE",this.props.show_store)
+		// console.log("APP SHOW STORE",this.props.show_store)
 		// if(this.props.show_store){
 		// 	this.refs["root"].to({
 		// 		beta: 0,

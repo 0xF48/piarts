@@ -14,10 +14,10 @@ var merge = Object.assign;
 
 var params = {
 	'length': 4,
-	1: Math.random(),
-	2: Math.random(),
-	3: Math.random(),
-	4: Math.random(),	
+	1: 0.05,
+	2: 0.1,
+	3: 1.2,
+	4: 0.8,	
 }
 
 
