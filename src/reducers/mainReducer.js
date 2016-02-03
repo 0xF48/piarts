@@ -1,5 +1,7 @@
-const default_state = require('../store').default_state
+var s = require('../store')
+
 var merge = Object.assign;
+
 
 
 function mergeToFilters(state,pieces){
@@ -33,13 +35,13 @@ function mergeToFilters(state,pieces){
 function mainReducer(state, action){
 	var n = {};
 	var nstate = {};
-	if ( !state ) return default_state
+	if ( !state ) return s.default_state
   
   	switch (action.type) {
   		case 'SAVE_PARAMS':
   			//console.log('save params',action.params)
   			return merge(n, state, {
-				piece_params:  merge({},action.params)
+				piece_params:  action.params
       		})
   		break;
   		case 'UPDATE_LIST':
@@ -77,9 +79,12 @@ function mainReducer(state, action){
 				});					
 			}
 		break;
-		case 'SET_CURRENT_PIECE':
+		case 'SET_PIECE':
+			s.setParams(action.params)
+			console.log(action.params)
 			return merge(n,state,{
 				current_piece : action.current_piece,
+				piece_params: action.params,
 			});
 
 	}

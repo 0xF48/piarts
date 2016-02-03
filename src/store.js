@@ -7,19 +7,19 @@ var pieces = require('./pieces');
 window.pieces = pieces;
 var merge = Object.assign;
 
+const MAX_PARAMS = 5;
 
 
 
 
-
-var params = {
-	'length': 4,
-	1: 0.05,
-	2: 0.1,
-	3: 1.2,
-	4: 0.8,	
-}
-
+var params = [ 
+	0.5, 
+	0.5, 
+	0.5,
+	0.5,
+	0.5
+]
+module.exports.params = params;
 
 
 const default_state = {
@@ -39,7 +39,6 @@ const default_state = {
 		saving_piece: false,		
 	}
 }
-
 module.exports.default_state = default_state
 
 
@@ -79,13 +78,12 @@ module.exports.default_state = default_state
 
 
 
+var current_piece = null;
 
 
 
+var loops = [null]; //all the render loops currently running.
 
-
-var loops = []; //all the render loops currently running.
-var piece_loop = null; //reference to current piece loop function.
 
 var applyRouterMiddleware = require('redux-tiny-router').applyMiddleware; //router to bind middleware to state
 var mainReducer = require('./reducers/mainReducer');
@@ -102,7 +100,6 @@ window.store = store //debug
 //globals
 module.exports.store = store;
 module.exports.loops = loops;
-module.exports.piece_loop = piece_loop; 
 
 
 
@@ -173,6 +170,7 @@ function updateList(filter){
 		})
 	})
 }
+module.exports.updateList = updateList;
 
 // var snap_canvas = document.createElement('canvas');
 // snap_canvas.width = 400;
@@ -223,57 +221,83 @@ function savePiece(opt){
 	})
 }
 
+
 function saveParams(){
 	store.dispatch({
 		type: 'SAVE_PARAMS',
 		params: params
 	})
 }
+module.exports.saveParams = saveParams
+
 
 function setParam(index,val){
 	params[index] = val
+	if(current_piece != null) current_piece.set(params)
 }
-
 module.exports.setParam = setParam
-module.exports.saveParams = saveParams
 
-function setCurrentPiece(opt){
-	var i;
-	if(piece_loop != null){
-		i = loops.indexOf(piece_loop);
-		if(i < 0) throw "failed to remove current piece render loop from pool"
-		loops[i] = null;
-		piece_loop = null;
-		console.log("REMOVED PIECE LOOP",loops);
-	}
 
-	piece_loop = opt.loop
-	if( i != null ) loops[i] = piece_loop;
-	else loops.push(opt.loop);
+function setParams(new_params){
+	params = new_params
+}
+module.exports.setParams = setParams
 
-	console.log("ADDED PIECE LOOP",loops);
+
+
+
+
+
+
+function setPiece(type,new_params){
 	store.dispatch({
-		type: 'SET_CURRENT_PIECE',
-		current_piece: {
-			type: opt.type,
-			cfg: opt.cfg
-		}
+		type: 'SET_PIECE',
+		current_piece: type,
+		params: new_params
 	})
 }
+module.exports.setPiece = setPiece
+
+
+
+function makeCurrentPiece(canvas){
+
+	var state = store.getState();
+	var type = state.app.current_piece;
+	var new_params = state.app.piece_params;
+
+	if(canvas == null) throw 'cant set piece with no canvas'
+	if(type == null) throw 'cant set piece with no type'
+	if(pieces[type] == null ) throw 'piece does not exist'
+
+	if(pieces[type][0].length == 0 || pieces[type].length > MAX_PARAMS) throw 'invalid piece parameters for '+opt.type
+	//call the constructor
+	var piece = pieces[type][1](canvas); //init piece.
+	
+	//set params.
+	if(new_params != null){
+		if(new_params.length != pieces[type][0].length){
+			throw 'piece constructor param length is not equal to current state params.'
+		}
+	}else{
+		throw 'cannot make piece without params.'
+	}
+
+	current_piece = piece;
+	current_piece.set(new_params);
+
+	//set the new loop.
+	loops[0] = current_piece.loop;
+
+	console.log("ADDED PIECE LOOP",loops);
+}
+module.exports.makeCurrentPiece = makeCurrentPiece;
+
+
+
+
 
 function saveCurrentPiece(){
-	var state = store.getState();
-	savePiece(state.current_piece);
+	savePiece(current_piece);
 }
-
-
-//export actions.
-module.exports.params = params;
-module.exports.updateList = updateList;
-module.exports.setCurrentPiece = setCurrentPiece;
-module.exports.savePiece = savePiece;
 module.exports.saveCurrentPiece = saveCurrentPiece;
-
-
-
-

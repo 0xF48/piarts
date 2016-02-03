@@ -1,23 +1,5 @@
-
-module.exports = 
-{
-	creature: require('./creature')
-	//thread:require('./pieces/thread') /*TODO*/
-};
-
-
-
-/*
-INPUT:
-{
-	canvas: -- canvas element where to start render,
-	state: -- configuration object
+module.exports = {
+	creature: require('./creature'),
+	example: require('./_base_example'),
+	example2: require('./_base_example2'),
 }
-------------------
-OUTPUT:
-{
-	loop: function() -- main render loop.
-	set: function(cfg) -- state setter
-}
-
-*/

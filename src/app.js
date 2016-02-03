@@ -36,6 +36,8 @@ var App = React.createClass({
 			this.forceUpdate();
 		}.bind(this))
 		this.forceUpdate();
+		setTimeout(function() {s.setPiece('example',[0.1,0.2,0.3,0.3,0.3])}, 1);		
+		 //set new piece configuration
 	},
 
 	componentDidUpdate: function(){
@@ -65,13 +67,8 @@ var App = React.createClass({
 	render: function(){
 		return (
 			<I slide beta={100} ref="root" >
-				<I width={100} ref='browser' style={{background:"#2C2C2D"}}>
-					
-					
-				</I>
-				<I beta={100} offset={-100} ref='viewer' style={{background:"#8E8D91"}}>
-					<Viewer />
-				</I>
+				<I width={100} ref='browser' style={{background:"#2C2C2D"}}></I>
+				<Viewer beta={100} offset={-100} />
 			</I>
 		)
 	}
@@ -83,6 +80,8 @@ var App = React.createClass({
 
 function select(state){
 	return {
+		saving_piece: state.saving_piece,
+		params: state.app.piece_params,
 		pieces: {
 			saving_piece: state.app.saving_piece,
 			all: state.app.pieces,

@@ -26,8 +26,8 @@ build/Release
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
 
-public/bundle.js.map
-public/bundle.js
-public/main.css
+static/bundle.js.map
+static/bundle.js
+static/main.css
 
 **/**/.DS_Store

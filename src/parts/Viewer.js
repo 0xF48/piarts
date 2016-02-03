@@ -1,70 +1,48 @@
-var UserWidget = require('./UserWidget')
-var ParamWidget = require('./ParamWidget')
+
 var React = require('react');
+
+var UserWidget = require('./UserWidget');
 var connect = require('react-redux').connect;
-
 var pieces = require('../pieces');
-
 var s = require('../store.js');
-
+var slideMixin = require('intui').Mixin;
+var I = require('intui').Slide;
 
 
 var PieceView = React.createClass({
+	mixins: [slideMixin],
 
+	init: function(){
+		
+	},
 
-	getInitialState: function(){
-		return {
-			cfg: {}, //piece configuration object.
-			type: null //type of piece.
+	shouldComponentUpdate: function(props){
+	
+
+		if(this.props.current_piece != props.current_piece){
+			s.makeCurrentPiece(this.refs.piece_canvas)
 		}
-	},
-
-	pause: function(){
-
-	},
-
-	play: function(){
-
-	},
-
-	clear: function(){
-		while (	this.refs.piece.firstChild) {
-			this.refs.piece.removeChild(this.refs.piece.firstChild);
-		}
-	},
-
-	loadPiece: function(type,cfg){
-		this.clear();
-
-		var piece = pieces[type]({
-			canvas: this.refs.piece,
-			cfg: cfg
-		});
-
-		s.setCurrentPiece({
-			cfg: cfg,
-			type: type,
-			loop: piece.loop
-		})
-
-	},
-
-	componentDidMount: function(){
-		this.loadPiece("creature",s.params);
+		return true
 	},
 
 	render: function(){
-		console.log("RENDER PIECEVIEW",this.props,this.context)
 		return (
-			<div id = "view">
-				<canvas className='view-piece' ref = "piece" />
-				<UserWidget />
-		
-			</div>
+			<I ref = "view-slide" beta={this.props.beta} offset={this.props.offset} style={{background:"#8E8D91"}}>
+				<canvas id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />
+				<UserWidget {...this.props} />
+			</I>
 		)
 	}
 })
 
 
 
-module.exports = PieceView;
+module.exports = connect(function(state){
+	return {
+		current_piece: state.app.current_piece,
+		saving_piece: state.app.saving_piece,
+		params: state.app.piece_params		
+	}
+})(PieceView);
+
+

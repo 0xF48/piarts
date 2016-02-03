@@ -139,8 +139,6 @@ var UserWidget = React.createClass({
 
 	componentDidMount: function(){
 		window.widget = this;
-		window.root_node = this.refs.root_node;
-		window.widget = this;
 		this.refs.param_widget.initDragger(this.refs.canvas);
 	},
 
@@ -174,7 +172,7 @@ var UserWidget = React.createClass({
 		return (
 			<div className = 'user-widget' ref = 'root'>
 				<canvas  tabIndex='1' ref='canvas' className = 'user-widget-canvas' />
-				<C style={{top:'50%'}}rootClass = 'user-widget-dom' ref='root_node' expanded={this.state.expanded} onClick={this.toggleRoot} size={85} angle = {-Math.PI/2} >
+				<C style={{top:'50%'}} rootClass = 'user-widget-dom' ref='root_node' expanded={this.state.expanded} onClick={this.toggleRoot} size={85} angle = {-Math.PI/2} >
 					<b className='icon-cog' />
 					<C distance={1.3}  beta={45} selfClass="love_node" ref='love_node'>
 						<b className='icon-heart' />
@@ -188,9 +186,4 @@ var UserWidget = React.createClass({
 	}
 });
 
-module.exports = connect(function(state){
-	return {
-		saving_piece: state.saving_piece,
-		params: state.app.piece_params
-	}
-})(UserWidget)
+module.exports = UserWidget

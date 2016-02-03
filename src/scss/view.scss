@@ -1,13 +1,7 @@
 
 
-#view{
-	position: relative;
-	width: 100%;
-	height: 100%;
-	.view-piece{
-		position: absolute;
-		width: 100%;
-		height: 100%;
-	}
+.view-canvas{
+	position: absolute;
+	top:0;
+	left:0;
 }
-

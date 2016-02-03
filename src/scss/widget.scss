@@ -1,3 +1,9 @@
+.white{
+	border-radius : 50% 50% 50% 50%;
+	background: #fff;
+	overflow: hidden;
+}
+
 
 .user-widget{
 	width: 100%;
@@ -48,8 +54,6 @@
 	}
 
 	.c_node{
-		transform: translateZ(0);		
-		transform: translate3d(0,0,0);
 		@include center;
 		// box-shadow : 0px 0px 10px rgba(0,0,0,0.5);
 		border-radius : 50% 50% 50% 50%;

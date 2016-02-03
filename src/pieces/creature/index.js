@@ -134,9 +134,11 @@ var init = function(el,cfg){
 
 
 
-module.exports = function(opt){
 
-	var main_loop = new init(opt.canvas,opt.cfg);
+
+module.exports = function(canvas,params){
+
+	var main_loop = new init(canvas,params);
 
 	return {
 		loop: main_loop,
