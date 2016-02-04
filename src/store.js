@@ -32,7 +32,8 @@ const default_state = {
 			liked: 	[],
 			viewed: []
 		},
-		show_store: false,
+		show_info: false,
+		show_browser: false,
 		error: null,
 		type: 'canvas',
 		render_active: true,
@@ -148,6 +149,20 @@ if(store.getState().app.render_active == true) render();
 /*         STORE ACTIONS            */
 /*----------------------------------*/
 /*----------------------------------*/
+
+module.exports.toggleInfo = function(){
+	store.dispatch({
+		type: 'TOGGLE_INFO'
+	})
+}
+
+module.exports.toggleBrowser = function(){
+	store.dispatch({
+		type: 'TOGGLE_BROWSER'
+	})
+}
+
+
 
 function updateList(filter){
 	store.dispatch({

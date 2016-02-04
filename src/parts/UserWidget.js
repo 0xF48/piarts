@@ -172,12 +172,12 @@ var UserWidget = React.createClass({
 		return (
 			<div className = 'user-widget' ref = 'root'>
 				<canvas  tabIndex='1' ref='canvas' className = 'user-widget-canvas' />
-				<C style={{top:'50%'}} rootClass = 'user-widget-dom' ref='root_node' expanded={this.state.expanded} onClick={this.toggleRoot} size={85} angle = {-Math.PI/2} >
+				<C rootStyle={{top:'50%'}} rootClass = 'user-widget-dom' ref='root_node' expanded={this.state.expanded} onClick={this.toggleRoot} size={85} angle = {-Math.PI/2} >
 					<b className='icon-cog' />
 					<C distance={1.3}  beta={45} selfClass="love_node" ref='love_node'>
 						<b className='icon-heart' />
 					</C>
-					<ParamWidget distance={1.7} beta={100} ref='param_widget' expanded={this.state.expanded} params={this.props.params}/>
+					<ParamWidget distance={1.1} beta={100} ref='param_widget' expanded={this.state.expanded} params={this.props.params}/>
 					<SaveWidget distance={1.3} beta={45} ref='save_widget' saving={this.props.saving_piece} />
 
 				</C>		

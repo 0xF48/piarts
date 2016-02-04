@@ -368,12 +368,12 @@ var	Dragger = function(canvas){
 		stage.overflow_cycles = 0;
 		stage.cycles = 0;
 		stage.prev_angle = null;
-		stage.prev_a = null
-		if(value < 0){
-			stage.draw_cycles = -1 * ( Math.floor(value*stage.cycles_per_unit) + 1 )
-		}else{
-			stage.draw_cycles = Math.floor(value*stage.cycles_per_unit)
-		}
+		stage.prev_a = null;
+
+
+		stage.draw_cycles = Math.floor(value*stage.cycles_per_unit)
+	
+		
 		
 		param_index = index
 		document.body.style.cursor = 'none'
@@ -420,7 +420,8 @@ var ParamWidget = React.createClass({
 		return {
 			expanded: false,
 			active_knob: -1,
-			padding: 10
+			padding: 10,
+			default_dist: 2.9
 		}
 	},
 
@@ -471,7 +472,7 @@ var ParamWidget = React.createClass({
 		if(this.state.active_knob != -1){
 			return -0.5
 		}else{
-			return 2.5
+			return this.state.default_dist
 		}
 	},
 
@@ -484,24 +485,26 @@ var ParamWidget = React.createClass({
 		window.param_widget = this;
 	},
 
+
+
 	render: function(){
-		var c_size = 35;
-		var c_beta = 20;
+		var c_size = 30;
+		var c_beta = 10;
 		var c_style = {display: this.state.active_knob != -1 ? 'none' : 'initial'}
 
 		return (
-			<C {...this.props} rootClass = 'param-widget' ref = 'root' padding = {this.state.padding} size={40} angle = {Math.PI/2} expanded={this.props.expanded}>
+			<C {...this.props} expand_duration = {1} rootClass = 'param-widget' ref = 'root' padding = {this.state.padding} size={40} angle = {Math.PI/2} expanded={this.props.expanded}>
 				<b className='icon-sliders' />
-				<C beta = {c_beta} size={c_size} distance={this.getDist(4)} onMouseDown={this.setDragger.bind(this,4)} ref = 'knob_4' scale = {this.getScale(4)}>
-					<b style={c_style}>{this.getVal(4)}</b></C>
-				<C beta = {c_beta} size={c_size} distance={this.getDist(2)} onMouseDown={this.setDragger.bind(this,2)} ref = 'knob_2' scale = {this.getScale(2)}>
-					<b style={c_style}>{this.getVal(2)}</b></C>
-				<C beta = {c_beta} size={c_size} distance={this.getDist(0)} onMouseDown={this.setDragger.bind(this,0)} ref = 'knob_0' scale = {this.getScale(0)}>
-					<b style={c_style}>{this.getVal(0)}</b></C>
-				<C beta = {c_beta} size={c_size} distance={this.getDist(1)} onMouseDown={this.setDragger.bind(this,1)} ref = 'knob_1' scale = {this.getScale(1)}>
-					<b style={c_style}>{this.getVal(1)}</b></C>
-				<C beta = {c_beta} size={c_size} distance={this.getDist(3)} onMouseDown={this.setDragger.bind(this,3)} ref = 'knob_3' scale = {this.getScale(3)}>
-					<b style={c_style}>{this.getVal(3)}</b></C>
+				<C  beta = {c_beta} size={c_size} distance={this.getDist(4)} onMouseDown={this.setDragger.bind(this,4)} ref = 'knob_4' scale = {this.getScale(4)}>
+					<b style={c_style}>z</b></C>
+				<C  beta = {c_beta} size={c_size} distance={this.getDist(2)} onMouseDown={this.setDragger.bind(this,2)} ref = 'knob_2' scale = {this.getScale(2)}>
+					<b style={c_style}>x</b></C>
+				<C  beta = {c_beta} size={c_size} distance={this.getDist(0)} onMouseDown={this.setDragger.bind(this,0)} ref = 'knob_0' scale = {this.getScale(0)}>
+					<b style={c_style}>a</b></C>
+				<C  beta = {c_beta} size={c_size} distance={this.getDist(1)} onMouseDown={this.setDragger.bind(this,1)} ref = 'knob_1' scale = {this.getScale(1)}>
+					<b style={c_style}>b</b></C>
+				<C  beta = {c_beta} size={c_size} distance={this.getDist(3)} onMouseDown={this.setDragger.bind(this,3)} ref = 'knob_3' scale = {this.getScale(3)}>
+					<b style={c_style}>y</b></C>
 			</C>
 		)
 	}

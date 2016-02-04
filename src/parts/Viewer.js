@@ -24,12 +24,20 @@ var PieceView = React.createClass({
 		}
 		return true
 	},
+	showSelf: function(ee,e){
+		if(!this.props.show_browser) return;
+		else{
+			s.toggleBrowser();
+			ee.preventDefault()
+		} 
+	},
 
 	render: function(){
 		return (
-			<I ref = "view-slide" beta={this.props.beta} offset={this.props.offset} style={{background:"#8E8D91"}}>
+			<I id = 'view' onClick={this.showSelf} ref = "view-slide" beta={this.props.beta} offset={this.props.offset} style={{background:"#8E8D91"}}>
 				<canvas id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />
 				<UserWidget {...this.props} />
+				<div className='view-overlay' style={{pointerEvents:this.props.show_browser ? 'all' : 'none', 'opacity':this.props.show_browser ? 0.85 : 0}} />
 			</I>
 		)
 	}
@@ -39,6 +47,7 @@ var PieceView = React.createClass({
 
 module.exports = connect(function(state){
 	return {
+		show_browser: state.app.show_browser,
 		current_piece: state.app.current_piece,
 		saving_piece: state.app.saving_piece,
 		params: state.app.piece_params		

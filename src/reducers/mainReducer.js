@@ -38,12 +38,19 @@ function mainReducer(state, action){
 	if ( !state ) return s.default_state
   
   	switch (action.type) {
+  		case 'TOGGLE_INFO':
+   			return merge(n, state, {
+				show_info:  !state.show_info
+      		})  			
+  		case 'TOGGLE_BROWSER':
+   			return merge(n, state, {
+				show_browser:  !state.show_browser
+      		})	
   		case 'SAVE_PARAMS':
   			//console.log('save params',action.params)
   			return merge(n, state, {
 				piece_params:  action.params
       		})
-  		break;
   		case 'UPDATE_LIST':
   			//console.log('UPDATE LIST',action.piece_items)
   			
@@ -65,7 +72,6 @@ function mainReducer(state, action){
 			return merge(n,state, {
 				piece_items: mergeToFilters(state,action.piece_items)
 			})
-		break;
   		case 'ADD_PIECE':
 		//	console.log("ADD_PIECE",action.piece)
 			if(!action.piece_item){
@@ -78,7 +84,6 @@ function mainReducer(state, action){
 					piece_items: mergeToFilters(state,action.piece_item)
 				});					
 			}
-		break;
 		case 'SET_PIECE':
 			s.setParams(action.params)
 			console.log(action.params)

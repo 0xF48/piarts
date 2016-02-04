@@ -37,3 +37,16 @@ body{
 	align-content	: center;
 	justify-content: center;	
 }
+
+
+.site-info{
+	background: rgb(42, 40, 40);
+	color: #D8BDA8;
+	box-sizing: inset;
+	padding: 14px;
+	font-size: 14px;
+	font-family: "Roboto";
+	font-weight: 300;
+	@include center;
+	flex-direction: column
+}

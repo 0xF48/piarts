@@ -16,11 +16,8 @@ var s = require('./store');
 /*containers*/
 // var Widget = require('./parts/Widget');
 var Viewer = require('./parts/Viewer');
-var Browser = require('./parts/Browser');
-
-window.s = s
-
-
+var Gui = require('./parts/Gui');
+var Info = require('./parts/Info');
 
 var App = React.createClass({
 
@@ -36,7 +33,7 @@ var App = React.createClass({
 			this.forceUpdate();
 		}.bind(this))
 		this.forceUpdate();
-		setTimeout(function() {s.setPiece('example',[0.1,0.2,0.3,0.3,0.3])}, 1);		
+		//setTimeout(function() {s.setPiece('example',[0.1,0.2,0.3,0.3,0.3])}, 1);		
 		 //set new piece configuration
 	},
 
@@ -55,20 +52,24 @@ var App = React.createClass({
 		// }
 	},
 
-	toggleSidebar: function(){
-		console.log("toggle")
-		if(this.state.view_beta == 100){
-			this.setState({view_beta:20})
-		}else{
-			this.setState({view_beta:100})
-		}
-	},
+	// toggleSidebar: function(){
+	// 	console.log("toggle")
+	// 	if(this.state.view_beta == 100){
+	// 		this.setState({view_beta:20})
+	// 	}else{
+	// 		this.setState({view_beta:100})
+	// 	}
+	// },
 
 	render: function(){
+		console.log(this.props.show_info)
 		return (
-			<I slide beta={100} ref="root" >
-				<I width={100} ref='browser' style={{background:"#2C2C2D"}}></I>
-				<Viewer beta={100} offset={-100} />
+			<I slide index_pos={this.props.show_info ? 1 : 0} vertical beta={100} ref="root" >
+				<I slide beta={100} ref="top" >
+					<Gui slide width={this.props.show_browser ? 500 : 50} />
+					<Viewer beta={100} offset={-50} />
+				</I>
+				<Info beta = {20}/>
 			</I>
 		)
 	}
@@ -80,7 +81,9 @@ var App = React.createClass({
 
 function select(state){
 	return {
-		saving_piece: state.saving_piece,
+		show_info: state.app.show_info,
+		show_browser: state.app.show_browser,
+		saving_piece: state.app.saving_piece,
 		params: state.app.piece_params,
 		pieces: {
 			saving_piece: state.app.saving_piece,
