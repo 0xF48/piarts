@@ -13,7 +13,7 @@ var reactify = require('reactify');
 var sass = require('gulp-sass')
 // add custom browserify options here
 var customOpts = {
-  entries: ['./src/app.js'],
+  entries: ['./src/main.js'],
   transform: [reactify/*,stringify(['.glsl'])*/],
   debug: true
 };
@@ -25,7 +25,7 @@ var b = watchify(browserify(opts));
 
 gulp.task('sass', function () {
   console.log('start sass');
-  gulp.src('./src/scss/main.scss')
+  gulp.src('./src/styles/main.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest('./static/'));
 });
@@ -41,9 +41,15 @@ b.on('log', gutil.log); // output build logs to terminal
 
 
 
+function build_pieces(){
+
+}
+
+
+
 
 function bundle() {
-  gulp.watch('./src/scss/**/*.scss', ['sass']);
+  gulp.watch('./src/styles/**/*.scss', ['sass']);
   return b.bundle()
     // log errors if they happen
     .on('error', gutil.log.bind(gutil, 'Browserify Error'))

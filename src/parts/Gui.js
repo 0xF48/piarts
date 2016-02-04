@@ -4,7 +4,7 @@ var PiecePreview = require('./PiecePreview');
 var connect = require('react-redux').connect;
 var SlideMixin = require('intui').Mixin
 var C = require('circui').Circle;
-var s = require('../store')
+var s = require('../data/store')
 
 
 /* inverted button */
@@ -18,6 +18,7 @@ var InvButton = React.createClass({
 			left: false,
 			active: false,
 			index_offset: 3,
+			index_offsset_full: false,
 			c1: '#fff',
 			c2: '#000',
 		}
@@ -41,6 +42,7 @@ var InvButton = React.createClass({
 
 		var index_pos = this.props.active ? (this.props.left || this.props.up) ? 0 : 1 : (this.props.left || this.props.up) ? 1 : 0
 		var index_offset = this.props.active ? 0 : (this.state.hover ? this.props.index_offset : 0)
+
 		if(this.props.left || this.props.up) index_offset *= -1
 
 		var vertical = false
@@ -51,6 +53,11 @@ var InvButton = React.createClass({
 
 		var top_style = {color:c1,background:c2}
 		var bot_style = {color:c2,background:c1}
+		
+		if(this.props.index_offset_full && this.state.hover){
+			index_offset = 0
+			index_pos = index_pos == 1 ? 0 : 1
+		}
 
 		return (
 			<I {...this.props} slide vertical={vertical} slide_duration={this.active ? 1 : 0.5} index_pos={index_pos} index_offset={index_offset} onHover={this.toggleHover}>
@@ -67,6 +74,47 @@ var InvButton = React.createClass({
 
 
 
+
+
+
+
+
+
+
+
+
+var TypesList = React.createClass({
+	mixins: [SlideMixin],
+	generateList: function(){
+		this.typeslist = [];
+		for( key in types){
+			types[key]
+		}
+	},
+	shouldComponentUpdate: function(props,state){
+		if(props.typeslist.length != this.props.typeslist.length){
+			this.generateList
+		}
+		return true;
+	},
+	render: function(){
+		return (
+			<I {...this.props} id="sidebar" ref="sidebar" outerClassName="gui-sidebar">
+				<G style={{boxSizing:'border-box',padding:'0px'}} >
+					{this.typeslist}	
+				</G>
+			</I>
+		)		
+	}
+})
+
+
+
+
+
+
+
+
 var Sidebar = React.createClass({
 	mixins: [SlideMixin],
 	getDefaultProps: function(){
@@ -79,9 +127,7 @@ var Sidebar = React.createClass({
 			active_button: -1
 		}
 	},
-
 	toBrowserRecent: function(){
-		console.log("TEST")
 		if(!this.props.show_browser) s.toggleBrowser()
 		this.setState({active_button: 0})
 	},
@@ -94,35 +140,58 @@ var Sidebar = React.createClass({
 		if(!this.props.show_browser) s.toggleBrowser()
 		this.setState({active_button: 2})
 	},
+	toTypesList: function(){
+		s.toggleTypesList()
+	},
 	showInfo: function(){
 		s.toggleInfo()
 	},
-
 	shouldComponentUpdate: function(props){
 		if(this.props.show_browser != props.show_browser && props.show_browser == false){
 			this.setState({active_button:-1})
 		}
 		return true 
 	},
-
 	componentDidMount: function(){
+
 		window.sidebar = this.refs['sidebar']
 		window.sidebar_top = this.refs['sidebar_top']
 	},
-
 	render: function(){
 		return (
 			<I {...this.props} id = 'sidebar' ref="sidebar" outerClassName="gui-sidebar" >
 				<I vertical beta={100} offset={-50} ref = 'sidebar_top'>
 					<InvButton c1 = '#00C85C' c2 ='#003016' left onClick={this.toBrowserRecent} height={this.props.width} icon= 'icon-leaf-1' active = {this.state.active_button == 0} index_offset={3} />
 					<InvButton c1 = '#C80041' c2 ='#30000A' up onClick={this.toBrowserLoved} height={this.props.width} icon= 'icon-heart-1' active = {this.state.active_button == 1} index_offset={3} />
-					<InvButton c1 = '#C8A700' c2 ='#302900' right onClick={this.toBrowserPicked} height={this.props.width} icon= 'icon-isight' active = {this.state.active_button == 2} index_offset={3} />
+					<InvButton c1 = '#E6B200' c2 ='#4B3A00' right onClick={this.toBrowserPicked} height={this.props.width} icon= 'icon-isight' active = {this.state.active_button == 2} index_offset={3} />
+					<InvButton  c1 = '#FFDEBF' c2 ='#2A2828' down onClick={this.toTypesList} height={this.props.width} icon= 'icon-picture' active = {this.props.show_typeslist} index_offset={3} />
 				</I>
 				<InvButton c1 = '#FFDEBF' c2 ='#2A2828' down onClick={this.showInfo} height={this.props.width} icon= 'icon-info-circled' active = {this.props.show_info} index_offset={3} />
 			</I>
 		)
 	}
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 var Browser = React.createClass({
@@ -142,12 +211,33 @@ var Browser = React.createClass({
 	},
 	render: function(){
 		return (
-			<I {...this.props} id='browser'>
-				<b>browser</b>
+			<I {...this.props} /*index_pos = {0} */ id='browser'>
+				<I height = {this.props.show_typeslist ? null : 50 }beta = {50} style = {{background:'#fff'}}>
+
+				</I>
+				<I beta = {100} style = {{background:'#000'}}>
+					
+				</I>
 			</I>
 		)
 	}
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 var Gui = React.createClass({
 	mixins: [SlideMixin],
@@ -159,7 +249,7 @@ var Gui = React.createClass({
 	},
 
 	componentDidMount: function(){
-		// window.gui = this
+		window.gui = this
 		// s.updateList(this.state.filter);
 
 		// //this.checker = setInterval(this.checkForUpdate, 500);
@@ -185,21 +275,9 @@ var Gui = React.createClass({
 		// }
 	},
 
-	// shouldComponentUpdate: function(props,state){
-	// 	// if(!this.props.fetching_list && props.fetching_list){
-	// 	// 	this.setState(Object.assign(state,{
-	// 	// 		loading: true
-	// 	// 	}))
-	// 	// 	return false
-	// 	// }else if(this.props.fetching_list && !props.fetching_list){
-	// 	// 	this.setState(Object.assign(state,{
-	// 	// 		loading: false
-	// 	// 	}))
-	// 	// 	return false
-	// 	// }
-
-	// 	// return true;
-	// },
+	shouldComponentUpdate: function(props,state){
+		return true;
+	},
 
 	componentWillUpdate: function(props,state){
 
@@ -238,8 +316,8 @@ var Gui = React.createClass({
 	render: function(){
 		return (
 			<I {...this.props} index_pos={this.props.show_browser ? 0 : 1}  id="gui" ref="root">
-				<Browser width = {450}/>
-				<Sidebar slide show_browser ={this.props.show_browser} show_info ={this.props.show_info} vertical width = {50} />
+				<Browser slide  show_typeslist = {this.props.show_typeslist} vertical beta = {100} offset = {-50}/>
+				<Sidebar slide  show_typeslist = {this.props.show_typeslist} show_browser = {this.props.show_browser} show_info ={this.props.show_info} vertical width = {50} />
 			</I>
 		)
 	}
@@ -257,6 +335,6 @@ var select = function(state){
 }
 
 
-module.exports = connect(select)(Gui)
+module.exports = Gui
 
 

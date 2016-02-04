@@ -3,7 +3,6 @@ var req = require('superagent');
 var redux = require('redux');
 var _uniq = require('lodash/array/uniq');
 var createStore = require('redux').createStore;
-var pieces = require('./pieces');
 window.pieces = pieces;
 var merge = Object.assign;
 
@@ -32,6 +31,8 @@ const default_state = {
 			liked: 	[],
 			viewed: []
 		},
+		typelist: [],
+		show_typelist: false,
 		show_info: false,
 		show_browser: false,
 		error: null,
@@ -79,6 +80,140 @@ module.exports.default_state = default_state
 
 
 
+
+
+
+
+
+
+function mergeToFilters(state,pieces){
+	if(pieces.length == null){
+		pieces = [pieces];
+	}
+
+	var all =  _uniq(pieces.concat(state.piece_items.recent),function(piece){
+		return piece._id;
+	})
+
+	console.log("ALL",all)
+
+	return {
+		recent : all.sort(function(piece){
+			return -Date.parse(piece.created_at)
+		}),
+		picked: all.sort(function(piece){
+			return -Date.parse(piece.created_at)
+		}),
+		liked: all.sort(function(piece){
+			return -piece.likes
+		}),
+		viewed: all.sort(function(piece){
+			return -piece.views
+		}),					
+	};
+}
+
+
+function mainReducer(state, action){
+	var n = {};
+	var nstate = {};
+	if ( !state ) return default_state
+  
+  	switch (action.type) {
+
+  		case 'TOGGLE_TYPELIST':
+   			return merge(n, state, {
+				show_typelist:  !state.show_typelist,
+				show_browser:  !state.show_typelist ? true : state.show_browser,
+      		})
+  		case 'TOGGLE_INFO':
+   			return merge(n, state, {
+				show_info:  !state.show_info
+      		})  			
+  		case 'TOGGLE_BROWSER':
+   			return merge(n, state, {
+   				show_info: state.show_browser ? false : state.show_info,
+				show_browser:  !state.show_browser,
+				show_typelist:  !state.show_browser == false ? false : state.show_typelist,
+      		})	
+  		case 'SAVE_PARAMS':
+  			//console.log('save params',action.params)
+  			return merge(n, state, {
+				piece_params:  action.params
+      		})
+  		case 'UPDATE_LIST':
+  			//console.log('UPDATE LIST',action.piece_items)
+  			
+
+  			if(!action.piece_items){
+  				return merge(n,state,{
+  					fetching_list: true,
+  				})
+  			}
+  		
+			if(action.filter == null){
+				return merge(n, state, {
+					fetching_list: false,
+	        		error: "cant update list with no filter"
+	      		})
+			}
+
+			//asign new items.
+			return merge(n,state, {
+				piece_items: mergeToFilters(state,action.piece_items)
+			})
+  		case 'ADD_PIECE':
+		//	console.log("ADD_PIECE",action.piece)
+			if(!action.piece_item){
+				return merge(n,state,{
+					saving_piece : true
+				});			
+			}else{
+				return merge(n,state,{
+					saving_piece : false,
+					piece_items: mergeToFilters(state,action.piece_item)
+				});					
+			}
+		case 'SET_PIECE':
+			s.setParams(action.params)
+			console.log(action.params)
+			return merge(n,state,{
+				current_piece : action.current_piece,
+				piece_params: action.params,
+			});
+
+	}
+	return state
+}
+
+
+module.exports = mainReducer;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var current_piece = null;
 
 
@@ -87,7 +222,6 @@ var loops = [null]; //all the render loops currently running.
 
 
 var applyRouterMiddleware = require('redux-tiny-router').applyMiddleware; //router to bind middleware to state
-var mainReducer = require('./reducers/mainReducer');
 
 
 
@@ -149,6 +283,31 @@ if(store.getState().app.render_active == true) render();
 /*         STORE ACTIONS            */
 /*----------------------------------*/
 /*----------------------------------*/
+function getTypeList(){
+	return req.get('/data/types/list')
+	.end(function(err,res){
+		if(!res.body.length) throw "got bad type array : "+JSON.stringify(res.body)
+		//console.log("GOT LIST BODY",res.body);
+		store.dispatch({
+			type: 'UPDATE_TYPELIST',
+			type_items: res.body,
+		})
+	})
+}
+//getTypeList();
+
+
+
+
+
+
+
+module.exports.toggleTypesList = function(){
+	store.dispatch({
+		type: 'TOGGLE_TYPELIST'
+	})
+}
+
 
 module.exports.toggleInfo = function(){
 	store.dispatch({

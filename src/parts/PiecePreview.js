@@ -1,7 +1,7 @@
 var I = require('intui').Slide;
 var React = require('react');
 var Loader = require('intui').Loader;
-var s = require('../store');
+var s = require('../data/store');
 var C = require('circui').Circle;
 var pieces = require('../pieces');
 

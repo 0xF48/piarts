@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 var pack = require('../package');
 var Piece = require('./models').Piece;
-
+var Type = require('./models').Type;
+var path = require('path')
 
 const LIMIT = 5;
 
@@ -30,6 +31,62 @@ function likeCheck(req,res,next){
 
 
 router
+.use(function(req,res,next){
+	if(req.headers.authorization != null && req.headers.authorization == pack.auth) req.admin = true
+	else req.admin = false
+	next()
+})
+
+
+
+
+
+
+
+
+
+
+.post('/types/add',function(req,res){
+	console.log(req.admin)
+	if(!req.admin) return res.sendStatus(500)
+	
+	Type.add({
+		name: req.body.name,
+		path: req.body.path,
+		locked: req.body.locked
+	}).then(function(type,err){
+		if(type == null) res.sendStatus(500)
+		else res.json(type)
+	})
+
+})
+.get('/types/list',function(req,res){
+	Type
+	.find()
+	.exec(function(err,typelist){
+		res.json(typelist.map(function(type){
+			return (req.admin ? type : type.public_json())
+		}))
+	})
+})
+.get('/types/:id',function(req,res){
+	Type.findOne({_id:req.params.id}).exec(function(err,type){
+		if(type == null) res.sendStatus(404)
+		else if(type.locked && !req.admin) res.sendStatus(403)
+		else res.sendFile(path.join(__dirname,'..','pieces',type.path));
+	})
+})
+
+
+
+
+
+
+
+
+
+
+
 .get('/pieces/list',function(req,res){
 	var skip = req.query.skip;
 	var filter = req.query.filter;
@@ -41,6 +98,11 @@ router
 
 	if(skip == null) skip = 0;
 
+
+	if(req.query.type != null){
+		q.type = req.query.type
+	}
+
 	switch(filter){
 		case 'likes':
 			sort_q = {likes: -1}
@@ -51,11 +113,11 @@ router
 		case 'picked':
 			sort_q = {_id: -1 }
 			break;
+		default:
 		case 'recent':
 			sort_q = {_id: -1}
 			break;
-		default:
-			return res.json({status:'bad_query'})
+		
 	}
 
 	
@@ -72,34 +134,21 @@ router
 })
 
 .get('/pieces/get/:piece_id',function(req,res){
-	res.send(serializePiece(req.piece));
+	res.json(req.piece.public_json());
 })
 
 .post('/pieces/add',addCheck,function(req,res){
-
-	req.on('data',function(data){
-
-		try {
-			var body = JSON.parse(data);
-			body.cfg = JSON.stringify(body.cfg);
-		}catch(e){
-			res.sendStatus(300);
-		}
-		
-
-		var piece = new Piece({
-			cfg: body.cfg,
-			type: body.type,
-			views: 1,
-		})
-
-
-
-		piece.saveAsync().then(function(){
-			res.json(serializePiece(piece)).status(200);
-		}).catch(function(e){
-			res.sendStatus(500)
-		})
+	console.log('add')
+	console.log(req.body)
+	var body = req.body
+	Piece.add({
+		params: body.params,
+		type_name: body.type_name,
+		views: 1,
+	}).then(function(piece){
+		console.log(piece)
+		if(piece == null) return res.sendStatus(500)
+		res.json(piece.public_json())
 	})
 })
 
@@ -112,7 +161,6 @@ router
 	})
 })
 
-
 .put('/like/:piece_id',likeCheck,function(req,res){
 	req.piece.likes++;
 	req.saveAsync().then(function(){
@@ -121,7 +169,6 @@ router
 		res.sendStatus(500)
 	})
 })
-
 
 .param('piece_id',getPiece)
 

@@ -4,7 +4,7 @@ var React = require('react');
 var connect = require('react-redux').connect;
 var CircleMixin = require('circui').Mixin;
 
-var s = require('../store')
+var s = require('../data/store')
 
 function normalize(a){
 	if(a < 0){

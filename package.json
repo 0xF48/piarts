@@ -1,14 +1,15 @@
 {
-  "name": "teragrid",
-  "version": "1.0.0",
-  "description": "resource conquest and trading",
+  "name": "PiArts",
+  "version": "0.0.0",
+  "description": "digital art gallery and shop",
   "main": "gulpfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "auth": "Basic eXVyaXNpZG9AZ21haWwuY29tOnRlc3Q=",
   "maintenance": false,
   "port": "4000",
-  "db_url": "mongodb://localhost/pieceview",
+  "db_url": "mongodb://localhost/piarts",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/arxii/teragrid.git"
@@ -31,7 +32,7 @@
     "colors": "^1.1.2",
     "debug": "^2.2.0",
     "ejs": "^2.3.4",
-    "express": "^4.13.3",
+    "express": "^4.13.4",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",
     "lodash": "^3.10.1",

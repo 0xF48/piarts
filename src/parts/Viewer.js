@@ -4,7 +4,7 @@ var React = require('react');
 var UserWidget = require('./UserWidget');
 var connect = require('react-redux').connect;
 var pieces = require('../pieces');
-var s = require('../store.js');
+var s = require('../data/store.js');
 var slideMixin = require('intui').Mixin;
 var I = require('intui').Slide;
 
