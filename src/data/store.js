@@ -31,7 +31,7 @@ const default_state = {
 			viewed: []
 		},
 		type_items: [],
-		show_types: false,
+		show_types: true,
 		show_info: false,
 		show_browser: false,
 		error: null,

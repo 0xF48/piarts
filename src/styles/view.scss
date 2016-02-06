@@ -3,6 +3,13 @@
 #view{
 	box-shadow: rgba(0, 0, 0, 0.2) -3px 0px 3px;
 	.view-overlay{
+		.icon-angle-left{
+			color: #fff;
+			position: absolute;
+			left: 3px;
+			top: 50%;
+			transform: translate(0,-50%)
+		}
 		z-index: 10;
 		position: absolute;
 		top:0;

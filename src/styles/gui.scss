@@ -26,15 +26,27 @@
 
 
 .type_list{
-	background: #3E3E3E;	
+
+	background: #3E3E3E;
+
 	.type_item{
 		transition: background 0.3s ease;
 		box-sizing : border-box;
 		margin: 4px;
+		position: relative;
 		cursor: default;
 		width: calc(100% - 8px);
 		height: calc(100% - 8px);
 		@include center;
+		overflow: hidden;
+		.icon-lock{
+			font-size: 20px;
+		}
+		.type_item_modal{
+			background: rgba(0,0,0,0.5);
+			
+			@include center;
+		}
 		.type_item_symbol{
 			font-weight: 100;
 			font-size: 20px;
