@@ -18,11 +18,21 @@ var p = require('bluebird');
 var TypeSchema = mongoose.Schema({
 	name: {type:String,required:true},
 	path: {type:String,required: true,unique:true},
+	color: [{type:Number,required:true}],
+	symbol: {type:String,required:true,unique:true},
 	piece_count: {type:Number,default:0},
 	locked: {type:Boolean,default:true},
 });
 
-TypeSchema.statics.add = function(data){
+TypeSchema.statics.add = function(body){
+	var data = {
+		color: body.color,
+		symbol: body.symbol,
+		name: body.name,
+		path: body.path,
+		locked: body.locked
+	}
+
 	return Type.findOne({$or: [{name:data.name},{path:data.path}]}).then(function(found_same){
 		if(found_same != null){
 			console.log('add conflict -> ',found_same)
@@ -35,8 +45,12 @@ TypeSchema.statics.add = function(data){
 
 TypeSchema.methods.public_json = function(){
 	return {
-		_id: this._id,
+		id: this._id,
+		color:this.color,
+		symbol:this.symbol,
 		piece_count: this.piece_count,
+		name: this.name,
+		locked: this.locked,
 	}
 }
 

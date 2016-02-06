@@ -1,6 +1,5 @@
 var I = require('intui').Slide;
 var React = require('react');
-var PiecePreview = require('./PiecePreview');
 var connect = require('react-redux').connect;
 var SlideMixin = require('intui').Mixin
 var C = require('circui').Circle;
@@ -8,6 +7,12 @@ var s = require('../data/store')
 
 
 /* inverted button */
+/* 
+
+	NOTE: move to intui 
+
+
+*/
 var InvButton = React.createClass({
 	mixins: [SlideMixin],
 	getDefaultProps: function(){
@@ -162,9 +167,9 @@ var Sidebar = React.createClass({
 			<I {...this.props} id = 'sidebar' ref="sidebar" outerClassName="gui-sidebar" >
 				<I vertical beta={100} offset={-50} ref = 'sidebar_top'>
 					<InvButton c1 = '#00C85C' c2 ='#003016' left onClick={this.toBrowserRecent} height={this.props.width} icon= 'icon-leaf-1' active = {this.state.active_button == 0} index_offset={3} />
-					<InvButton c1 = '#C80041' c2 ='#30000A' up onClick={this.toBrowserLoved} height={this.props.width} icon= 'icon-heart-1' active = {this.state.active_button == 1} index_offset={3} />
-					<InvButton c1 = '#E6B200' c2 ='#4B3A00' right onClick={this.toBrowserPicked} height={this.props.width} icon= 'icon-isight' active = {this.state.active_button == 2} index_offset={3} />
-					<InvButton  c1 = '#FFDEBF' c2 ='#2A2828' down onClick={this.toTypesList} height={this.props.width} icon= 'icon-picture' active = {this.props.show_typeslist} index_offset={3} />
+					<InvButton c1 = '#C80041' c2 ='#30000A' left onClick={this.toBrowserLoved} height={this.props.width} icon= 'icon-heart-1' active = {this.state.active_button == 1} index_offset={3} />
+					<InvButton c1 = '#E6B200' c2 ='#4B3A00' left onClick={this.toBrowserPicked} height={this.props.width} icon= 'icon-isight' active = {this.state.active_button == 2} index_offset={3} />
+					<InvButton  c1 = '#FFDEBF' c2 ='#2A2828' right onClick={this.toTypesList} height={this.props.width} icon= 'icon-picture' active = {this.props.show_types} index_offset={3} />
 				</I>
 				<InvButton c1 = '#FFDEBF' c2 ='#2A2828' down onClick={this.showInfo} height={this.props.width} icon= 'icon-info-circled' active = {this.props.show_info} index_offset={3} />
 			</I>
@@ -316,8 +321,8 @@ var Gui = React.createClass({
 	render: function(){
 		return (
 			<I {...this.props} index_pos={this.props.show_browser ? 0 : 1}  id="gui" ref="root">
-				<Browser slide  show_typeslist = {this.props.show_typeslist} vertical beta = {100} offset = {-50}/>
-				<Sidebar slide  show_typeslist = {this.props.show_typeslist} show_browser = {this.props.show_browser} show_info ={this.props.show_info} vertical width = {50} />
+				<Browser slide  show_types = {this.props.show_types} vertical beta = {100} offset = {-50}/>
+				<Sidebar slide  show_types = {this.props.show_types} show_browser = {this.props.show_browser} show_info ={this.props.show_info} vertical width = {50} />
 			</I>
 		)
 	}

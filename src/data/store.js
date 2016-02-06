@@ -3,7 +3,6 @@ var req = require('superagent');
 var redux = require('redux');
 var _uniq = require('lodash/array/uniq');
 var createStore = require('redux').createStore;
-window.pieces = pieces;
 var merge = Object.assign;
 
 const MAX_PARAMS = 5;
@@ -23,7 +22,7 @@ module.exports.params = params;
 
 const default_state = {
 	app: {
-		piece_params: params,
+		params: params,
 		current_piece: null,
 		piece_items: {
 			recent: [],
@@ -31,8 +30,8 @@ const default_state = {
 			liked: 	[],
 			viewed: []
 		},
-		typelist: [],
-		show_typelist: false,
+		type_items: [],
+		show_types: false,
 		show_info: false,
 		show_browser: false,
 		error: null,
@@ -121,10 +120,13 @@ function mainReducer(state, action){
   
   	switch (action.type) {
 
+  		case 'SET_TYPES':
+     		return merge(n, state, {
+				type_items:  action.type_items
+      		})
   		case 'TOGGLE_TYPELIST':
    			return merge(n, state, {
-				show_typelist:  !state.show_typelist,
-				show_browser:  !state.show_typelist ? true : state.show_browser,
+				show_types:  !state.show_types,
       		})
   		case 'TOGGLE_INFO':
    			return merge(n, state, {
@@ -134,12 +136,12 @@ function mainReducer(state, action){
    			return merge(n, state, {
    				show_info: state.show_browser ? false : state.show_info,
 				show_browser:  !state.show_browser,
-				show_typelist:  !state.show_browser == false ? false : state.show_typelist,
+				show_types:  !state.show_browser == false ? false : state.show_types,
       		})	
   		case 'SAVE_PARAMS':
   			//console.log('save params',action.params)
   			return merge(n, state, {
-				piece_params:  action.params
+				params:  action.params
       		})
   		case 'UPDATE_LIST':
   			//console.log('UPDATE LIST',action.piece_items)
@@ -179,7 +181,7 @@ function mainReducer(state, action){
 			console.log(action.params)
 			return merge(n,state,{
 				current_piece : action.current_piece,
-				piece_params: action.params,
+				params: action.params,
 			});
 
 	}
@@ -289,12 +291,12 @@ function getTypeList(){
 		if(!res.body.length) throw "got bad type array : "+JSON.stringify(res.body)
 		//console.log("GOT LIST BODY",res.body);
 		store.dispatch({
-			type: 'UPDATE_TYPELIST',
+			type: 'SET_TYPES',
 			type_items: res.body,
 		})
 	})
 }
-//getTypeList();
+getTypeList();
 
 
 
@@ -438,7 +440,7 @@ function makeCurrentPiece(canvas){
 
 	var state = store.getState();
 	var type = state.app.current_piece;
-	var new_params = state.app.piece_params;
+	var new_params = state.app.params;
 
 	if(canvas == null) throw 'cant set piece with no canvas'
 	if(type == null) throw 'cant set piece with no type'

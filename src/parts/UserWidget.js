@@ -105,10 +105,10 @@ var SaveWidget = React.createClass({
 				<div className='share-slide-container'>
 					<CLoader ref = 'loader' className='loader' color='#2F8BAD' c_r={0} c_g={255} c_b={0} radius={70/4} width={3} />
 					<I slide v beta={100} ref='slide' index = {this.sharing ? 1 : 0} className='share_slide'>
-						<I beta={100} classNameInner='share-slide-favorite'>
+						<I beta={100} innerClassName='share-slide-favorite'>
 							<b className='icon-star' />
 						</I>
-						<I beta={100} classNameInner='share-slide-share'>
+						<I beta={100} innerClassName='share-slide-share'>
 							<b className='icon-paper-plane' />
 						</I>	
 					</I>

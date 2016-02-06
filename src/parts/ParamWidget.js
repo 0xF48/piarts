@@ -41,7 +41,7 @@ var	Dragger = function(canvas){
 
 	var defaults = {
 		c_radius : 2,
-		filler_radius: 20
+		filler_radius: 15
 	}
 
 	var stage = {
@@ -58,7 +58,7 @@ var	Dragger = function(canvas){
 		cycles_per_unit: 1,
 		padding: 60,
 		client_max_radius: 999, 
-		client_min_radius: defaults.filler_radius, 
+		client_min_radius: 50, 
 		vertical: false,
 		c_radius : 0,
 		c_a : 0,
@@ -71,19 +71,28 @@ var	Dragger = function(canvas){
 		draw_cycles: 0,
 		filler_radius: 0
 	}
+	var tween = null
 
 	function clipClientXY(x,y){
 		var d = dist(x,y,stage.c_x,stage.c_y);
+		stage.client_x = x
+		stage.client_y = y
 		if(d > (stage.client_max_radius || stage.diam/2) ){
+			
 			var xy = pointOnLine(x,y,stage.c_x,stage.c_y,stage.client_max_radius || stage.diam/2)
-			x = xy[0]
-			y = xy[1]
+			stage.client_x = xy[0]
+			stage.client_y = xy[1]
+
+			
 		}else if (d < stage.client_min_radius){
 			var xy = pointOnLine(x,y,stage.c_x,stage.c_y,stage.client_min_radius)
-			x = xy[0]
-			y = xy[1]			
+			
+				stage.client_x = xy[0]
+				stage.client_y = xy[1]
+		
+			
 		}
-		return [x,y]
+		
 	}
 
 	function drawVal(a){
@@ -99,16 +108,15 @@ var	Dragger = function(canvas){
 	function mouseMove(e){
 		if(!stage.active) return
 	
-		var clip = clipClientXY(e.clientX-stage.left,e.clientY-stage.top)
-		stage.client_x = clip[0]
-		stage.client_y = clip[1]
+		clipClientXY(e.clientX-stage.left,e.clientY-stage.top)
+
 	}
 
 
 	function drawCircle(x,y,r){
 		ctx.beginPath();
 		ctx.arc(x,y,r,0,Math.PI*2);
-		ctx.fillStyle = 'rgba(255, 255, 255, 1)'
+		ctx.fillStyle = 'rgba(0, 255, 255, 1)'
 		ctx.fill();
 	}
 
@@ -116,12 +124,12 @@ var	Dragger = function(canvas){
 		ctx.beginPath();
 		ctx.moveTo(stage.c_x,stage.c_y)
 		ctx.lineTo(stage.client_x,stage.client_y)
-		ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)'
+		ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)'
 		ctx.stroke()
 		ctx.closePath();
 		ctx.moveTo(stage.client_x,stage.client_y)
 		ctx.lineTo(stage.from_x,stage.from_y)
-		ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)'
+		ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'
 		ctx.stroke()
 		ctx.closePath();
 	}
@@ -226,9 +234,9 @@ var	Dragger = function(canvas){
 		var end_a = 0;
 	
 		if(stage.draw_cycles < 0){
-			fillstyle = 'rgba(0, 0, 0, 0.1)'
+			fillstyle = 'rgba(255, 0, 0, 0.1)'
 		}else{
-			fillstyle = 'rgba(255, 255, 255, 0.1)'
+			fillstyle = 'rgba(0, 255, 255, 0.1)'
 		}
 
 		for(var i = (stage.draw_cycles < 0 ? stage.draw_cycles+1 : 0) ;i < (stage.draw_cycles < 0 ? 0 : stage.draw_cycles) ;i++){
@@ -491,20 +499,20 @@ var ParamWidget = React.createClass({
 		var c_size = 30;
 		var c_beta = 10;
 		var c_style = {display: this.state.active_knob != -1 ? 'none' : 'initial'}
-
+		var k_style = {background:'#00DECE'}
 		return (
 			<C {...this.props} expand_duration = {1} rootClass = 'param-widget' ref = 'root' padding = {this.state.padding} size={40} angle = {Math.PI/2} expanded={this.props.expanded}>
 				<b className='icon-sliders' />
-				<C  beta = {c_beta} size={c_size} distance={this.getDist(4)} onMouseDown={this.setDragger.bind(this,4)} ref = 'knob_4' scale = {this.getScale(4)}>
-					<b style={c_style}>z</b></C>
-				<C  beta = {c_beta} size={c_size} distance={this.getDist(2)} onMouseDown={this.setDragger.bind(this,2)} ref = 'knob_2' scale = {this.getScale(2)}>
-					<b style={c_style}>x</b></C>
-				<C  beta = {c_beta} size={c_size} distance={this.getDist(0)} onMouseDown={this.setDragger.bind(this,0)} ref = 'knob_0' scale = {this.getScale(0)}>
-					<b style={c_style}>a</b></C>
-				<C  beta = {c_beta} size={c_size} distance={this.getDist(1)} onMouseDown={this.setDragger.bind(this,1)} ref = 'knob_1' scale = {this.getScale(1)}>
-					<b style={c_style}>b</b></C>
-				<C  beta = {c_beta} size={c_size} distance={this.getDist(3)} onMouseDown={this.setDragger.bind(this,3)} ref = 'knob_3' scale = {this.getScale(3)}>
-					<b style={c_style}>y</b></C>
+				<C style = {k_style} beta = {c_beta} size={c_size} distance={this.getDist(4)} onMouseDown={this.setDragger.bind(this,4)} ref = 'knob_4' scale = {this.getScale(4)}>
+					</C>
+				<C  style = {k_style} beta = {c_beta} size={c_size} distance={this.getDist(2)} onMouseDown={this.setDragger.bind(this,2)} ref = 'knob_2' scale = {this.getScale(2)}>
+					</C>
+				<C  style = {k_style} beta = {c_beta} size={c_size} distance={this.getDist(0)} onMouseDown={this.setDragger.bind(this,0)} ref = 'knob_0' scale = {this.getScale(0)}>
+					</C>
+				<C  style = {k_style} beta = {c_beta} size={c_size} distance={this.getDist(1)} onMouseDown={this.setDragger.bind(this,1)} ref = 'knob_1' scale = {this.getScale(1)}>
+					</C>
+				<C  style = {k_style} beta = {c_beta} size={c_size} distance={this.getDist(3)} onMouseDown={this.setDragger.bind(this,3)} ref = 'knob_3' scale = {this.getScale(3)}>
+					</C>
 			</C>
 		)
 	}

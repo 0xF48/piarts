@@ -12,9 +12,46 @@
 		font-size: 20px;
 		background: #2E3030;
 		color: #fff;
-	}
+	};
+
+
 }
 
 #browser{
 	background: #1D2728
+}
+
+
+
+
+
+.type_list{
+	background: #3E3E3E;	
+	.type_item{
+		transition: background 0.3s ease;
+		box-sizing : border-box;
+		margin: 4px;
+		cursor: default;
+		width: calc(100% - 8px);
+		height: calc(100% - 8px);
+		@include center;
+		.type_item_symbol{
+			font-weight: 100;
+			font-size: 20px;
+		}
+		.type_item_name{
+			position: absolute;
+			right: 0px;
+			padding: 10px;
+			bottom: 0px;
+			font-size: 10px;
+		}
+		.type_item_count{
+			position: absolute;
+			left: 0px;
+			padding: 10px;
+			bottom: 0px;
+			font-size: 10px;
+		}
+	}
 }

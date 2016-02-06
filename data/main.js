@@ -50,11 +50,7 @@ router
 	console.log(req.admin)
 	if(!req.admin) return res.sendStatus(500)
 	
-	Type.add({
-		name: req.body.name,
-		path: req.body.path,
-		locked: req.body.locked
-	}).then(function(type,err){
+	Type.add(req.body).then(function(type,err){
 		if(type == null) res.sendStatus(500)
 		else res.json(type)
 	})
