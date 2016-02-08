@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var p = require('bluebird');
 
+var pack = require('../package.json')
 
 
 
@@ -8,10 +9,7 @@ var p = require('bluebird');
 
 
 
-
-
-
-
+var fs = require('fs')
 
 
 
@@ -29,11 +27,21 @@ TypeSchema.statics.add = function(body){
 		color: body.color,
 		symbol: body.symbol,
 		name: body.name,
-		path: body.path,
 		locked: body.locked
 	}
 
-	return Type.findOne({$or: [{name:data.name},{path:data.path}]}).then(function(found_same){
+	
+	try {
+		fs.statSync('./pieces/builds/'+data.name+'.js')
+		data.path = './pieces/builds/'+data.name+'.js'
+	}catch(e){
+		console.log('cant add type, no build found.')
+		return p.resolve(null)
+	}
+
+
+
+	return Type.findOne({name:data.name}).then(function(found_same){
 		if(found_same != null){
 			console.log('add conflict -> ',found_same)
 			return p.resolve(null)
@@ -41,6 +49,15 @@ TypeSchema.statics.add = function(body){
 		var type = new Type(data)
 		return type.save()
 	})
+}
+
+TypeSchema.methods.get_script = function(){
+	if(pack.dev == true){
+		var file = fs.readFileSync(this.path)
+		return String(file)
+	}else{
+		return typeCache[this._id]
+	}
 }
 
 TypeSchema.methods.public_json = function(){
@@ -115,6 +132,15 @@ PieceSchema.statics.add = function(data){
 
 var Piece = mongoose.model('Piece', PieceSchema);
 var Type = mongoose.model('Type', TypeSchema);
+
+
+
+var typeCache = {};
+Type.find().exec(function(err,list){
+	for(var i in list){
+		typeCache[list[i]._id] = list[i].get_script()
+	}
+})
 
 
 module.exports.Piece = Piece

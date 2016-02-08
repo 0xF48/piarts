@@ -1,5 +1,8 @@
-var intui = require('intui')
+var intui = require('intui');
 
+
+var react_redux = require('react-redux');
+var connect = react_redux.connect;
 
 var I = require('intui').Slide;
 var SlideMixin = require('intui').Mixin;
@@ -88,35 +91,6 @@ var InvButton = React.createClass({
 
 
 
-
-
-
-
-
-var TypesList = React.createClass({
-	mixins: [SlideMixin],
-	generateList: function(){
-		this.typeslist = [];
-		for( key in types){
-			types[key]
-		}
-	},
-	shouldComponentUpdate: function(props,state){
-		if(props.typeslist.length != this.props.typeslist.length){
-			this.generateList
-		}
-		return true;
-	},
-	render: function(){
-		return (
-			<I {...this.props} id="sidebar" ref="sidebar" outerClassName="gui-sidebar">
-				<G style={{boxSizing:'border-box',padding:'0px'}} >
-					{this.typeslist}	
-				</G>
-			</I>
-		)		
-	}
-})
 
 
 
@@ -322,7 +296,7 @@ var Modal = React.createClass({
 	}
 
 	,render: function(){
-		console.log("RENDER ME")
+		
 		// var p = this.props.pos
 
 		// if(! this.props.toggle){
@@ -344,30 +318,40 @@ var Modal = React.createClass({
 
 var TypeItem = React.createClass({
 	mixins: [GMixin],
+
 	getInitialState: function(){
 		return {
 			c_offset: 170
 			,toggle_modal: false
 		}
 	},
-	toggleHover: function(){
 
+	toggleHover: function(){
 		this.setState({
 			c_offset: this.state.c_offset == 170 ? 160 : 170,
 			toggle_modal: this.props.item.locked ? true : this.state.toggle_modal
 		})
 	},
+
+	load: function(){
+		s.loadType(this.props.item,function(item){
+			console.log('loaded',item)
+			s.setCurrentType(item)
+			s.showView()
+		});
+	},
+
 	render: function(){
-		
+		var active = this.props.current_type != null && this.props.current_type.id == this.props.item.id;
 		var item = this.props.item
 		var style = {
 			color: 'rgb('+item.color[0]+','+item.color[1]+','+item.color[2]+')',
-			background: 'rgb('+getC(item.color[0]-this.state.c_offset)+','+getC(item.color[1]-this.state.c_offset)+','+getC(item.color[2]-this.state.c_offset)+')',
+			background: 'rgb('+getC(item.color[0]-this.state.c_offset+(active ? 50 : 0))+','+getC(item.color[1]-this.state.c_offset+(active ? 50 : 0))+','+getC(item.color[2]-this.state.c_offset+(active ? 50 : 0))+')',
 			boxShadow: 'inset rgba('+item.color[0]+','+item.color[1]+','+item.color[2]+',0.5) 0px 0px 1px, rgba(0,0,0,0.3) 0px 0px 2px',
 		}
 
 		return (
-			<GItem {...this.props} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} >
+			<GItem {...this.props} onClick = {this.load} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} >
 				
 				<div className = 'type_item' style={style}>
 					<Modal easeOut={Power3.easeOut} pos = 'top' className = 'type_item_modal' toggle={this.state.toggle_modal} >
@@ -382,6 +366,12 @@ var TypeItem = React.createClass({
 	}
 })
 
+var TypeItem = connect(function(state){
+	return {
+		current_type: state.app.current_type
+	}
+})(TypeItem)
+
 
 var TypeList = React.createClass({
 	getInitialState: function(){
@@ -395,7 +385,7 @@ var TypeList = React.createClass({
 	},
 
 	shouldComponentUpdate: function(props,state){
-		if(this.props.type_items.length != props.type_items.length){
+		if(Object.keys(this.props.type_items).length != Object.keys(props.type_items).length){
 			this.makeList(props.type_items)
 		}
 		return true
@@ -406,12 +396,13 @@ var TypeList = React.createClass({
 	makeList: function(list){
 		this.items = [];
 		for(var i in list){
-			this.items.push(<TypeItem item = {list[i]} key = {'type_item_'+i}  size_index = {3} />)
+			this.items.push(<TypeItem current_type = {this.props.current_type} item = {list[i]} key = {'type_item_'+i}  size_index = {3} />)
 		}
 	},
 
 	items: [],
 	render: function(){
+
 		return (
 			<I {...this.props} scroll vertical innerClassName='type_list' >
 				<G>
@@ -444,9 +435,22 @@ var App = React.createClass({
 	showView: function(ee,e){
 		if(this.props.show_browser) s.toggleBrowser();
 		if(this.props.show_types) s.toggleTypesList();
-
 	},
 
+	componentDidUpdate: function(props){
+
+		if(this.props.current_type != props.current_type){
+			if(this.props.current_type != null){
+				s.setView(this.refs.piece_canvas)
+			}else{
+				s.clearView()
+			}
+		}
+
+		if(this.props.view_paused != props.view_paused){
+			s.toggleView(this.props.view_paused)
+		}
+	},
 
 
 	render: function(){
@@ -457,7 +461,7 @@ var App = React.createClass({
 					<Sidebar slide  show_types = {this.props.show_types} show_browser = {this.props.show_browser} show_info ={this.props.show_info} vertical width = {50} />
 					<I slide index_pos={this.props.show_types ? 0 : 1} beta={100} offset={-50} >
 						<I beta = {20} >
-							<TypeList type_items = {this.props.type_items} />
+							<TypeList current_type = {this.props.current_type} type_items = {this.props.type_items} />
 						</I>
 						<I beta = {100} id = 'view' onClick={this.showView} ref = "view-slide" style={{background:"#002131"}}>
 							<canvas id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />

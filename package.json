@@ -1,4 +1,7 @@
 {
+  "dev": true,
+
+
   "name": "PiArts",
   "version": "0.0.0",
   "description": "digital art gallery and shop",

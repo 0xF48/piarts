@@ -1,4 +1,4 @@
-var q = require('bluebird');
+//var p = require('bluebird');
 var req = require('superagent');
 var redux = require('redux');
 var _uniq = require('lodash/array/uniq');
@@ -7,7 +7,7 @@ var merge = Object.assign;
 
 const MAX_PARAMS = 5;
 
-
+const MODULE_PREFIX = 'piarts_type_';
 
 
 var params = [ 
@@ -22,16 +22,17 @@ module.exports.params = params;
 
 const default_state = {
 	app: {
+		view_paused: false,
 		params: params,
-		current_piece: null,
+		current_type: null,
 		piece_items: {
 			recent: [],
 			picked: [],
 			liked: 	[],
 			viewed: []
 		},
-		type_items: [],
-		show_types: true,
+		type_items: {},
+		show_types: false,
 		show_info: false,
 		show_browser: false,
 		error: null,
@@ -120,24 +121,49 @@ function mainReducer(state, action){
   
   	switch (action.type) {
 
+
+  		case 'SET_CURRENT_TYPE':
+  			console.log('current_type set')
+  			return merge(n, state, {
+				current_type: action.dat
+      		})
+  		case 'SET_TYPE':
+  			n_type_items = merge({},state.type_items);
+  			n_type_items[action.dat.id] = action.dat;
+     		return merge(n, state, {
+				type_items: n_type_items
+      		})
   		case 'SET_TYPES':
+
      		return merge(n, state, {
 				type_items:  action.type_items
       		})
   		case 'TOGGLE_TYPELIST':
    			return merge(n, state, {
 				show_types:  !state.show_types,
+				view_paused: (!state.show_types == true || state.show_browser == true),
+      		})
+      	case 'SHOW_VIEW':
+   			return merge(n, state, {
+				show_types:  false,
+				show_browser: false
       		})
   		case 'TOGGLE_INFO':
    			return merge(n, state, {
 				show_info:  !state.show_info
       		})  			
   		case 'TOGGLE_BROWSER':
+
+  			var show_browser = !state.show_browser
+  			var show_types = !state.show_browser == false ? false : !state.show_browser
+
    			return merge(n, state, {
    				show_info: state.show_browser ? false : state.show_info,
-				show_browser:  !state.show_browser,
-				show_types:  !state.show_browser == false ? false : state.show_types,
-      		})	
+				show_browser:  show_browser,
+				show_types: show_types,
+				view_paused: show_browser == true || show_types == true,
+      		})
+
   		case 'SAVE_PARAMS':
   			//console.log('save params',action.params)
   			return merge(n, state, {
@@ -176,17 +202,10 @@ function mainReducer(state, action){
 					piece_items: mergeToFilters(state,action.piece_item)
 				});					
 			}
-		case 'SET_PIECE':
-			s.setParams(action.params)
-			console.log(action.params)
-			return merge(n,state,{
-				current_piece : action.current_piece,
-				params: action.params,
-			});
-
 	}
 	return state
 }
+
 
 
 module.exports = mainReducer;
@@ -216,10 +235,10 @@ module.exports = mainReducer;
 
 
 
-var current_piece = null;
+var current_view = null;
 
 
-
+var view_paused = false;
 var loops = [null]; //all the render loops currently running.
 
 
@@ -246,6 +265,7 @@ function render(){
 	if(store.getState().render_active == false) return
 	requestAnimationFrame(render);
 	for(var i = 0;i<loops.length;i++){
+		if(view_paused) return
 		if(loops[i] != null) loops[i]();
 	}
 }
@@ -290,9 +310,16 @@ function getTypeList(){
 	.end(function(err,res){
 		if(!res.body.length) throw "got bad type array : "+JSON.stringify(res.body)
 		//console.log("GOT LIST BODY",res.body);
+		
+		var types = {}
+		
+		for(var i in res.body){
+			types[res.body[i].id] = res.body[i]
+		}
+
 		store.dispatch({
 			type: 'SET_TYPES',
-			type_items: res.body,
+			type_items: types,
 		})
 	})
 }
@@ -310,7 +337,6 @@ module.exports.toggleTypesList = function(){
 	})
 }
 
-
 module.exports.toggleInfo = function(){
 	store.dispatch({
 		type: 'TOGGLE_INFO'
@@ -322,6 +348,128 @@ module.exports.toggleBrowser = function(){
 		type: 'TOGGLE_BROWSER'
 	})
 }
+
+
+module.exports.showView= function(){
+	store.dispatch({
+		type: 'SHOW_VIEW'
+	})
+}
+
+
+
+
+
+
+
+
+
+
+
+function getType(name){
+	return window[MODULE_PREFIX+name] 
+}
+module.exports.getType = getType
+
+
+function loadType(type,cb){
+	return req.get('/data/types/'+type.id)
+	.end(function(err,res){
+
+		//dispatch
+		store.dispatch({
+			type: 'SET_TYPE',
+			dat: res.body
+		})
+
+		//add script
+		var piece_script = document.createElement("script");
+		piece_script.type = "text/javascript";
+		piece_script.innerHTML = res.body.script
+		document.head.appendChild(piece_script)
+
+		console.log('LOADED TYPE',window[MODULE_PREFIX+type.name])
+		cb(res.body)
+	})
+}
+module.exports.loadType = loadType
+
+
+function setCurrentType(type){
+	if(!type.script) {
+		throw 'cant set current type without script'
+	}
+	store.dispatch({
+		type: 'SET_CURRENT_TYPE',
+		dat: type
+	})
+}
+module.exports.setCurrentType = setCurrentType
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function clearView(){
+	//clear view
+	if(current_view == null) return 
+	loops.splice(loops.indexOf(current_view.loop),1)
+	current_view = null
+}
+module.exports.clearView = clearView;
+
+function setView(canvas){
+	console.log('set view',canvas)
+	clearView();
+
+	console.log('set view 2')
+
+	var current_type = store.getState().app.current_type;
+
+	if(current_type == null) throw 'cannot set view with no current_type'
+
+	var module = window[MODULE_PREFIX+current_type.name]
+	if(!module) throw 'cannot set view current type module does not exist'
+	
+	
+	current_view = module[1](canvas)
+	setParams(module[0])
+	saveParams(module[0])
+	loops.push(current_view.loop)
+	current_view.loop()
+}
+module.exports.setView = setView;
+
+function toggleView(pause){
+	view_paused = pause
+}
+module.exports.toggleView = toggleView;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -400,7 +548,7 @@ function savePiece(opt){
 
 function saveParams(){
 	store.dispatch({
-		type: 'SAVE_PARAMS',
+		type: 'SET_PARAMS',
 		params: params
 	})
 }
@@ -409,13 +557,15 @@ module.exports.saveParams = saveParams
 
 function setParam(index,val){
 	params[index] = val
-	if(current_piece != null) current_piece.set(params)
+	if(current_view == null) throw 'cant set param with no current_view'
+	current_view.set(params)
 }
 module.exports.setParam = setParam
 
 
 function setParams(new_params){
 	params = new_params
+	current_view.set(params)
 }
 module.exports.setParams = setParams
 
@@ -428,7 +578,7 @@ module.exports.setParams = setParams
 function setPiece(type,new_params){
 	store.dispatch({
 		type: 'SET_PIECE',
-		current_piece: type,
+		current_type: type,
 		params: new_params
 	})
 }
@@ -439,7 +589,7 @@ module.exports.setPiece = setPiece
 function makeCurrentPiece(canvas){
 
 	var state = store.getState();
-	var type = state.app.current_piece;
+	var type = state.app.current_type;
 	var new_params = state.app.params;
 
 	if(canvas == null) throw 'cant set piece with no canvas'
@@ -459,11 +609,11 @@ function makeCurrentPiece(canvas){
 		throw 'cannot make piece without params.'
 	}
 
-	current_piece = piece;
-	current_piece.set(new_params);
+	current_type = piece;
+	current_type.set(new_params);
 
 	//set the new loop.
-	loops[0] = current_piece.loop;
+	loops[0] = current_type.loop;
 
 	console.log("ADDED PIECE LOOP",loops);
 }
@@ -474,6 +624,6 @@ module.exports.makeCurrentPiece = makeCurrentPiece;
 
 
 function saveCurrentPiece(){
-	savePiece(current_piece);
+	savePiece(current_type);
 }
 module.exports.saveCurrentPiece = saveCurrentPiece;

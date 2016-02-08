@@ -3,6 +3,9 @@ var router = express.Router();
 var pack = require('../package');
 var Piece = require('./models').Piece;
 var Type = require('./models').Type;
+
+
+
 var path = require('path')
 
 const LIMIT = 5;
@@ -69,7 +72,9 @@ router
 	Type.findOne({_id:req.params.id}).exec(function(err,type){
 		if(type == null) res.sendStatus(404)
 		else if(type.locked && !req.admin) res.sendStatus(403)
-		else res.sendFile(path.join(__dirname,'..','pieces',type.path));
+		var dat = type.public_json();
+		dat.script = type.get_script();
+		res.json(dat);
 	})
 })
 
