@@ -14,45 +14,14 @@ var SaveWidget = React.createClass({
 
 	getInitialState: function(){
 		return {
-			saving: false,
 			sharing: false
 		}
 	},
 
-	getDefaultProps: function(){
-		return {
-			saving: false
-		}
-	},
-
-	shouldComponentUpdate: function(props,state){
-		if(props.saving != this.props.saving){
-			this.setState({
-				saving: props.saving,
-			})
-			return true
-		}
-
-		else if(this.state.saving == true && state.saving == false && this.state.sharing == false){
-			this.setState({
-				sharing: true
-			})
-			return true
-		}
-
-		//save loader done
-		else if(state.sharing != this.state.sharing && state.saving == true && state.sharing == true){
-			this.refs.loader.setState({
-				c_r: 0,
-				c_g: 255,
-				c_b: 0,
-				d: 0.5,
-				angle_start:0,
-				angle_end: Math.PI*2,
-			})
-
-		//save loader start
-		}else if(this.state.saving != state.saving && state.saving == true && state.sharing == false){
+	componentWillReceiveProps: function(props){
+		//console.log(this.props.saving_piece)
+		//start save loader.
+		if(!this.props.saving_piece && props.saving_piece){
 			this.refs.loader.setState({
 				ease:Power4.easeOut,
 				c_r: 0,
@@ -61,10 +30,22 @@ var SaveWidget = React.createClass({
 				d: 1,
 				angle_start:0,
 				angle_end: Math.PI,
-			})	
+			})
+			return true
+		}
 
-		//default loader
-		}else if(this.state.saving != state.saving && state.sharing == false && state.saving == false){
+		//done save loader
+		if(!props.saving_piece && this.props.saving_piece){
+			this.refs.loader.setState({
+				c_r: 0,
+				c_g: 255,
+				c_b: 0,
+				d: 1,
+				angle_start:0,
+				angle_end: Math.PI*2,
+			})
+			return true
+		}else if(!props.save_sharing && this.props.save_sharing){
 			this.refs.loader.setState({
 				c_r: 255,
 				c_g: 255,
@@ -74,51 +55,71 @@ var SaveWidget = React.createClass({
 				angle_end: 0,
 			})
 		}
+		
+	},
 
-		return true
-	},	
+	// toggleShare: function(){
+	// 	if(!this.state.sharing) return
+	// 	this.setState({
+	// 		sharing: false
+	// 	})
+	// },
+
 
 	saveShare: function(){
-		if(this.props.saving_piece || this.state.sharing){
-			this.setState({
-				sharing: false
-			})
+		if(this.props.saving_piece) return
+		if(this.props.save_sharing) {
+			this.end()
+			
+		}else{
+			s.saveCurrentPiece()
 		}
-
-		this.setState({
-		 	sharing: false,
-		 	saving: true
-		})
-
-		s.saveCurrentPiece()
 	},
 
 	componentDidMount: function(){
-		console.log(this.refs['root'])
-		window.tt = this.refs['root']
+		// console.log(this.refs['root'])
+		// window.tt = this.refs['root']
 	},
+
+
+	//cancel and return to normal mode
+	end: function(){
+		s.toggleSaveShare(false)
+	},
+
+
+	//view the piece in the browser
+	viewInBrowser: function(){
+		s.showPieceList('saved')
+		this.end()
+	},
+
 
 
 	render: function(){
 		return (
-			<C {...this.props} padding={7}  className='share_node' ref='root' expanded={this.props.sharing}  onClick={this.saveShare}>
+			<C {...this.props} padding={0} className='share_node' ref='root' expanded={this.props.save_sharing} onClick={this.saveShare}>
 				<div className='share-slide-container'>
 					<CLoader ref = 'loader' className='loader' color='#2F8BAD' c_r={0} c_g={255} c_b={0} radius={70/4} width={3} />
-					<I slide v beta={100} ref='slide' index = {this.sharing ? 1 : 0} className='share_slide'>
-						<I beta={100} innerClassName='share-slide-favorite'>
-							<b className='icon-star' />
+					<I beta={100} innerClassName='share-slide-favorite'>
+						<I slide v beta={100} ref='slide' index_pos = {this.props.save_sharing ? 1 : 0} className='share_slide'>
+							<I beta={100} innerClassName='share-slide-favorite'>
+								<b className='icon-star' />
+							</I>
+							<I beta={100} innerClassName='share-slide-share'>
+								<b className='icon-cancel' />
+							</I>	
 						</I>
-						<I beta={100} innerClassName='share-slide-share'>
-							<b className='icon-paper-plane' />
-						</I>	
 					</I>
-					
 				</div>
-				<C distance={1} ref='share_node_tr' beta={70}>
-					<b className='icon-twitter' />
+				<C distance={1} ref='share_node_view' beta={100} onClick={this.viewInBrowser}> 
+					<b className='icon-isight' />
 				</C>
-				<C distance={1} ref='share_node_fb' beta={70}>
-					<b className='icon-facebook-1' />
+				<C distance={1} ref='share_node_buy' beta={100} onClick={this.sharePiece}>
+					<b className='icon-paper-plane' />
+				</C>
+				<C distance={1} ref='share_node_buy' beta={100} onClick={this.buyPiece}>
+					<b className='icon-picture' />
 				</C>
 			</C>
 		)
@@ -140,6 +141,7 @@ var UserWidget = React.createClass({
 	componentDidMount: function(){
 		window.widget = this;
 		this.refs.param_widget.initDragger(this.refs.canvas);
+
 	},
 
 	componentDidUpdate: function(){
@@ -161,24 +163,77 @@ var UserWidget = React.createClass({
 		}
 	},
 
+	// toggleShortcut: function(e){
+	// 	e.preventDefault()
+	// 	if(this.props.dragger_active || !this.props.) return
+
+
+	// 	this.setState({
+	// 		expanded: !this.state.expanded
+	// 	})
+	// },
+
+
+	// shouldComponentUpdate: function(){
+	// 	if(!this.props.current_type) return false
+	// 	return true
+	// },
+
 	toggleRoot: function(){
+		if(!this.props.current_type) return
+
+
+		if(this.props.saving_piece) return
+		if(this.props.save_sharing){
+			s.toggleSaveShare(false)
+		}
+
+		
 		this.setState({
-			expanded: !this.state.expanded
+			expanded: !this.state.expanded,
+			params_expanded : !this.state.expanded
 		})
+	},
+
+	startSave: function(){
+		console.log('start save',this.props.saving_piece)
+		if(this.props.saving_piece) return
+		this.setState({
+			params_expanded : false
+		})
+		this.refs['save_widget'].saveShare()
+	},
+
+	// componentDidUpdate: function(props){
+	// 	if(props.expanded != this.props.expanded){
+	// 		this.setState({
+	// 			expanded: this.props.expanded
+	// 		})
+	// 	}
+	// },
+
+
+	//decide whether to expand the params or not based on whether we are saving.
+	paramState: function(){
+		
+		if(this.props.save_sharing == true) return false
+		if(!this.state.expanded) return false
+		return true
 	},
 
 
 	render: function(){
+		
 		return (
-			<div className = 'user-widget' ref = 'root'>
+			<div className = 'user-widget' ref = 'root'  >
 				<canvas  tabIndex='1' ref='canvas' className = 'user-widget-canvas' />
 				<C rootStyle={{top:'50%'}} rootClass = 'user-widget-dom' ref='root_node' expanded={this.state.expanded} onClick={this.toggleRoot} size={85} angle = {-Math.PI/2} >
 					<b className='icon-cog' />
 					<C distance={1.3}  beta={45} selfClass="love_node" ref='love_node'>
 						<b className='icon-heart' />
 					</C>
-					<ParamWidget distance={1.1} beta={100} ref='param_widget' expanded={this.state.expanded} params={this.props.params}/>
-					<SaveWidget distance={1.3} beta={45} ref='save_widget' saving={this.props.saving_piece} />
+					<ParamWidget distance={1.1} beta={100} ref='param_widget' expanded={ this.paramState() } params={this.props.params} save_sharing={this.props.save_sharing} />
+					<SaveWidget distance={1.3} beta={45} ref='save_widget' saving_piece={this.props.saving_piece} save_sharing={this.props.save_sharing}/>
 
 				</C>		
 			</div>

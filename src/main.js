@@ -13,7 +13,7 @@ var s = require('./data/store');
 
 /* pass state in as props and diff down the tree */
 function select(state){
-	return state.app 
+	return state
 	// {
 	// 	show_info: state.app.show_info,
 	// 	show_browser: state.app.show_browser,

@@ -96,25 +96,35 @@ var PieceSchema = mongoose.Schema({
 
 PieceSchema.methods.public_json = function(){
 	return {
-		_id: this._id,
+		id: this._id,
 		likes: this.likes,
 		views: this.views,
 		params: this.params,
 		type_name: this.type_name,
-		created: this.created,
+		created_at: this.created,
 		picked: this.picked,
-	}	
+	}
 }
 
-PieceSchema.statics.add = function(data){
-	return Type.findOne({name:data.type_name}).then(function(found){
+
+PieceSchema.statics.add = function(body){
+
+	var data = {
+		params: body.params,
+		type_id: body.type_id,
+	}
+
+	return Type.findOne({_id:data.type_id}).then(function(found){
 		if(found == null) return p.resolve(null)
-		piece = new Piece(data);
+
+		var piece = new Piece(data);
 		return piece.save(function(err,doc){
+			console.log(err,doc)
 			if(err != null || doc == null){
+				return p.resolve(null)
 			}else{
 				found.piece_count += 1;
-				found.save();
+				return found.save();
 			}
 		})
 	})

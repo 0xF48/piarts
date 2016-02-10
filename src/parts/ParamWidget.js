@@ -108,7 +108,7 @@ var	Dragger = function(canvas){
 	function mouseMove(e){
 		if(!stage.active) return
 	
-		clipClientXY(e.clientX-stage.left,e.clientY-stage.top)
+		clipClientXY(e.clientX-50,e.clientY)
 
 	}
 
@@ -439,27 +439,40 @@ var ParamWidget = React.createClass({
 	},
 
 	setDragger: function(i,e){
+		//s.toggleDragger(true);
+		// if(this.state.active_knob == i){
+		// 	return this.endDragger()
+		// }
 		console.log("START")
+
+
 		var pos = this.refs.root.refs.root.getBoundingClientRect();
-		this.dragger.stage.from_x = pos.left - this.dragger.stage.left + pos.width/2
-		this.dragger.stage.from_y = pos.top - this.dragger.stage.top + pos.height/2
+		console.log(pos)
+		this.dragger.stage.from_x = pos.left+pos.width/2 - 50
+		this.dragger.stage.from_y = pos.top+pos.height/2
 		this.dragger.start(i,e.nativeEvent,this.props.params[i]);
-		document.addEventListener('mousedown',this.endDragger,false)
+		document.addEventListener('mouseup',this.endDragger,false)
 
 		this.setState({
 			active_knob: i,
 		})
 
 		e.preventDefault();
+
+		
 	},
 
 	endDragger: function(){
 		console.log("END")
-		document.removeEventListener('mousedown',this.endDragger)
+		document.removeEventListener('mouseup',this.endDragger)
 		this.dragger.end();
 		this.setState({
 			active_knob: -1,
 		})
+		// setTimeout(function() {
+		// 	s.toggleDragger();
+		// }, 100);
+		
 	},
 
 	dragger: null,
@@ -491,27 +504,50 @@ var ParamWidget = React.createClass({
 
 	componentDidMount: function(){
 		window.param_widget = this;
+		this.refs['knob_0'].refs.root.addEventListener('click', function(){console.log('CLICKED')},false)
+	},
+
+
+	toggleSelf: function(){
+		if(this.props.save_sharing){
+			s.store.dispatch({
+				type:'TOGGLE_SAVE_SHARE',
+				toggle: false
+			})
+		}
+
+	},
+
+	componentWillReceiveProps: function(props){
+		if(this.state.expanded == false && props.expanded == true){
+			this.setState({
+				expanded: true
+			})
+		}
 	},
 
 
 
 	render: function(){
+
 		var c_size = 30;
 		var c_beta = 10;
 		var c_style = {display: this.state.active_knob != -1 ? 'none' : 'initial'}
-		var k_style = {background:'#00DECE'}
+		var k_style = {background: this.props.expanded ? '#00DECE' : '#fff' }
+
+
 		return (
-			<C {...this.props} expand_duration = {1} rootClass = 'param-widget' ref = 'root' padding = {this.state.padding} size={40} angle = {Math.PI/2} expanded={this.props.expanded}>
+			<C {...this.props} expand_duration = {1} rootClass = 'param-widget' ref = 'root' padding = {this.state.padding} size={40} angle = {Math.PI/2} expanded={this.props.expanded} onClick={this.toggleSelf} >
 				<b className='icon-sliders' />
-				<C style = {k_style} beta = {c_beta} size={c_size} distance={this.getDist(4)} onMouseDown={this.setDragger.bind(this,4)} ref = 'knob_4' scale = {this.getScale(4)}>
+				<C style = {k_style} beta = {c_beta} size={c_size} distance={this.getDist(4)} onClick={this.setDragger.bind(this,4)} ref = 'knob_4' scale = {this.getScale(4)}>
 					</C>
-				<C  style = {k_style} beta = {c_beta} size={c_size} distance={this.getDist(2)} onMouseDown={this.setDragger.bind(this,2)} ref = 'knob_2' scale = {this.getScale(2)}>
+				<C  style = {k_style} beta = {c_beta} size={c_size} distance={this.getDist(2)} onClick={this.setDragger.bind(this,2)} ref = 'knob_2' scale = {this.getScale(2)}>
 					</C>
-				<C  style = {k_style} beta = {c_beta} size={c_size} distance={this.getDist(0)} onMouseDown={this.setDragger.bind(this,0)} ref = 'knob_0' scale = {this.getScale(0)}>
+				<C  style = {k_style} beta = {c_beta} size={c_size} distance={this.getDist(0)}  onClick={this.setDragger.bind(this,0)} ref = 'knob_0' scale = {this.getScale(0)}>
 					</C>
-				<C  style = {k_style} beta = {c_beta} size={c_size} distance={this.getDist(1)} onMouseDown={this.setDragger.bind(this,1)} ref = 'knob_1' scale = {this.getScale(1)}>
+				<C  style = {k_style} beta = {c_beta} size={c_size} distance={this.getDist(1)} onClick={this.setDragger.bind(this,1)} ref = 'knob_1' scale = {this.getScale(1)}>
 					</C>
-				<C  style = {k_style} beta = {c_beta} size={c_size} distance={this.getDist(3)} onMouseDown={this.setDragger.bind(this,3)} ref = 'knob_3' scale = {this.getScale(3)}>
+				<C  style = {k_style} beta = {c_beta} size={c_size} distance={this.getDist(3)} onClick={this.setDragger.bind(this,3)} ref = 'knob_3' scale = {this.getScale(3)}>
 					</C>
 			</C>
 		)

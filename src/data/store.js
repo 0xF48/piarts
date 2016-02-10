@@ -21,25 +21,28 @@ module.exports.params = params;
 
 
 const default_state = {
-	app: {
-		view_paused: false,
-		params: params,
-		current_type: null,
-		piece_items: {
-			recent: [],
-			picked: [],
-			liked: 	[],
-			viewed: []
-		},
-		type_items: {},
-		show_types: false,
-		show_info: false,
-		show_browser: false,
-		error: null,
-		type: 'canvas',
-		render_active: true,
-		saving_piece: false,		
-	}
+	view_paused: false,
+	params: params,
+	current_type: null,
+	current_piece: null,
+	piece_items: {
+		recent: [],
+		picked: [],
+		liked: 	[],
+		saved: []
+	},
+	type_items: {},
+	dragger_active: false,
+	browser_tab : 'recent',
+	show_types: false,
+	show_info: false,
+	show_browser: false,
+	error: null,
+	type: 'canvas',
+	render_active: true,
+	save_sharing: false,
+	saving_piece: false,		
+	
 }
 module.exports.default_state = default_state
 
@@ -91,25 +94,31 @@ function mergeToFilters(state,pieces){
 		pieces = [pieces];
 	}
 
-	var all =  _uniq(pieces.concat(state.piece_items.recent),function(piece){
-		return piece._id;
+	var all =  _uniq(state.piece_items.recent.concat(pieces),function(piece){
+		return piece.id;
 	})
 
-	console.log("ALL",all)
+	//console.log("ALL",all)
+
+	
 
 	return {
 		recent : all.sort(function(piece){
 			return -Date.parse(piece.created_at)
 		}),
-		picked: all.sort(function(piece){
+		picked: all.filter(function(piece){
+			return piece.picked
+		}).sort(function(piece){
 			return -Date.parse(piece.created_at)
 		}),
 		liked: all.sort(function(piece){
 			return -piece.likes
 		}),
-		viewed: all.sort(function(piece){
-			return -piece.views
-		}),					
+		saved: all.filter(function(piece){
+			return (piece.local == true)
+		}).sort(function(piece){
+			return -Date.parse(piece.created_at)
+		})
 	};
 }
 
@@ -120,13 +129,27 @@ function mainReducer(state, action){
 	if ( !state ) return default_state
   
   	switch (action.type) {
-
-
-  		case 'SET_CURRENT_TYPE':
-  			console.log('current_type set')
+  		case 'TOGGLE_DRAGGER':
+  			return merge(n,state,{
+  				dragger_active: !state.dragger_active
+  			})
+  		case 'TOGGLE_RENDER':
+  			console.log("TOGGLE RENDER",action.mode)
   			return merge(n, state, {
-				current_type: action.dat
+  				render_active: action.mode
+  			})
+  			
+  			
+  		case 'SET_CURRENT_TYPE':
+  			return merge(n, state, {
+				current_type: action.type_item
       		})
+		
+		case 'SET_CURRENT_PIECE':
+			return merge(n,state,{
+				current_piece: action.piece_item
+			})
+
   		case 'SET_TYPE':
   			n_type_items = merge({},state.type_items);
   			n_type_items[action.dat.id] = action.dat;
@@ -141,7 +164,6 @@ function mainReducer(state, action){
   		case 'TOGGLE_TYPELIST':
    			return merge(n, state, {
 				show_types:  !state.show_types,
-				view_paused: (!state.show_types == true || state.show_browser == true),
       		})
       	case 'SHOW_VIEW':
    			return merge(n, state, {
@@ -160,19 +182,22 @@ function mainReducer(state, action){
    			return merge(n, state, {
    				show_info: state.show_browser ? false : state.show_info,
 				show_browser:  show_browser,
-				show_types: show_types,
-				view_paused: show_browser == true || show_types == true,
+				// show_types: show_types,
       		})
-
-  		case 'SAVE_PARAMS':
+   		case 'SET_BROWSER_TAB':
+    		return merge(n, state, {
+				browser_tab: action.tab
+      		})  			
+  		case 'SET_PARAMS':
   			//console.log('save params',action.params)
   			return merge(n, state, {
 				params:  action.params
       		})
   		case 'UPDATE_LIST':
+  			console.log(action.piece_items)
   			//console.log('UPDATE LIST',action.piece_items)
   			
-
+  			//console.log(action.piece_items)
   			if(!action.piece_items){
   				return merge(n,state,{
   					fetching_list: true,
@@ -191,17 +216,36 @@ function mainReducer(state, action){
 				piece_items: mergeToFilters(state,action.piece_items)
 			})
   		case 'ADD_PIECE':
-		//	console.log("ADD_PIECE",action.piece)
-			if(!action.piece_item){
-				return merge(n,state,{
-					saving_piece : true
-				});			
-			}else{
-				return merge(n,state,{
-					saving_piece : false,
-					piece_items: mergeToFilters(state,action.piece_item)
-				});					
-			}
+  			if(action.local){
+  				var saved_pieces = JSON.parse(localStorage.getItem('saved_pieces'))
+  				console.log(saved_pieces)
+  				for(var i in saved_pieces){
+  					if(saved_pieces[i].id == action.piece_item.id){
+  						throw 'cant add piece to local storage, it already exists.'
+  						return
+  					}
+  				}
+  				action.piece_item.local = true;
+  				saved_pieces.push(action.piece_item)
+  				localStorage.setItem('saved_pieces',JSON.stringify(saved_pieces))
+  			}
+			
+
+			return merge(n,state,{
+				piece_items: mergeToFilters(state,action.piece_item),
+				saving_piece: false
+			});		
+		case 'TOGGLE_SAVE_SHARE':
+			return merge(n,state,{
+				save_sharing : action.toggle
+			});				
+			
+		case 'TOGGLE_SAVE':
+			return merge(n,state,{
+				saving_piece : action.toggle,
+				save_sharing : !action.toggle
+			});			
+
 	}
 	return state
 }
@@ -222,13 +266,25 @@ module.exports = mainReducer;
 
 
 
+function checkRender(getState){
+	return function(next){
+		return function(action){
 
+			var old_state = store.getState();
+	   		var returnValue = next(action)
+	    	var new_state = store.getState();
 
-
-
-
-
-
+			if(!new_state.show_browser && !new_state.show_types && !new_state.show_info && (old_state.show_info || old_state.show_browser || old_state.show_types )){
+				RENDER_ACTIVE = true
+				//return next({type:'TOGGLE_RENDER',mode:true})
+			}else if( (new_state.show_browser || new_state.show_types || new_state.show_info) && (!old_state.show_info && !old_state.show_browser && !old_state.show_types )){
+				RENDER_ACTIVE = false
+				//return next({type:'TOGGLE_RENDER',mode:false})
+			}
+			return returnValue
+		}
+	}
+}
 
 
 
@@ -236,20 +292,12 @@ module.exports = mainReducer;
 
 
 var current_view = null;
-
-
-var view_paused = false;
 var loops = [null]; //all the render loops currently running.
 
 
-var applyRouterMiddleware = require('redux-tiny-router').applyMiddleware; //router to bind middleware to state
-
-
-
-
-
 //create store with router middleware
-var store = applyRouterMiddleware()(createStore)({app:mainReducer},default_state)
+var store = redux.createStore(mainReducer,redux.applyMiddleware(checkRender))
+
 
 window.store = store //debug
 
@@ -261,17 +309,15 @@ module.exports.loops = loops;
 
 
 // render all loops. pause rendering with store.render_active
+var RENDER_ACTIVE = true
 function render(){
-	if(store.getState().render_active == false) return
 	requestAnimationFrame(render);
+	if( ! RENDER_ACTIVE ) return
 	for(var i = 0;i<loops.length;i++){
-		if(view_paused) return
 		if(loops[i] != null) loops[i]();
 	}
 }
-
-
-if(store.getState().app.render_active == true) render();
+render();
 
 
 
@@ -305,6 +351,7 @@ if(store.getState().app.render_active == true) render();
 /*         STORE ACTIONS            */
 /*----------------------------------*/
 /*----------------------------------*/
+
 function getTypeList(){
 	return req.get('/data/types/list')
 	.end(function(err,res){
@@ -321,6 +368,14 @@ function getTypeList(){
 			type: 'SET_TYPES',
 			type_items: types,
 		})
+
+
+
+		//preload
+
+		loadType(types[res.body[0].id],function(item){
+			setCurrentType(item)
+		});
 	})
 }
 getTypeList();
@@ -335,28 +390,63 @@ module.exports.toggleTypesList = function(){
 	store.dispatch({
 		type: 'TOGGLE_TYPELIST'
 	})
+	
+	
 }
 
 module.exports.toggleInfo = function(){
 	store.dispatch({
 		type: 'TOGGLE_INFO'
 	})
+
+	
+
 }
 
 module.exports.toggleBrowser = function(){
 	store.dispatch({
 		type: 'TOGGLE_BROWSER'
 	})
+	
 }
 
-
-module.exports.showView= function(){
+module.exports.showView = function(){
 	store.dispatch({
 		type: 'SHOW_VIEW'
+	})	
+}
+
+module.exports.toggleSaveShare = function(mode){
+	store.dispatch({
+		type:'TOGGLE_SAVE_SHARE',
+		toggle: mode
 	})
 }
 
 
+module.exports.toggleDragger = function(mode){
+	store.dispatch({
+		type: 'TOGGLE_DRAGGER'
+	})		
+}
+
+module.exports.showPieceList = function(tab){
+	var state = store.getState()
+	var piece_items = state.piece_items;
+
+	if(!state.show_browser){
+		store.dispatch({
+			type: 'TOGGLE_BROWSER'
+		})
+	}
+
+	if(piece_items[tab].length == 0) updatePieceList(tab);
+
+	store.dispatch({
+		type: 'SET_BROWSER_TAB',
+		tab: tab, 
+	})
+}
 
 
 
@@ -395,13 +485,16 @@ function loadType(type,cb){
 module.exports.loadType = loadType
 
 
-function setCurrentType(type){
-	if(!type.script) {
+
+
+//set the current type to be rendered in the viewer
+function setCurrentType(type_item){
+	if(!type_item.script) {
 		throw 'cant set current type without script'
 	}
 	store.dispatch({
 		type: 'SET_CURRENT_TYPE',
-		dat: type
+		type_item: type_item
 	})
 }
 module.exports.setCurrentType = setCurrentType
@@ -427,13 +520,14 @@ function clearView(){
 }
 module.exports.clearView = clearView;
 
+
 function setView(canvas){
 	console.log('set view',canvas)
 	clearView();
 
 	console.log('set view 2')
 
-	var current_type = store.getState().app.current_type;
+	var current_type = store.getState().current_type;
 
 	if(current_type == null) throw 'cannot set view with no current_type'
 
@@ -449,31 +543,30 @@ function setView(canvas){
 }
 module.exports.setView = setView;
 
-function toggleView(pause){
-	view_paused = pause
+
+
+
+
+
+if(localStorage.getItem('saved_pieces') == null) {
+	localStorage.setItem('saved_pieces',JSON.stringify([]))
 }
-module.exports.toggleView = toggleView;
+
+function getSavedPieces(){
+	var local_pieces = localStorage.getItem('saved_pieces');
+	store.dispatch({
+		type: 'UPDATE_LIST',
+		filter: 'saved',
+		piece_items: JSON.parse(local_pieces),
+	})
+}
 
 
+function updatePieceList(filter){
+	if(filter == 'saved'){
+		return getSavedPieces()
+	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function updateList(filter){
 	store.dispatch({
 		type: 'UPDATE_LIST'
 	})
@@ -494,54 +587,27 @@ function updateList(filter){
 		})
 	})
 }
-module.exports.updateList = updateList;
+module.exports.updatePieceList = updatePieceList;
 
-// var snap_canvas = document.createElement('canvas');
-// snap_canvas.width = 400;
-// snap_canvas.height = 400;
-// var snap_creature = pieces['creature']({
-// 	canvas: snap_canvas,
-// 	cfg:{a:0.5,b:0.5,c:0.5}
-// });
 
-// function getPieceSnapURL(opt){
-	
-// 	snap_creature.set(opt.cfg);
-// 	//var url = snap_canvas.toDataURL();
-// 	//console.log(url)
-// 	return url;
-// }
 
-//module.exports.getPieceSnapURL = getPieceSnapURL;
 
-function savePiece(opt){
+function savePiece(type,params,picked){
 	var piece_item = 
 	{
-		type: opt.type,
-		cfg: opt.cfg,
-		likes: 0,
-		picked: false,
-	}
-
-	//piece_item.img_url = getPieceSnapURL(opt);
-
-	if( !opt.cfg || !opt.type ){
-		throw "can't save piece with no cfg/type"
+		type_name: type.name,
+		params: params,
+		picked: picked || false,
 	}
 
 	store.dispatch({
-		type: 'ADD_PIECE',
+		type: 'TOGGLE_SAVE',
+		toggle: true
 	})
 
-	req.post('/data/pieces/add').send({
-		cfg: opt.cfg,
-		type: opt.type,
-	}).end(function(err,res){
-		if(err) throw "UPLOAD ERROR";
-		store.dispatch({
-			type: 'ADD_PIECE',
-			piece_item: res.body
-		})
+	return req.post('/data/pieces/add').send({
+		type_id : type.id,
+		params: params,
 	})
 }
 
@@ -565,14 +631,9 @@ module.exports.setParam = setParam
 
 function setParams(new_params){
 	params = new_params
-	current_view.set(params)
+	current_view.set(new_params)
 }
 module.exports.setParams = setParams
-
-
-
-
-
 
 
 function setPiece(type,new_params){
@@ -585,12 +646,11 @@ function setPiece(type,new_params){
 module.exports.setPiece = setPiece
 
 
-
 function makeCurrentPiece(canvas){
 
 	var state = store.getState();
-	var type = state.app.current_type;
-	var new_params = state.app.params;
+	var type = state.current_type;
+	var new_params = state.params;
 
 	if(canvas == null) throw 'cant set piece with no canvas'
 	if(type == null) throw 'cant set piece with no type'
@@ -620,10 +680,24 @@ function makeCurrentPiece(canvas){
 module.exports.makeCurrentPiece = makeCurrentPiece;
 
 
-
-
-
 function saveCurrentPiece(){
-	savePiece(current_type);
+	var state = store.getState();
+	savePiece(state.current_type,state.params)
+	.end(function(err,res){
+		if(err) throw "UPLOAD ERROR";
+		store.dispatch({
+			type: 'SET_CURRENT_PIECE',
+			piece_item: res.body
+		})	
+		store.dispatch({
+			type: 'ADD_PIECE',
+			local: true,
+			piece_item: res.body
+		})
+		store.dispatch({
+			type: 'TOGGLE_SAVE',
+			toggle: false
+		})
+	});
 }
 module.exports.saveCurrentPiece = saveCurrentPiece;

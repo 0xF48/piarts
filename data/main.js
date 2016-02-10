@@ -8,7 +8,7 @@ var Type = require('./models').Type;
 
 var path = require('path')
 
-const LIMIT = 5;
+const LIMIT = 20;
 
 
 
@@ -139,15 +139,7 @@ router
 })
 
 .post('/pieces/add',addCheck,function(req,res){
-	console.log('add')
-	console.log(req.body)
-	var body = req.body
-	Piece.add({
-		params: body.params,
-		type_name: body.type_name,
-		views: 1,
-	}).then(function(piece){
-		console.log(piece)
+	Piece.add(req.body).then(function(piece){
 		if(piece == null) return res.sendStatus(500)
 		res.json(piece.public_json())
 	})
@@ -155,7 +147,7 @@ router
 
 .put('/view/:piece_id',likeCheck,function(req,res){
 	req.piece.views++;
-	req.saveAsync().then(function(){
+	req.piece.saveAsync().then(function(){
 		res.sendStatus(200)
 	}).catch(function(){
 		res.sendStatus(500)
@@ -164,7 +156,18 @@ router
 
 .put('/like/:piece_id',likeCheck,function(req,res){
 	req.piece.likes++;
-	req.saveAsync().then(function(){
+	req.piece.saveAsync().then(function(){
+		res.sendStatus(200)
+	}).catch(function(){
+		res.sendStatus(500)
+	})
+})
+
+.put('/pick/:piece_id',likeCheck,function(req,res){
+	if( !req.admin ) return res.setState(403)
+
+	req.piece.picked = true
+	req.piece.saveAsync().then(function(){
 		res.sendStatus(200)
 	}).catch(function(){
 		res.sendStatus(500)
