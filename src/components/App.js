@@ -235,9 +235,10 @@ var TypeItem = connect(function(state){
 	},
 
 	load: function(){
+		console.log("TRIGGER LOAD")
 		s.loadType(this.props.item,function(item){
-			console.log('loaded',item)
 			s.setCurrentType(item)
+			s.setView()
 			s.showView()
 		});
 	},
@@ -300,7 +301,7 @@ var TypeList = React.createClass({
 
 		return (
 			<I {...this.props} scroll vertical outerClassName='type_list' >
-				<G fixed = {true} w= {1} h = {6} >
+				<G list_id = "piece_types" fixed = {true} w= {1} h = {6} >
 					{this.items}
 				</G>
 			</I>
@@ -370,23 +371,32 @@ var App = React.createClass({
 	},
 
 	componentDidUpdate: function(props){
-
-		if(this.props.current_type != props.current_type){
-			if(this.props.current_type != null){
-				s.setView(this.refs.piece_canvas)
-			}else{
-				s.clearView()
-			}
-		}
+		// if(this.props.current_type == null) return
+		// if( (props.current_type == null && this.props.current_type != null) || (this.props.current_type.id != props.current_type.id)  ){
+		// 	console.log("SET VIEW",props.current_type,this.props.current_type)
+		// 	if(this.props.current_type != null){
+		// 		s.setView(this.refs.piece_canvas)
+		// 	}else{
+		// 		s.clearView()
+		// 	}
+		// }
 
 		if(this.props.view_paused != props.view_paused){
 			s.toggleView(this.props.view_paused)
+		}
+
+		if(this.refs.piece_canvas){
+			this.refs.piece_canvas.width = this.refs.piece_canvas.parentElement.clientWidth;
+			this.refs.piece_canvas.height = this.refs.piece_canvas.parentElement.clientHeight;
+
 		}
 
 	},
 
 
 	render: function(){
+		
+
 		return (
 			<I slide index_pos={this.props.show_info ? 1 : 0} vertical beta={100} ref="root" >
 				<I slide beta={100} index_pos = {this.props.show_browser ? 0 : 1} ref="top" >
@@ -395,7 +405,7 @@ var App = React.createClass({
 					<I slide index_pos={this.props.show_types ? 0 : 1} beta={100} offset={-50} >
 						<TypeList beta = {20} current_type = {this.props.current_type} type_items = {this.props.type_items} />
 						<I beta = {100} id = 'view' onClick={this.showView} ref = "view-slide">
-							<canvas id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />
+							<canvas key = {this.props.current_type ? this.props.current_type.id : 0} id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />
 							<UserWidget {...this.props} ref='widget' />
 							<div className='view-overlay' style={{pointerEvents: (this.props.show_browser || this.props.show_types) ? 'all' : 'none', 'opacity':(this.props.show_browser || this.props.show_types) ? 0.85 : 0}} >
 								<span className='icon-angle-left'></span>

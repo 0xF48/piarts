@@ -86,7 +86,7 @@ TypeSchema.methods.public_json = function(){
 
 var PieceSchema = mongoose.Schema({
    params: [{type:Number}],
-   type_name: {type:String},
+   type: { type: mongoose.Schema.Types.ObjectId, ref: 'Type'},
    views: {type: Number, default: 0},
    likes: {type: Number, default: 0},
    created: {type: Date, default: Date.now()},
@@ -100,28 +100,29 @@ PieceSchema.methods.public_json = function(){
 		likes: this.likes,
 		views: this.views,
 		params: this.params,
-		type_name: this.type_name,
+		type_name: this.type.name,
+		type_id: this.type.id,
 		created_at: this.created,
 		picked: this.picked,
 	}
 }
 
+
 PieceSchema.statics.add = function(body){
 
-
-	var data = {
-		params: body.params,
-		type_id: body.type_id,
-	}
+	console.log("ADD",body)
 
 
-	return Type.findOne({_id:data.type_id}).then(function(found){
+
+	return Type.findOne({_id:body.type_id}).then(function(found){
 		if(found == null) return p.resolve(null)
 
-		var piece = new Piece(data);
+		var piece = new Piece({
+			params: body.params,
+			type: found
+		});
 		return render(piece).then(function(piece){
 			return piece.save(function(err,doc){
-				console.log(err,doc)
 				if(err != null || doc == null){
 					return p.resolve(null)
 				}else{

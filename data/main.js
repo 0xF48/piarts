@@ -14,11 +14,13 @@ const LIMIT = 20;
 
 function getPiece(req,res,next,id){
 	if( ! id ) res.sendStatus(500);
-	Piece.findOneAsync( {'_id' : id }).then(function(piece){
+	Piece.findOne( {'_id' : id }).populate('type').exec(function(err,piece){
+		if(err){
+			console.log(err)
+			return res.sendStatus(500);
+		} 
 		req.piece = piece;
 		next();
-	}).catch(function(e){
-		res.sendStatus(500);
 	})
 }
 
@@ -59,7 +61,7 @@ router
 	})
 
 })
-.get('/types/list',function(req,res){
+.get('/types',function(req,res){
 	Type
 	.find()
 	.exec(function(err,typelist){
@@ -69,13 +71,22 @@ router
 	})
 })
 .get('/types/:id',function(req,res){
-	Type.findOne({_id:req.params.id}).exec(function(err,type){
-		if(type == null) res.sendStatus(404)
-		else if(type.locked && !req.admin) res.sendStatus(403)
+	Type.findOne({'_id':req.params.id}).exec(function(err,type){
+		if(type == null) return res.sendStatus(404)
+		else if(type.locked && !req.admin) return res.sendStatus(403)
 		var dat = type.public_json();
 		dat.script = type.get_script();
 		res.json(dat);
 	})
+})
+.put('/types/:id',function(req,res){
+	var body = req.body
+	
+	if(!req.admin) return res.sendStatus(403)
+	Type.update({ _id: req.params.id}, { $set: body }, function(err,type){
+		if(type == null) return res.sendStatus(404)
+		res.json(type);
+	});
 })
 
 
@@ -126,6 +137,7 @@ router
 	.skip(skip)
 	.sort(sort_q)
 	.limit(LIMIT)
+	.populate('type')
 	.exec(function(err,pieces){
 		if(err) return res.sendStatus(500);
 		res.json(pieces.map(function(piece){
@@ -134,9 +146,8 @@ router
 	})
 })
 
-.get('/pieces/get/:piece_id',function(req,res){
-	res.json(req.piece.public_json());
-})
+
+
 
 .post('/pieces/add',addCheck,function(req,res){
 	Piece.add(req.body).then(function(piece){
@@ -145,7 +156,7 @@ router
 	})
 })
 
-.put('/view/:piece_id',likeCheck,function(req,res){
+.put('/pieces/view/:piece_id',likeCheck,function(req,res){
 	req.piece.views++;
 	req.piece.saveAsync().then(function(){
 		res.sendStatus(200)
@@ -154,24 +165,24 @@ router
 	})
 })
 
-.put('/like/:piece_id',likeCheck,function(req,res){
+.put('/pieces/like/:piece_id',likeCheck,function(req,res){
 	req.piece.likes++;
-	req.piece.saveAsync().then(function(){
+	req.piece.save().then(function(){
 		res.sendStatus(200)
-	}).catch(function(){
-		res.sendStatus(500)
 	})
 })
 
-.put('/pick/:piece_id',likeCheck,function(req,res){
+.put('/pieces/pick/:piece_id',likeCheck,function(req,res){
 	if( !req.admin ) return res.setState(403)
 
 	req.piece.picked = true
-	req.piece.saveAsync().then(function(){
+	req.piece.save().then(function(){
 		res.sendStatus(200)
-	}).catch(function(){
-		res.sendStatus(500)
 	})
+})
+
+.get('/pieces/:piece_id',function(req,res){
+	res.json(req.piece.public_json());
 })
 
 .param('piece_id',getPiece)

@@ -67,6 +67,7 @@ var SaveWidget = React.createClass({
 
 
 	saveShare: function(){
+		console.log("SAVE toggled")
 		if(this.props.saving_piece) return
 		if(this.props.save_sharing) {
 			this.end()
@@ -115,9 +116,6 @@ var SaveWidget = React.createClass({
 				</C>
 				<C distance={1} ref='share_node_buy' beta={100} onClick={this.sharePiece}>
 					<b className='icon-paper-plane' />
-				</C>
-				<C distance={1} ref='share_node_buy' beta={100} onClick={this.buyPiece}>
-					<b className='icon-picture' />
 				</C>
 			</C>
 		)

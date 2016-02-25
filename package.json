@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "auth": "Basic eXVyaXNpZG9AZ21haWwuY29tOnRlc3Q=",
-  "maintenance": false,
+  "maintenance": true,
   "port": "4000",
   "db_url": "mongodb://localhost/piarts",
   "repository": {

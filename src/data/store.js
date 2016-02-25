@@ -2,6 +2,7 @@
 var req = require('superagent');
 var redux = require('redux');
 var _uniq = require('lodash/array/uniq');
+var _sort = require('lodash/collection/sortBy');
 var createStore = require('redux').createStore;
 var merge = Object.assign;
 
@@ -97,7 +98,9 @@ module.exports.default_state = default_state
 
 
 
-
+function sortTime(a){
+	return -a.raw_time 
+}
 
 function mergeToFilters(state,pieces){
 	if(pieces.length == null){
@@ -108,27 +111,30 @@ function mergeToFilters(state,pieces){
 		return piece.id;
 	})
 
-	//console.log("ALL",all)
+	// console.log("FILTER ALL",all)
+	for(var i in all){
+		all[i].created_at = new Date(all[i].created_at)
+		all[i].raw_time = Date.parse(all[i].created_at)
+	}
 
 	
 
 	return {
-		recent : all.sort(function(piece){
-			return -Date.parse(piece.created_at)
+
+		saved: _sort(all.filter(function(piece){
+			return (piece.local == true )
+		}),sortTime),
+
+		recent : _sort(all.slice(0, all.length),sortTime),
+
+		liked: _sort(all.slice(0, all.length),function(piece1,piece2){
+			return piece1.likes > piece2.likes
 		}),
-		picked: all.filter(function(piece){
+
+
+		picked: _sort(all.filter(function(piece){
 			return piece.picked
-		}).sort(function(piece){
-			return -Date.parse(piece.created_at)
-		}),
-		liked: all.sort(function(piece){
-			return -piece.likes
-		}),
-		saved: all.filter(function(piece){
-			return (piece.local == true)
-		}).sort(function(piece){
-			return -Date.parse(piece.created_at)
-		})
+		}),sortTime),
 	};
 }
 
@@ -321,8 +327,10 @@ module.exports.loops = loops;
 // render all loops. pause rendering with store.render_active
 var RENDER_ACTIVE = true
 function render(){
+
 	requestAnimationFrame(render);
 	if( ! RENDER_ACTIVE ) return
+
 	for(var i = 0;i<loops.length;i++){
 		if(loops[i] != null) loops[i]();
 	}
@@ -363,7 +371,7 @@ render();
 /*----------------------------------*/
 
 function getTypeList(){
-	return req.get('/data/types/list')
+	return req.get('/data/types')
 	.end(function(err,res){
 		if(!res.body.length) throw "got bad type array : "+JSON.stringify(res.body)
 		//console.log("GOT LIST BODY",res.body);
@@ -385,6 +393,7 @@ function getTypeList(){
 
 		loadType(types[res.body[0].id],function(item){
 			setCurrentType(item)
+			setView()
 		});
 	})
 }
@@ -450,12 +459,16 @@ module.exports.showPieceList = function(tab){
 		})
 	}
 	
-	updatePieceList(tab);
+	updatePieceList(tab,function(){
+		store.dispatch({
+			type: 'SET_BROWSER_TAB',
+			tab: tab, 
+		})
+	});
 
-	store.dispatch({
-		type: 'SET_BROWSER_TAB',
-		tab: tab, 
-	})
+
+	
+
 }
 
 
@@ -489,6 +502,7 @@ function loadType(type,cb){
 		document.head.appendChild(piece_script)
 
 		console.log('LOADED TYPE',window[MODULE_PREFIX+type.name])
+
 		cb(res.body)
 	})
 }
@@ -523,6 +537,7 @@ module.exports.setCurrentType = setCurrentType
 
 
 function clearView(){
+	console.log("CLEAR VIEW")
 	//clear view
 	if(current_view == null) return 
 	loops.splice(loops.indexOf(current_view.loop),1)
@@ -531,16 +546,19 @@ function clearView(){
 module.exports.clearView = clearView;
 
 
-function setView(canvas){
-	console.log('set view',canvas)
+
+
+function setView(){
+	var canvas = document.getElementById('view-canvas');
+	// console.log('set view',canvas)
 	clearView();
 
-	console.log('set view 2')
+	// console.log('set view 2')
 
 	var current_type = store.getState().current_type;
 
 	if(current_type == null) throw 'cannot set view with no current_type'
-
+	// console.log(current_type.name)
 	var module = window[MODULE_PREFIX+current_type.name]
 	if(!module) throw 'cannot set view current type module does not exist'
 	
@@ -572,9 +590,11 @@ function getSavedPieces(){
 }
 
 
-function updatePieceList(filter){
+function updatePieceList(filter,cb){
+
+	getSavedPieces()
 	if(filter == 'saved'){
-		return getSavedPieces()
+		if(cb!= null) cb()
 	}
 
 	store.dispatch({
@@ -582,19 +602,22 @@ function updatePieceList(filter){
 	})
 
 	var state = store.getState();
+	//console.log(arr.length)
 	var arr = state.piece_items[filter];
 
-	console.log('/data/pieces/list?filter='+filter+'&p='+state[filter+'_page'])
+	//console.log('/data/pieces/list?filter='+filter+'&skip='+arr.length)
 
-	return req.get('/data/pieces/list?filter='+filter+'&p='+arr.length)
+	return req.get('/data/pieces/list?filter='+filter+'&skip='+arr.length)
 	.end(function(err,res){
-		if(!res.body.length) throw "bad array : "+JSON.stringify(res.body)
+		// console.log(res.body.length)
+		if(!res.body.length) return cb()
 		//console.log("GOT LIST BODY",res.body);
 		store.dispatch({
 			type: 'UPDATE_LIST',
 			filter: filter,
 			piece_items: res.body,
 		})
+		if(cb != null) cb()
 	})
 }
 module.exports.updatePieceList = updatePieceList;
@@ -691,9 +714,11 @@ module.exports.makeCurrentPiece = makeCurrentPiece;
 
 
 function saveCurrentPiece(){
+	console.log("save current piece")
 	var state = store.getState();
 	savePiece(state.current_type,state.params)
 	.end(function(err,res){
+		console.log("SAVED")
 		if(err) throw "UPLOAD ERROR";
 		store.dispatch({
 			type: 'SET_CURRENT_PIECE',

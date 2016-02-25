@@ -22,6 +22,16 @@
 	box-sizing : border-box;
 	.piece-item{
 		position: relative;
+		font-size: 10px;
+		.piece-item-date{
+			position: absolute;
+			box-sizing : border-box;
+			padding:7px;
+			left:0;
+			top:0;
+			color: #fff;
+			background: rgba(255,255,255,0.3);
+		}
 		.piece-item-params{
 			box-sizing : border-box;
 			text-align: center;
@@ -32,7 +42,7 @@
 			padding:7px;
 			color: #fff;
 			background: rgba(255,255,255,0.3);
-			font-size: 10px;
+			
 		}
 		// box-shadow: inset 0px 0px 2px rgba(255,255,255,0.5);
 		background: #008B8A;
