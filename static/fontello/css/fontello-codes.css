@@ -29,3 +29,7 @@
 .icon-angle-left:before { content: '\e81b'; } /* '' */
 .icon-off:before { content: '\e81c'; } /* '' */
 .icon-cancel:before { content: '\e81d'; } /* '' */
+.icon-angle-up:before { content: '\e81e'; } /* '' */
+.icon-angle-down:before { content: '\e81f'; } /* '' */
+.icon-angle-right:before { content: '\e820'; } /* '' */
+.icon-angle-double-right:before { content: '\e821'; } /* '' */

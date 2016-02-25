@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var p = require('bluebird');
 
 var pack = require('../package.json')
-
+var render = require('./render')
 
 
 
@@ -106,26 +106,29 @@ PieceSchema.methods.public_json = function(){
 	}
 }
 
-
 PieceSchema.statics.add = function(body){
+
 
 	var data = {
 		params: body.params,
 		type_id: body.type_id,
 	}
 
+
 	return Type.findOne({_id:data.type_id}).then(function(found){
 		if(found == null) return p.resolve(null)
 
 		var piece = new Piece(data);
-		return piece.save(function(err,doc){
-			console.log(err,doc)
-			if(err != null || doc == null){
-				return p.resolve(null)
-			}else{
-				found.piece_count += 1;
-				return found.save();
-			}
+		return render(piece).then(function(piece){
+			return piece.save(function(err,doc){
+				console.log(err,doc)
+				if(err != null || doc == null){
+					return p.resolve(null)
+				}else{
+					found.piece_count += 1;
+					return found.save();
+				}
+			})
 		})
 	})
 }

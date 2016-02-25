@@ -1,0 +1,50 @@
+
+
+
+
+.list_refresh_button{
+	height: 50px;
+	width: 100%;
+	color: #000;
+	background: #fff;
+	cursor: pointer;
+	text-align: center;
+	padding: 10px;
+	box-sizing : border-box;
+}
+
+.piece_list{
+	background: #111111;
+	position: relative;
+	height: calc(100%-50px);
+	padding: 4px;
+	transform: translateZ(0);
+	box-sizing : border-box;
+	.piece-item{
+		position: relative;
+		.piece-item-params{
+			box-sizing : border-box;
+			text-align: center;
+			position: absolute;
+			line-height: 15px;
+			right:0;
+			bottom:0;
+			padding:7px;
+			color: #fff;
+			background: rgba(255,255,255,0.3);
+			font-size: 10px;
+		}
+		// box-shadow: inset 0px 0px 2px rgba(255,255,255,0.5);
+		background: #008B8A;
+		transition: background 0.3s ease;
+		box-sizing : border-box;
+		margin: 4px;
+		position: relative;
+		cursor: default;
+		width: calc(100% - 8px);
+		height: calc(100% - 8px);
+		@include center;
+		overflow: hidden;
+	}
+}
+

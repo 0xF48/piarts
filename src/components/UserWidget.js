@@ -101,15 +101,13 @@ var SaveWidget = React.createClass({
 			<C {...this.props} padding={0} className='share_node' ref='root' expanded={this.props.save_sharing} onClick={this.saveShare}>
 				<div className='share-slide-container'>
 					<CLoader ref = 'loader' className='loader' color='#2F8BAD' c_r={0} c_g={255} c_b={0} radius={70/4} width={3} />
-					<I beta={100} innerClassName='share-slide-favorite'>
-						<I slide v beta={100} ref='slide' index_pos = {this.props.save_sharing ? 1 : 0} className='share_slide'>
-							<I beta={100} innerClassName='share-slide-favorite'>
-								<b className='icon-star' />
-							</I>
-							<I beta={100} innerClassName='share-slide-share'>
-								<b className='icon-cancel' />
-							</I>	
+					<I slide v beta={100} ref='slide' index_pos = {this.props.save_sharing ? 1 : 0} outerClassName='share_slide'>
+						<I beta={100} innerClassName='share-slide-favorite'>
+							<b className='icon-star' />
 						</I>
+						<I beta={100} innerClassName='share-slide-share'>
+							<b className='icon-cancel' />
+						</I>	
 					</I>
 				</div>
 				<C distance={1} ref='share_node_view' beta={100} onClick={this.viewInBrowser}> 
@@ -227,13 +225,14 @@ var UserWidget = React.createClass({
 		return (
 			<div className = 'user-widget' ref = 'root'  >
 				<canvas  tabIndex='1' ref='canvas' className = 'user-widget-canvas' />
-				<C rootStyle={{top:'50%'}} rootClass = 'user-widget-dom' ref='root_node' expanded={this.state.expanded} onClick={this.toggleRoot} size={85} angle = {-Math.PI/2} >
+				<C padding = {6} rootStyle={{top:'50%'}} rootClass = 'user-widget-dom' ref='root_node' expanded={this.state.expanded} onClick={this.toggleRoot} size={85} angle = {-Math.PI/2} >
 					<b className='icon-cog' />
-					<C distance={1.3}  beta={45} selfClass="love_node" ref='love_node'>
+					<C distance={1.2}  beta={45} selfClass="love_node" ref='love_node'>
 						<b className='icon-heart' />
 					</C>
-					<ParamWidget distance={1.1} beta={100} ref='param_widget' expanded={ this.paramState() } params={this.props.params} save_sharing={this.props.save_sharing} />
-					<SaveWidget distance={1.3} beta={45} ref='save_widget' saving_piece={this.props.saving_piece} save_sharing={this.props.save_sharing}/>
+					
+					<ParamWidget distance={1.3} beta={100} ref='param_widget' expanded={ this.paramState() } params={this.props.params} save_sharing={this.props.save_sharing} />
+					<SaveWidget distance={1.2} beta={45} ref='save_widget' saving_piece={this.props.saving_piece} save_sharing={this.props.save_sharing}/>
 
 				</C>		
 			</div>

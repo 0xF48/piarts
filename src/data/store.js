@@ -25,15 +25,25 @@ const default_state = {
 	params: params,
 	current_type: null,
 	current_piece: null,
+
+
+	recent_page: 0,
+	picked_page: 0,
+	liked_page: 0,
+	saved_page: 0,
+
+
 	piece_items: {
 		recent: [],
 		picked: [],
 		liked: 	[],
 		saved: []
 	},
+
+
 	type_items: {},
 	dragger_active: false,
-	browser_tab : 'recent',
+	browser_tab : null,
 	show_types: false,
 	show_info: false,
 	show_browser: false,
@@ -194,7 +204,7 @@ function mainReducer(state, action){
 				params:  action.params
       		})
   		case 'UPDATE_LIST':
-  			console.log(action.piece_items)
+  			// console.log(action.piece_items)
   			//console.log('UPDATE LIST',action.piece_items)
   			
   			//console.log(action.piece_items)
@@ -215,7 +225,7 @@ function mainReducer(state, action){
 			return merge(n,state, {
 				piece_items: mergeToFilters(state,action.piece_items)
 			})
-  		case 'ADD_PIECE':
+		case 'ADD_PIECE':
   			if(action.local){
   				var saved_pieces = JSON.parse(localStorage.getItem('saved_pieces'))
   				console.log(saved_pieces)
@@ -439,8 +449,8 @@ module.exports.showPieceList = function(tab){
 			type: 'TOGGLE_BROWSER'
 		})
 	}
-
-	if(piece_items[tab].length == 0) updatePieceList(tab);
+	
+	updatePieceList(tab);
 
 	store.dispatch({
 		type: 'SET_BROWSER_TAB',
@@ -574,9 +584,9 @@ function updatePieceList(filter){
 	var state = store.getState();
 	var arr = state.piece_items[filter];
 
-	console.log('/data/pieces/list?filter='+filter+'&skip='+arr.length)
+	console.log('/data/pieces/list?filter='+filter+'&p='+state[filter+'_page'])
 
-	return req.get('/data/pieces/list?filter='+filter+'&skip='+arr.length)
+	return req.get('/data/pieces/list?filter='+filter+'&p='+arr.length)
 	.end(function(err,res){
 		if(!res.body.length) throw "bad array : "+JSON.stringify(res.body)
 		//console.log("GOT LIST BODY",res.body);
@@ -701,3 +711,9 @@ function saveCurrentPiece(){
 	});
 }
 module.exports.saveCurrentPiece = saveCurrentPiece;
+
+
+
+
+
+

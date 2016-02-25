@@ -3,23 +3,20 @@
 	@include center;
 }
 
-#gui{
-	position: relative;
-	background: #000;
-	flex-shrink:0;
-	box-shadow: -1px 0px 0px rgba(255, 255, 255, 0.13);
-	.gui-sidebar{
-		font-size: 20px;
-		background: #2E3030;
-		color: #fff;
-	};
+	// position: relative;
+	// background: #000;
+	// flex-shrink:0;
+	// box-shadow: -1px 0px 0px rgba(255, 255, 255, 0.13);
+.gui-sidebar{
+	transform: translateZ(0);
+	font-size: 18px;
+	background: #111111;
+	color: #fff;
+};
 
 
-}
 
-#browser{
-	background: #2A2828
-}
+
 
 
 
@@ -27,7 +24,7 @@
 
 .type_list{
 
-	background: #3E3E3E;
+	background: #000;
 
 	.type_item{
 		transition: background 0.3s ease;
@@ -71,25 +68,3 @@
 
 
 
-
-
-
-
-
-
-
-.piece_list{
-	
-	.piece_item{
-		background: #fff;
-		transition: background 0.3s ease;
-		box-sizing : border-box;
-		margin: 4px;
-		position: relative;
-		cursor: default;
-		width: calc(100% - 8px);
-		height: calc(100% - 8px);
-		@include center;
-		overflow: hidden;
-	}
-}

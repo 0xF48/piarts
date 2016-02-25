@@ -1,22 +1,18 @@
-var Type = require('./models').Type
-
-function preLoad(){
-	Type.find().exec(function(type_list){
-		for(var i in type_list){
-			type_list[i] = 
-		}
-	})
-}
-
-
 /*
 	config :
 		resolution
 		zoom
 		width
 		height
+
 */
 
-function render(type_name,params,config){
+var Canvas = require('canvas')
+var canvas = new Canvas(2000,2000)
+var ctx =  canvas.getContext('2d')
 
+
+function render(piece){
+	ctx.clearRect(0,0,2000,2000)
+	
 }

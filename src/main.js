@@ -26,7 +26,10 @@ function select(state){
 	// }
 }
 
-var ConnectedApp = connect(select)(require('./parts/App'));
+
+
+
+var ConnectedApp = connect(select)(require('./components/App'));
 
 render(
   <Provider store={s.store}>
@@ -34,3 +37,13 @@ render(
   </Provider>,
   document.getElementById('webpiece')
 )
+
+
+
+// var Example = require('intui').Example
+
+// render(
+//   <Example/>,
+//   document.getElementById('webpiece')
+// )
+
