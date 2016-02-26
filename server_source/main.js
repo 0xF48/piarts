@@ -3,10 +3,9 @@ var router = express.Router();
 var pack = require('../package');
 var Piece = require('./models').Piece;
 var Type = require('./models').Type;
-
-
-
 var path = require('path')
+
+
 
 const LIMIT = 20;
 
@@ -70,12 +69,18 @@ router
 		}))
 	})
 })
+.get('/types/script/:id.js',function(req,res){
+	Type.findOne({'_id':req.params.id}).exec(function(err,type){
+		if(type == null) return res.sendStatus(404)
+		else if(type.locked && !req.admin) return res.sendStatus(403)
+		res.sendFile(path.join(__dirname,'..','/piece_modules/builds/'+type.name+'.js'));
+	})
+})
 .get('/types/:id',function(req,res){
 	Type.findOne({'_id':req.params.id}).exec(function(err,type){
 		if(type == null) return res.sendStatus(404)
 		else if(type.locked && !req.admin) return res.sendStatus(403)
 		var dat = type.public_json();
-		dat.script = type.get_script();
 		res.json(dat);
 	})
 })
@@ -97,9 +102,7 @@ router
 
 
 
-
-
-.get('/pieces/list',function(req,res){
+.get('/pieces',function(req,res){
 	var skip = req.query.skip;
 	var filter = req.query.filter;
 //	console.log("FILTER",filter);
@@ -123,7 +126,8 @@ router
 			sort_q = {views: -1}
 			break;
 		case 'picked':
-			sort_q = {_id: -1 }
+			sort_q = {_id: -1}
+			q = {picked: true}
 			break;
 		default:
 		case 'recent':
@@ -145,9 +149,6 @@ router
 		}))
 	})
 })
-
-
-
 
 .post('/pieces/add',addCheck,function(req,res){
 	Piece.add(req.body).then(function(piece){

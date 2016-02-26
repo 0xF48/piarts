@@ -1,6 +1,5 @@
 //parameters
 var C = require('circui').Circle;
-var React = require('react');
 var connect = require('react-redux').connect;
 var CircleMixin = require('circui').Mixin;
 
@@ -53,9 +52,9 @@ var	Dragger = function(canvas){
 		angle: 0,
 		prev_a: null,
 		prev_angle: null,
-		min_val: -1.5,
-		max_val: 1.5,
-		cycles_per_unit: 1,
+		min_val: -5.5,
+		max_val: 5.5,
+		cycles_per_unit: 0.25,
 		padding: 60,
 		client_max_radius: 999, 
 		client_min_radius: 50, 

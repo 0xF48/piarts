@@ -51,7 +51,7 @@ var PieceItem = React.createClass({
 				<div className = 'piece-item' style={style}>
 					<p>{item.type_name}</p>
 					<div className = 'piece-item-params'>{params}</div>
-					<div className = 'piece-item-date'>{ (item.created_at ? item.created_at.toDateString() : null)  + '@'+item.raw_time}</div>
+					<div className = 'piece-item-date'>{ (item.created_at ? item.created_at.toDateString() : null)  + ' | '+item.id}</div>
 				</div>
 			</GItem>
 		)
@@ -128,10 +128,16 @@ var Browser = React.createClass({
 	},
 
 	makeList: function(props,state,items){
-		// console.log("MAKE LIST",items.length,items)
+		console.log("MAKE LIST",items.length,items)
 		this.items = [];
 		for(var i = 0;i<items.length;i++){
-			this.items.push(<PieceItem index = {i} ease_dur={0.5} delay={0.1}  w={Math.floor(1+Math.random()*2)} h={Math.floor(1+Math.random()*2)} color = {items[i].local ?this.colors['saved'] : this.colors[props.browser_tab]} item = {items[i]} key = {props.browser_tab+'_piece_item_'+items[i].id+(items[i].local ? '_local' : '_')} />)
+			var color = this.colors[props.browser_tab]
+			if(items[i].picked){
+				color = this.colors['picked']
+			}else if(items[i].local){
+				color = this.colors['saved']
+			}
+			this.items.push(<PieceItem index = {i} ease_dur={0.5} delay={0.1}  w={Math.floor(1+Math.random()*2)} h={Math.floor(1+Math.random()*2)} color = {color} item = {items[i]} key = {props.browser_tab+'_piece_item_'+items[i].id+(items[i].local ? '_local' : '_')} />)
 		}
 	},
 

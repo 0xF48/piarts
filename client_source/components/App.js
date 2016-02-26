@@ -167,11 +167,11 @@ var Sidebar = React.createClass({
 		return (
 			<I {...this.props} id = 'sidebar' ref="sidebar" outerClassName="gui-sidebar" >
 				<I vertical beta={100} offset={-50} ref = 'sidebar_top'>
-					<Button inverse c1 = '#99D4DB' c2 ='#34494C' down 	onClick={s.showPieceList.bind(null,'saved')} height={this.props.width} icon= 'icon-floppy' active = {this.state.active_button == 3} index_offset={5} bClassName={'gui-button-layer'} />
-					<Button inverse c1 = '#00C85C' c2 ='#003016' up 	onClick={s.showPieceList.bind(null,'recent')} height={this.props.width} icon= 'icon-leaf-1' active = {this.state.active_button == 0} index_offset={5} bClassName={'gui-button-layer'} />
-					<Button inverse c1 = '#C80041' c2 ='#30000A' down 	onClick={s.showPieceList.bind(null,'liked')} height={this.props.width} icon= 'icon-heart' active = {this.state.active_button == 1} index_offset={5} bClassName={'gui-button-layer'} />
-					<Button inverse c1 = '#E6B200' c2 ='#4B3A00' up 	onClick={s.showPieceList.bind(null,'picked')} height={this.props.width} icon= 'icon-isight' active = {this.state.active_button == 2} index_offset={5} bClassName={'gui-button-layer'} />
-					<Button inverse c1 = '#FFDEBF' c2 ='#2A2828' right 	onClick={s.toggleTypesList} height={this.props.width} icon= 'icon-th-thumb' active = {this.props.show_types} index_offset={5} bClassName={'gui-button-layer'} />
+					<Button inverse c1 = '#99D4DB' c2 ='#34494C' down 	onClick={s.showPieceList.bind(null,'saved')} height={this.props.width} icon= 'icon-floppy' active = {this.state.active_button == 3} index_offset={3} bClassName={'gui-button-layer'} />
+					<Button inverse c1 = '#00C85C' c2 ='#003016' up 	onClick={s.showPieceList.bind(null,'recent')} height={this.props.width} icon= 'icon-leaf-1' active = {this.state.active_button == 0} index_offset={3} bClassName={'gui-button-layer'} />
+					<Button inverse c1 = '#C80041' c2 ='#30000A' down 	onClick={s.showPieceList.bind(null,'liked')} height={this.props.width} icon= 'icon-heart' active = {this.state.active_button == 1} index_offset={3} bClassName={'gui-button-layer'} />
+					<Button inverse c1 = '#E6B200' c2 ='#4B3A00' up 	onClick={s.showPieceList.bind(null,'picked')} height={this.props.width} icon= 'icon-isight' active = {this.state.active_button == 2} index_offset={3} bClassName={'gui-button-layer'} />
+					<Button inverse c1 = '#FFDEBF' c2 ='#2A2828' right 	onClick={s.toggleTypesList} height={this.props.width} icon= 'icon-th-thumb' active = {this.props.show_types} index_offset={3} bClassName={'gui-button-layer'} />
 				</I>
 				<Button inverse c1 = '#FFDEBF' c2 ='#2A2828' down 	onClick={this.showInfo} height={this.props.width} icon= 'icon-info-circled' active = {this.props.show_info} index_offset={3} bClassName={'gui-button-layer'} />
 			</I>

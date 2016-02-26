@@ -13,7 +13,14 @@ var ctx =  canvas.getContext('2d')
 var p = require('bluebird');
 
 function render(piece){
-	// ctx.clearRect(0,0,2000,2000)
+	var window = {}
+	console.log(piece.type)
+	var type_module = require('../pieces/builds/creature.js')
+
+	console.log(window)
+	console.log("WAT...")
+
+	// tx.clearRect(0,0,2000,2000)
 	return p.resolve(piece)
 }
 

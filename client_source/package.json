@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cajon": "^0.2.12",
+    "curl-amd": "git+https://github.com/cujojs/curl.git",
     "gsap": "^1.18.2",
     "history": "^1.17.0",
     "lodash": "^3.10.1",
@@ -19,6 +21,8 @@
     "react-three-renderer": "0.0.21-alpha",
     "redux": "^3.3.1",
     "redux-simple-router": "^2.0.4",
+    "require": "^2.4.20",
+    "requirejs": "^2.1.22",
     "superagent": "^1.6.1",
     "three": "^0.74.0",
     "three-orbit-controls": "^72.0.0"

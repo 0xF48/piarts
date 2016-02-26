@@ -1,13 +1,8 @@
-/*globals*/
-require('gsap/src/uncompressed/TweenMax.js');
-require('gsap/src/uncompressed/easing/EasePack.js');
-
-
 /*deps*/
 var react_redux = require('react-redux');
 var Provider = react_redux.Provider;
 var render = require('react-dom').render;
-var React = require('react');
+// var React = require('react');
 var connect = react_redux.connect;
 var s = require('./data/store');
 window.s = s

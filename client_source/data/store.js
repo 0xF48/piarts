@@ -6,9 +6,12 @@ var _sort = require('lodash/collection/sortBy');
 var createStore = require('redux').createStore;
 var merge = Object.assign;
 
-const MAX_PARAMS = 5;
 
-const MODULE_PREFIX = 'piarts_type_';
+
+
+const MAX_PARAMS = 5;
+var type_modules = {};
+
 
 
 var params = [ 
@@ -22,6 +25,9 @@ module.exports.params = params;
 
 
 const default_state = {
+	user: {
+		is_admin: true
+	},
 	view_paused: false,
 	params: params,
 	current_type: null,
@@ -59,41 +65,6 @@ module.exports.default_state = default_state
 
 
 
-//function getBase64Image(imgElem) {
-// imgElem must be on the same server otherwise a cross-origin error will be thrown "SECURITY_ERR: DOM Exception 18"
-    // var canvas = document.createElement("canvas");
-    // canvas.width = imgElem.clientWidth;
-    // canvas.height = imgElem.clientHeight;
-    // var ctx = canvas.getContext("2d");
-    // ctx.drawImage(imgElem, 0, 0);
-    // var dataURL = canvas.toDataURL("image/png");
-    // return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-//}
-
-
-// var getList = dispatch.bind(null,function(){
-// 	return {
-// 		type: 'UPDATE_LIST',
-// 		list_type: opt.type,
-// 		cursor: opt.cursor
-// 	}
-// })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -103,21 +74,24 @@ function sortTime(a){
 }
 
 function mergeToFilters(state,pieces){
+	// console.log("MERGE TO FILTERS",pieces)
 	if(pieces.length == null){
 		pieces = [pieces];
 	}
 
-	var all =  _uniq(state.piece_items.recent.concat(pieces),function(piece){
+
+
+	var all =  _uniq(pieces.concat(state.piece_items.recent),function(piece){
 		return piece.id;
 	})
 
-	// console.log("FILTER ALL",all)
+	
 	for(var i in all){
 		all[i].created_at = new Date(all[i].created_at)
 		all[i].raw_time = Date.parse(all[i].created_at)
 	}
 
-	
+	console.log("FILTER ALL",all)
 
 	return {
 
@@ -130,10 +104,8 @@ function mergeToFilters(state,pieces){
 		liked: _sort(all.slice(0, all.length),function(piece1,piece2){
 			return piece1.likes > piece2.likes
 		}),
-
-
 		picked: _sort(all.filter(function(piece){
-			return piece.picked
+			return piece.picked == true
 		}),sortTime),
 	};
 }
@@ -390,13 +362,15 @@ function getTypeList(){
 
 
 		//preload
-
-		loadType(types[res.body[0].id],function(item){
-			setCurrentType(item)
+		var example = types[res.body[0].id]
+		loadType(example,function(module){
+			type_modules[example.name] = module
+			setCurrentType(example)
 			setView()
 		});
 	})
 }
+
 getTypeList();
 
 
@@ -486,24 +460,12 @@ module.exports.getType = getType
 
 
 function loadType(type,cb){
-	return req.get('/data/types/'+type.id)
-	.end(function(err,res){
 
-		//dispatch
-		store.dispatch({
-			type: 'SET_TYPE',
-			dat: res.body
-		})
+	if(!store.getState().user.is_admin && type_modules[type.name]) return cb(type_modules[type.name])
 
-		//add script
-		var piece_script = document.createElement("script");
-		piece_script.type = "text/javascript";
-		piece_script.innerHTML = res.body.script
-		document.head.appendChild(piece_script)
 
-		console.log('LOADED TYPE',window[MODULE_PREFIX+type.name])
-
-		cb(res.body)
+	requirejs(['data/types/script/'+type.id],function(type){
+		cb(type)
 	})
 }
 module.exports.loadType = loadType
@@ -513,9 +475,6 @@ module.exports.loadType = loadType
 
 //set the current type to be rendered in the viewer
 function setCurrentType(type_item){
-	if(!type_item.script) {
-		throw 'cant set current type without script'
-	}
 	store.dispatch({
 		type: 'SET_CURRENT_TYPE',
 		type_item: type_item
@@ -559,9 +518,10 @@ function setView(){
 
 	if(current_type == null) throw 'cannot set view with no current_type'
 	// console.log(current_type.name)
-	var module = window[MODULE_PREFIX+current_type.name]
+	var module = type_modules[current_type.name]
 	if(!module) throw 'cannot set view current type module does not exist'
-	
+	var module = module()
+
 	
 	current_view = module[1](canvas)
 	setParams(module[0])
@@ -605,7 +565,7 @@ function updatePieceList(filter,cb){
 	//console.log(arr.length)
 	var arr = state.piece_items[filter];
 
-	//console.log('/data/pieces/list?filter='+filter+'&skip='+arr.length)
+	console.log('/data/pieces/list?filter='+filter+'&skip='+arr.length)
 
 	return req.get('/data/pieces/list?filter='+filter+'&skip='+arr.length)
 	.end(function(err,res){

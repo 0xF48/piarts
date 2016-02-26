@@ -19,17 +19,18 @@ coverage
 # node-waf configuration
 .lock-wscript
 
-# Compiled binary addons (http://nodejs.org/api/addons.html)
-build/Release
+
 
 # Dependency directory
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
 
-static/bundle.js.map
-static/bundle.js
-static/main.css
+client_static/vendor.bundle.js.map
+client_static/vendor.bundle.js
+client_static/bundle.js.map
+client_static/bundle.js
+client_static/main.css
 
-pieces
+piece_modules
 
 **/**/.DS_Store

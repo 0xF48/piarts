@@ -32,8 +32,8 @@ TypeSchema.statics.add = function(body){
 
 	
 	try {
-		fs.statSync('./pieces/builds/'+data.name+'.js')
-		data.path = './pieces/builds/'+data.name+'.js'
+		fs.statSync('./piece_modules/builds/'+data.name+'.js')
+		data.path = './piece_modules/builds/'+data.name+'.js'
 	}catch(e){
 		console.log('cant add type, no build found.')
 		return p.resolve(null)
@@ -51,14 +51,7 @@ TypeSchema.statics.add = function(body){
 	})
 }
 
-TypeSchema.methods.get_script = function(){
-	if(pack.dev == true){
-		var file = fs.readFileSync(this.path)
-		return String(file)
-	}else{
-		return typeCache[this._id]
-	}
-}
+
 
 TypeSchema.methods.public_json = function(){
 	return {
@@ -110,7 +103,7 @@ PieceSchema.methods.public_json = function(){
 
 PieceSchema.statics.add = function(body){
 
-	console.log("ADD",body)
+	// console.log("ADD",body)
 
 
 
@@ -149,12 +142,7 @@ var Type = mongoose.model('Type', TypeSchema);
 
 
 
-var typeCache = {};
-Type.find().exec(function(err,list){
-	for(var i in list){
-		typeCache[list[i]._id] = list[i].get_script()
-	}
-})
+
 
 
 module.exports.Piece = Piece

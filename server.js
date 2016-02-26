@@ -7,8 +7,9 @@ var pack = require('./package');
 
 var app  = express();
 
+app.set('views','./client_views')
 app.set('view engine', 'ejs');
-app.use(express.static('static'));
+app.use(express.static('client_static'));
 
 db.connect(pack.db_url);
 db.connection.on('error',console.error.bind(console,'connection error'));	
@@ -54,7 +55,7 @@ if(pack.maintenance){
 }
 
 
-require('./data/main.js')(app);
+require('./server_source/main.js')(app);
 
 // app.use(function(req, res, next) {
 //     var err = new Error('Not Found');
