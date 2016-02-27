@@ -1,11 +1,11 @@
 var webpack = require("webpack");
-
+var path = require('path');
 
 var cfg = {
 	devtool: 'source-map',
 	module: {
 		loaders: [
-			{ loader: "jsx-loader" },
+			{test: /\.js$/, loader: "jsx-loader" },
 		]
 	},
 	entry: {
@@ -17,6 +17,9 @@ var cfg = {
  			
  		],
  	},
+ 	// sassLoader: {
+  //   	includePaths: [path.resolve(__dirname, "./client_source")]
+  // 	},
 	output: {
 		path: './client_static',
 		publicPath: './client_static',
@@ -35,5 +38,20 @@ var cfg = {
 	// 	},
 	// ]
 }
+
+
+var gulp = require('gulp');
+var sass = require('gulp-sass');
+
+function runsass() {
+  return gulp.src('./client_source/style/main.scss')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(gulp.dest('./client_static'));
+}
+
+gulp.task('sass',runsass);
+runsass()
+gulp.watch('./client_source/style/**/*.scss', ['sass']);
+
 
 module.exports = cfg;

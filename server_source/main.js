@@ -6,6 +6,8 @@ var Type = require('./models').Type;
 var path = require('path')
 
 
+const DATA_PATH = pack.data_path
+
 
 const LIMIT = 20;
 
@@ -73,7 +75,7 @@ router
 	Type.findOne({'_id':req.params.id}).exec(function(err,type){
 		if(type == null) return res.sendStatus(404)
 		else if(type.locked && !req.admin) return res.sendStatus(403)
-		res.sendFile(path.join(__dirname,'..','/piece_modules/builds/'+type.name+'.js'));
+		res.sendFile(path.join(__dirname,'..','/piece_modules/builds/'+type.name+'.amd.js'));
 	})
 })
 .get('/types/:id',function(req,res){
@@ -180,6 +182,14 @@ router
 	req.piece.save().then(function(){
 		res.sendStatus(200)
 	})
+})
+
+.get('/pieces/preview/:piece_id',function(req,res){
+	var size = 'small'
+	if(req.query.scale == 'medium') var size = 'medium'
+	
+
+	res.sendFile(path.join(__dirname,'..',DATA_PATH,'pieces',size,req.piece.id+'.png'));
 })
 
 .get('/pieces/:piece_id',function(req,res){

@@ -16,38 +16,14 @@
 	</svg>
 </body>
 
-
-
-<script type="x-shader/x-vertex" id="vertexshader">
-	uniform float amplitude;
-	uniform float time;
-
-	attribute vec3 displacement;
-	attribute vec3 customColor;
-	attribute float customOpacity;
-
-	varying vec3 vColor;
-	varying float vOpacity;
-
-	void main() {
-		vColor = customColor;
-		vOpacity = customOpacity;
-
-		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, time );
-	}
-</script>
-
-<script type="x-shader/x-fragment" id="fragmentshader">
-	uniform float time;
-	uniform float opacity;
-
-
-	varying vec3 vColor;
-	varying float vOpacity;
-
-	void main() {
-		gl_FragColor = vec4( vColor, vOpacity );
-	}
+<script src="require.min.js"></script>
+<script>
+	requirejs.config({
+		baseUrl: "/",
+		// paths: {
+		//     "some": "some/v1.0"
+		// },
+	});
 </script>
 <script src="vendor.bundle.js"></script>
 <script src="bundle.js"></script>

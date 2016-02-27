@@ -91,7 +91,7 @@ function mergeToFilters(state,pieces){
 		all[i].raw_time = Date.parse(all[i].created_at)
 	}
 
-	console.log("FILTER ALL",all)
+	// console.log("FILTER ALL",all)
 
 	return {
 
@@ -364,7 +364,6 @@ function getTypeList(){
 		//preload
 		var example = types[res.body[0].id]
 		loadType(example,function(module){
-			type_modules[example.name] = module
 			setCurrentType(example)
 			setView()
 		});
@@ -464,7 +463,8 @@ function loadType(type,cb){
 	if(!store.getState().user.is_admin && type_modules[type.name]) return cb(type_modules[type.name])
 
 
-	requirejs(['data/types/script/'+type.id],function(type){
+	requirejs(['data/types/script/'+type.id],function(module){
+		type_modules[type.name] = module
 		cb(type)
 	})
 }
@@ -565,9 +565,9 @@ function updatePieceList(filter,cb){
 	//console.log(arr.length)
 	var arr = state.piece_items[filter];
 
-	console.log('/data/pieces/list?filter='+filter+'&skip='+arr.length)
+	console.log('/data/pieces?filter='+filter+'&skip='+arr.length)
 
-	return req.get('/data/pieces/list?filter='+filter+'&skip='+arr.length)
+	return req.get('/data/pieces?filter='+filter+'&skip='+arr.length)
 	.end(function(err,res){
 		// console.log(res.body.length)
 		if(!res.body.length) return cb()
@@ -625,6 +625,7 @@ module.exports.setParam = setParam
 function setParams(new_params){
 	params = new_params
 	current_view.set(new_params)
+	saveParams()
 }
 module.exports.setParams = setParams
 

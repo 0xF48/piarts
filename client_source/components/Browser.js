@@ -48,10 +48,11 @@ var PieceItem = React.createClass({
 		// console.log(item)
 		return (
 			<GItem {...this.props} onClick = {this.load}  >
-				<div className = 'piece-item' style={style}>
+				<div className = 'piece-item' >
 					<p>{item.type_name}</p>
-					<div className = 'piece-item-params'>{params}</div>
-					<div className = 'piece-item-date'>{ (item.created_at ? item.created_at.toDateString() : null)  + ' | '+item.id}</div>
+					<img className = 'piece-item-thumb' src={item.preview.medium} style={style} />
+					<div className = 'piece-item-params' style={style} >{params}</div>
+					<div className = 'piece-item-date' style={style} >{ (item.created_at ? item.created_at.toDateString() : null)  + ' | '+item.id}</div>
 				</div>
 			</GItem>
 		)
@@ -128,7 +129,7 @@ var Browser = React.createClass({
 	},
 
 	makeList: function(props,state,items){
-		console.log("MAKE LIST",items.length,items)
+		
 		this.items = [];
 		for(var i = 0;i<items.length;i++){
 			var color = this.colors[props.browser_tab]

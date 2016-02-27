@@ -25,6 +25,7 @@ coverage
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
 
+
 client_static/vendor.bundle.js.map
 client_static/vendor.bundle.js
 client_static/bundle.js.map
@@ -32,5 +33,6 @@ client_static/bundle.js
 client_static/main.css
 
 piece_modules
-
+data
+server_source/nwjs/
 **/**/.DS_Store

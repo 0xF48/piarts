@@ -5,6 +5,9 @@ var render = require('react-dom').render;
 // var React = require('react');
 var connect = react_redux.connect;
 var s = require('./data/store');
+
+
+
 window.s = s
 /* pass state in as props and diff down the tree */
 function select(state){

@@ -2,10 +2,12 @@ var mongoose = require('mongoose');
 var p = require('bluebird');
 
 var pack = require('../package.json')
-var render = require('./render')
+var render = require('./piece_render/renderController')
 
-
-
+const SIZES = pack.sizes
+var DATA_PATH = pack.data_path
+var path = require('path')
+var Promise = require('bluebird')
 
 
 
@@ -78,12 +80,22 @@ TypeSchema.methods.public_json = function(){
 
 
 var PieceSchema = mongoose.Schema({
-   params: [{type:Number}],
-   type: { type: mongoose.Schema.Types.ObjectId, ref: 'Type'},
-   views: {type: Number, default: 0},
-   likes: {type: Number, default: 0},
-   created: {type: Date, default: Date.now()},
-   picked: {type: Boolean, default: false}
+	params: [{type:Number}],
+	type: { type: mongoose.Schema.Types.ObjectId, ref: 'Type'},
+	views: {type: Number, default: 0},
+	likes: {type: Number, default: 0},
+	created: {type: Date, default: Date.now()},
+	picked: {type: Boolean, default: false},
+	preview: {
+		medium: {type: String},
+		small: {type: String},
+		large:  {type: String},
+	},
+	prints: {
+		medium: {type: String},
+		small: {type: String},
+		large:  {type: String},
+	}
 });
 
 
@@ -97,8 +109,11 @@ PieceSchema.methods.public_json = function(){
 		type_id: this.type.id,
 		created_at: this.created,
 		picked: this.picked,
+		preview: this.preview
 	}
 }
+// var gm = require('gm');
+
 
 
 PieceSchema.statics.add = function(body){
@@ -114,16 +129,17 @@ PieceSchema.statics.add = function(body){
 			params: body.params,
 			type: found
 		});
-		return render(piece).then(function(piece){
-			return piece.save(function(err,doc){
-				if(err != null || doc == null){
-					return p.resolve(null)
-				}else{
-					found.piece_count += 1;
-					return found.save();
-				}
+
+		return Promise.map(['small','medium','large'],function(size){
+			return render(piece,size).then(function(url){
+				piece.preview[size] = '/data/pieces/preview/'+piece.id+'?scale='+size
+				return Promise.resolve()
 			})
+		}).then(function(){
+			console.log("DONE")
+			return piece.save()
 		})
+		
 	})
 }
 

@@ -281,6 +281,7 @@ var	Dragger = function(canvas){
 	function setOffset(value){
 		stage.offset_value_angle = getAngle(value)
 		stage.offset_client_angle = getClientAngle()
+		
 		stage.offset_angle = (stage.offset_value_angle - stage.offset_client_angle)
 	}
 
@@ -318,7 +319,7 @@ var	Dragger = function(canvas){
 		checkDrawCycle()
 
 		/* draw */
-		drawFiller();
+		//drawFiller();
 		drawCircle(stage.c_x,stage.c_y,stage.c_radius); 
 		drawCircle(stage.client_x,stage.client_y,stage.c_radius*2);
 		drawLine(); 
@@ -368,7 +369,8 @@ var	Dragger = function(canvas){
 
 
 	function start(index,e,value){
-		console.log("START",stage)
+		
+		
 		if(stage.active == true) return false
 		else stage.active = true //only after this.
 
@@ -385,9 +387,13 @@ var	Dragger = function(canvas){
 		param_index = index
 		document.body.style.cursor = 'none'
 		
-		document.addEventListener('mousemove',mouseMove)
+		stage.c_x = c.width/2
+		stage.c_y = c.height/2
 		
+		
+		document.addEventListener('mousemove',mouseMove)
 		mouseMove(e);
+		
 		setOffset(value);
 		render_index = s.loops.length
 		TweenLite.ticker.addEventListener("tick",render);
@@ -438,15 +444,16 @@ var ParamWidget = React.createClass({
 	},
 
 	setDragger: function(i,e){
+		console.log(this.props.params)
 		//s.toggleDragger(true);
 		// if(this.state.active_knob == i){
 		// 	return this.endDragger()
 		// }
-		console.log("START")
+		//console.log("START")
 
 
 		var pos = this.refs.root.refs.root.getBoundingClientRect();
-		console.log(pos)
+		//console.log(pos)
 		this.dragger.stage.from_x = pos.left+pos.width/2 - 50
 		this.dragger.stage.from_y = pos.top+pos.height/2
 		this.dragger.start(i,e.nativeEvent,this.props.params[i]);
@@ -462,7 +469,7 @@ var ParamWidget = React.createClass({
 	},
 
 	endDragger: function(){
-		console.log("END")
+		//console.log("END")
 		document.removeEventListener('mouseup',this.endDragger)
 		this.dragger.end();
 		this.setState({
@@ -528,6 +535,7 @@ var ParamWidget = React.createClass({
 
 
 	render: function(){
+		// console.log(this.props.params)
 
 		var c_size = 30;
 		var c_beta = 10;
