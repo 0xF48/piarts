@@ -84,7 +84,7 @@ var PieceSchema = mongoose.Schema({
 	type: { type: mongoose.Schema.Types.ObjectId, ref: 'Type'},
 	views: {type: Number, default: 0},
 	likes: {type: Number, default: 0},
-	created: {type: Date, default: Date.now()},
+	created: {type: Date},
 	picked: {type: Boolean, default: false},
 	preview: {
 		medium: {type: String},
@@ -126,6 +126,7 @@ PieceSchema.statics.add = function(body){
 		if(found == null) return p.resolve(null)
 
 		var piece = new Piece({
+			created: Date.now(),
 			params: body.params,
 			type: found
 		});

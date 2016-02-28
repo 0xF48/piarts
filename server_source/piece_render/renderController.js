@@ -28,13 +28,14 @@ module.exports = function(piece,size){
         // var prom = new Promise();
         console.log("START")
 
-        var buffer = null
+        // var buffer = null
+        // var l = 0
        
         
-        const client = net.createConnection({port: PORT},function(){
-            
+        const client = net.connect({port: PORT,readable: true},function(){
            
-
+            var save_path = path.join(__dirname,'../../',DATA_PATH,'/pieces/',typeof size == 'number' ? 'other' : size,piece.id+'.png')
+            var done = false
             client.write(JSON.stringify({
                 height: typeof size == "number" ? size : SIZES[size],
                 width: typeof size == "number" ? size : SIZES[size],
@@ -43,28 +44,26 @@ module.exports = function(piece,size){
                     id:piece.type.id,
                     name:piece.type.name
                 },
+                save_path: save_path,
                 params:piece.params
             }))
 
-            client.on('data',function(data){
-                buffer != null ? buffer += data : buffer = data
 
-                console.log("GOT BUFFER")
-                // if(!buffer) buffer = new Buffer(data)
-                // else buffer = Buffer.concat([buffer,data])
-                
-                            
-                
+            client.on('data',function(data){
+               if(data == 'done'){
+                    done = true;
+                    res(save_path);
+               }
             })
 
+            // client.on('readable',function(data){
+            //     // var data = client.read();
+            //     console.log("GOT READABLE ",data)
+            // })
+
+
             client.on('end',function(){
-                console.log("GOT END")
-                var buff = new Buffer(String(buffer), 'base64');
-                var dir = path.join(__dirname,'../../',DATA_PATH,'/pieces/',typeof size == 'number' ? 'other' : size,piece.id+'.png')
-                fs.writeFile(dir,buff,'binary',function(err){
-                    if(err) console.log('save image err',err)
-                })
-                res(dir)                   
+                if(!done) res(null)      
             })
         });
 

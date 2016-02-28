@@ -16,7 +16,7 @@ var PieceItem = React.createClass({
 	getInitialState: function(){
 		return {
 			// c_offset: 170
-			// ,toggle_modal: false
+			toggle_bg: false
 		}
 	},
 	toggleHover: function(){
@@ -25,34 +25,69 @@ var PieceItem = React.createClass({
 		// 	toggle_modal: this.props.item.locked ? true : this.state.toggle_modal
 		// })
 	},
-	load: function(){
+	load: function(e){
 
-		s.loadType(s.store.getState().type_items[this.props.item.type_id],function(item){
-			s.setCurrentType(item)
-			s.setView()
-			s.setParams(this.props.item.params)
-			s.showView()
-		}.bind(this));
+		s.viewPiece(this.props.item);
+
+		e.stopPropagation();
 	},
+
+	toggleHover: function(){
+		console.log("toggle")
+		this.setState({
+			toggle_bg: !this.state.toggle_bg
+		})
+		TweenLite.set(this.refs.bg,{
+			// rotationZ: !this.state.toggle_bg ? 10 * (Math.random()<0.5 ? -1 : 1):0,
+			// ease: Power2.easeOut,
+			webkitFilter: 'blur('+(!this.state.toggle_bg ? 5 : 0)+'px)'
+			
+		})
+		
+	},
+
 	render: function(){
+		// console.log(this.props.item.created_at)
 
 		var item = this.props.item;
-		var style = {
-			background:  this.props.color
+		var type = this.props.type;
+		// var style = {
+		// 	background:  this.props.color
+		// }
+		var bg = {
+			background: 'url('+( (this.props.w == 1 && this.props.h == 1)  ? item.preview.small : item.preview.medium)+') center',
+		}
+		var type_style = {
+			color: '#fff'
 		}
 
 		var params = []
 		for(var i in item.params){
 			params.push(<div key = {i} className='piece-item-param'>{Math.round(item.params[i]*100)/100}</div>)
 		}
+		var picked = null
+		if(item.picked == true && this.props.browser_tab != 'picked'){
+			picked = <div className='overlay-item piece-item-picked' onClick={(function(e){s.showPieceList('picked');e.stopPropagation();})}><span className='icon-isight' /></div>
+		}
+		var type = (
+			<div className='overlay-item piece-item-type' style={type_style}>{item.raw_time}|{item.id}</div>
+		)
 		// console.log(item)
 		return (
-			<GItem {...this.props} onClick = {this.load}  >
-				<div className = 'piece-item' >
-					<p>{item.type_name}</p>
-					<img className = 'piece-item-thumb' src={item.preview.medium} style={style} />
-					<div className = 'piece-item-params' style={style} >{params}</div>
-					<div className = 'piece-item-date' style={style} >{ (item.created_at ? item.created_at.toDateString() : null)  + ' | '+item.id}</div>
+			<GItem {...this.props} >
+				<div className = 'piece-item' onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} onClick = {this.load}>
+					<div ref='bg' className = 'piece-item-bg' style={bg} />
+					{picked}
+					{type}
+					<div className = 'overlay-item piece-item-stats' >
+						<span>
+							<span className="icon icon-heart" />
+							<span className='span-heart'>{item.likes}</span>
+							<span className="icon icon-eye" />
+							<span className='span-eye'>{item.views}</span>
+						</span>
+					</div>
+					
 				</div>
 			</GItem>
 		)
@@ -129,7 +164,11 @@ var Browser = React.createClass({
 	},
 
 	makeList: function(props,state,items){
-		
+		var w = h = 1
+		console.log(this.refs.wrapper.width())
+		if(this.refs.wrapper.width() <= 400){
+			w = 2
+		}
 		this.items = [];
 		for(var i = 0;i<items.length;i++){
 			var color = this.colors[props.browser_tab]
@@ -138,7 +177,15 @@ var Browser = React.createClass({
 			}else if(items[i].local){
 				color = this.colors['saved']
 			}
-			this.items.push(<PieceItem index = {i} ease_dur={0.5} delay={0.1}  w={Math.floor(1+Math.random()*2)} h={Math.floor(1+Math.random()*2)} color = {color} item = {items[i]} key = {props.browser_tab+'_piece_item_'+items[i].id+(items[i].local ? '_local' : '_')} />)
+			
+			if(items[i].picked == true && props.browser_tab == 'picked'){
+				h = 1
+			}else if(items[i].picked == true){
+				h = 2
+			}else{
+				h = 1
+			}
+			this.items.push(<PieceItem type={props.type_items[items[i].type_id]} browser_tab={props.browser_tab} index = {i} ease_dur={0.5} delay={0.1}  w={w} h={h} color = {color} item = {items[i]} key = {props.browser_tab+'_piece_item_'+items[i].id+(items[i].local ? '_local' : '_')} />)
 		}
 	},
 
@@ -174,11 +221,11 @@ var Browser = React.createClass({
 	},
 
 	render: function(){
-		
+
 		return (
 			<I beta = {this.props.beta} vertical outerClassName = 'piece_list_wrapper' scroll vertical ref="wrapper">
 			
-				<G ref = "grid" offset = {this.state.list_offset} fill_up={true} fixed={true} w = {3} h={6} list_id = {this.props.browser_tab} className='piece_list' style = {{height: 'calc(100% - 50px)'}} >
+				<G ref = "grid" offset = {this.state.list_offset} fill_up={true} fixed={true} w = {2} h={3} list_id = {this.props.browser_tab} className='piece_list' style = {{height: 'calc(100% - 50px)'}} >
 					{this.items}
 				</G>
 				<div className = 'list_refresh_button'>

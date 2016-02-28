@@ -16,6 +16,7 @@ const LIMIT = 20;
 function getPiece(req,res,next,id){
 	if( ! id ) res.sendStatus(500);
 	Piece.findOne( {'_id' : id }).populate('type').exec(function(err,piece){
+		if(piece == null) return res.sendStatus(404)
 		if(err){
 			console.log(err)
 			return res.sendStatus(500);
@@ -27,6 +28,10 @@ function getPiece(req,res,next,id){
 
 
 function addCheck(req,res,next){
+	next()
+}
+
+function viewCheck(req,res,next){
 	next()
 }
 
@@ -159,18 +164,15 @@ router
 	})
 })
 
-.put('/pieces/view/:piece_id',likeCheck,function(req,res){
-	req.piece.views++;
-	req.piece.saveAsync().then(function(){
+.put('/pieces/view/:piece_id',viewCheck,function(req,res){
+
+	req.piece.update({views:req.piece.views+1}).then(function(){
 		res.sendStatus(200)
-	}).catch(function(){
-		res.sendStatus(500)
 	})
 })
 
 .put('/pieces/like/:piece_id',likeCheck,function(req,res){
-	req.piece.likes++;
-	req.piece.save().then(function(){
+	req.piece.update({likes:req.piece.likes+1}).then(function(){
 		res.sendStatus(200)
 	})
 })

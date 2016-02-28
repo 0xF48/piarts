@@ -13,9 +13,9 @@
   "type_build_path": "piece_modules/builds",
   "data_path": "data",
   "sizes": {
-    "small": 150,
-    "medium": 300,
-    "large": 600
+    "small": 300,
+    "medium": 600,
+    "large": 1000
   },
   "port": "4000",
   "db_url": "mongodb://localhost/piarts",

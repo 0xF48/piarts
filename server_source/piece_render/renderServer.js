@@ -1,13 +1,16 @@
-const DEV = require('../../package.json').dev
-const TYPE_BUILD_PATH = require('../../package.json').type_build_path
+var cfg = require('../../package.json')
+const DEV = cfg.dev
+const TYPE_BUILD_PATH = cfg.type_build_path
+const DATA_PATH = cfg.data_path
 
-
-
+var fs = require('fs')
+var BufferStream = require('buffer').BufferStream
 
 var HOST = '127.0.0.1';
 var PORT = 6969;
 var path = require('path')
 var net = require('net')
+
 
 var log = function(msg){
 	document.getElementById('logger').innerHTML = msg
@@ -24,8 +27,12 @@ net.createServer({allowHalfOpen: false},function(client) {
         client.end("hello")
     }
 
+    client.setNoDelay()
+		
+
 
     client.on('data',function(data){
+
 		console.log("GOT DATA")
 		var logger = document.getElementById('logger')
 		var canvas = document.getElementById('canvas')
@@ -38,7 +45,7 @@ net.createServer({allowHalfOpen: false},function(client) {
 		var piece = JSON.parse(data)
 		log(piece.type.name+'  ['+piece.params+']  #'+piece.id+' '+piece.width+'x'+piece.height)
 
-		
+
 
 
 		canvas.width = piece.width
@@ -47,7 +54,7 @@ net.createServer({allowHalfOpen: false},function(client) {
 
 
 		var constructor = loadTypeModule(piece.type.name)
-		console.log(canvas.height,canvas.width)
+		// console.log(canvas.height,canvas.width)
 
 		var module = constructor()[1](canvas)
 
@@ -56,12 +63,16 @@ net.createServer({allowHalfOpen: false},function(client) {
 		module.loop()
 		var dataURL = canvas.toDataURL().replace(/^data:image\/(png|jpg);base64,/, "");
 
-		console.log(dataURL);
+		var buffer = new Buffer(dataURL,'base64')
+		
 
+		log( piece.save_path)
 
-		client.write(dataURL)
-		client.destroy()
-
+		fs.writeFile(piece.save_path,buffer,'binary',function(err){
+			if(err) console.log('save image err',err)
+			client.write("done")
+			client.destroy()
+		})
 	})
 
 }).listen(PORT, HOST);

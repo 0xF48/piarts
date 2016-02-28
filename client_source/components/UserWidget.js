@@ -216,18 +216,32 @@ var UserWidget = React.createClass({
 		return true
 	},
 
+	setLike: function(){
+		console.log("set like")
+		if(this.props.current_piece != null){
+			s.setLike(this.props.current_piece)
+		}
+	},
+
 
 	render: function(){
-		
+		var scale = 1;
+		if(this.props.current_piece != null){
+			if(this.props.liked_pieces.indexOf(this.props.current_piece.id) != -1){
+				scale = 0.7
+			}
+		}else{
+			scale = 0
+		}
+		console.log(scale)
 		return (
 			<div className = 'user-widget' ref = 'root'  >
 				<canvas  tabIndex='1' ref='canvas' className = 'user-widget-canvas' />
 				<C padding = {6} rootStyle={{top:'50%'}} rootClass = 'user-widget-dom' ref='root_node' expanded={this.state.expanded} onClick={this.toggleRoot} size={85} angle = {-Math.PI/2} >
 					<b className='icon-cog' />
-					<C distance={1.2}  beta={45} selfClass="love_node" ref='love_node'>
-						<b className='icon-heart' />
+					<C distance={1.2}  beta = {45} scale={scale} selfClass="love_node" ref='love_node' onClick={this.setLike}>
+						<b className='icon-heart' style={{color: ((this.props.current_piece != null && this.props.liked_pieces.indexOf(this.props.current_piece.id) != -1) ? '#FF0072' : 'black')}}/>
 					</C>
-					
 					<ParamWidget distance={1.3} beta={100} ref='param_widget' expanded={ this.paramState() } params={this.props.params} save_sharing={this.props.save_sharing} />
 					<SaveWidget distance={1.2} beta={45} ref='save_widget' saving_piece={this.props.saving_piece} save_sharing={this.props.save_sharing}/>
 
