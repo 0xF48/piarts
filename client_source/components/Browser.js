@@ -179,11 +179,11 @@ var Browser = React.createClass({
 			}
 			
 			if(items[i].picked == true && props.browser_tab == 'picked'){
-				h = 1
+				h = Math.random()<0.25 ? 2 : 1
 			}else if(items[i].picked == true){
 				h = 2
 			}else{
-				h = 1
+				h = Math.random()<0.25 ? 2 : 1
 			}
 			this.items.push(<PieceItem type={props.type_items[items[i].type_id]} browser_tab={props.browser_tab} index = {i} ease_dur={0.5} delay={0.1}  w={w} h={h} color = {color} item = {items[i]} key = {props.browser_tab+'_piece_item_'+items[i].id+(items[i].local ? '_local' : '_')} />)
 		}

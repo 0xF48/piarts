@@ -587,9 +587,10 @@ function getSavedPieces(cb){
 	var saved = store.getState().piece_items.saved
 	var t = 0;
 	var local_pieces = []
-	if(local_pieces.length == local_ids.length){
+	if(saved.length == local_ids.length){
 		if(cb != null) return cb()
 	}
+	console.log('LOAD LOCAL PIECES',saved.length,local_ids.length)
 	for(var i in local_ids){
 		t ++;
 		req.get('/data/pieces/'+local_ids[i]).end(function(err,res){
@@ -614,8 +615,7 @@ function updatePieceList(filter,cb){
 
 	
 	if(filter == 'saved'){
-		getSavedPieces(cb)
-		return
+		return getSavedPieces(cb)
 	}
 
 	store.dispatch({
