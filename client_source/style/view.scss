@@ -1,7 +1,8 @@
-
+.outer-view{
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.76);
+}
 
 #view{
-	box-shadow: rgba(0, 0, 0, 0.2) -3px 0px 3px;
 	.view-overlay{
 		.icon-angle-left{
 			color: #fff;

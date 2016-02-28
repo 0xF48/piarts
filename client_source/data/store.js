@@ -392,7 +392,7 @@ function getTypeList(){
 
 
 		//preload
-		var example = types[res.body[0].id]
+		var example = types[res.body[2].id]
 		loadType(example,function(module){
 			setCurrentType(example)
 			setView()
@@ -590,7 +590,7 @@ function getSavedPieces(cb){
 	for(var i in local_ids){
 		t ++;
 		req.get('/data/pieces/'+local_ids[i]).end(function(err,res){
-			console.log(res.body)
+			
 			res.body.local = true;
 			local_pieces.push(res.body)
 			t--;

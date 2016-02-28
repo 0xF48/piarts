@@ -233,7 +233,7 @@ var UserWidget = React.createClass({
 		}else{
 			scale = 0
 		}
-		console.log(scale)
+		
 		return (
 			<div className = 'user-widget' ref = 'root'  >
 				<canvas  tabIndex='1' ref='canvas' className = 'user-widget-canvas' />

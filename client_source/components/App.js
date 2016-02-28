@@ -141,7 +141,8 @@ var Sidebar = React.createClass({
 	// },
 	getInitialState: function(){
 		return {
-			active_button: -1
+			active_button: -1,
+			fullscreen: false
 		}
 	},
 	showInfo: function(){
@@ -158,6 +159,39 @@ var Sidebar = React.createClass({
 		}
 	},
 
+
+	toggleFullscreen: function(){
+		var elem = document.body
+
+		if(this.state.fullscreen == true){
+			console.log('exit fullscreen')
+			if (document.exitFullscreen) {
+			  document.exitFullscreen();
+			} else if (document.msExitFullscreen) {
+			 document.msExitFullscreen();
+			} else if (document.mozCancelFullScreen) {
+			  document.mozCancelFullScreen();
+			} else if (document.webkitExitFullscreen) {
+			  document.webkitExitFullscreen();
+			}
+		}else{
+			if (elem.requestFullscreen) {
+			  elem.requestFullscreen();
+			} else if (elem.msRequestFullscreen) {
+			  elem.msRequestFullscreen();
+			} else if (elem.mozRequestFullScreen) {
+			  elem.mozRequestFullScreen();
+			} else if (elem.webkitRequestFullscreen) {
+			  elem.webkitRequestFullscreen();
+			}			
+		}
+		
+
+		this.setState({
+			fullscreen: !this.state.fullscreen
+		})
+	},
+
 	componentDidMount: function(){
 
 		// window.sidebar = this.refs['sidebar']
@@ -166,14 +200,18 @@ var Sidebar = React.createClass({
 	render: function(){
 		return (
 			<I {...this.props} id = 'sidebar' ref="sidebar" outerClassName="gui-sidebar" >
-				<I vertical beta={100} offset={-50} ref = 'sidebar_top'>
+				<I vertical beta={100} offset={-100} ref = 'sidebar_top'>
 					<Button inverse c1 = '#00B7FF' c2 ='#003850' down 	onClick={s.showPieceList.bind(null,'saved')} height={this.props.width} icon= 'icon-floppy' active = {this.state.active_button == 3} index_offset={4} bClassName={'gui-button-layer'} />
 					<Button inverse c1 = '#00FF76' c2 ='#003E1C' up 	onClick={s.showPieceList.bind(null,'recent')} height={this.props.width} icon= 'icon-leaf-1' active = {this.state.active_button == 0} index_offset={4} bClassName={'gui-button-layer'} />
 					<Button inverse c1 = '#FF0157' c2 ='#39000C' down 	onClick={s.showPieceList.bind(null,'liked')} height={this.props.width} icon= 'icon-heart' active = {this.state.active_button == 1} index_offset={4} bClassName={'gui-button-layer'} />
 					<Button inverse c1 = '#FFCB00' c2 ='#3A2E00' up 	onClick={s.showPieceList.bind(null,'picked')} height={this.props.width} icon= 'icon-isight' active = {this.state.active_button == 2} index_offset={4} bClassName={'gui-button-layer'} />
-					<Button inverse c1 = '#FFDEB9' c2 ='#333131' down 	onClick={s.toggleTypesList} height={this.props.width} icon= 'icon-th-thumb' active = {this.props.show_types} index_offset={4} bClassName={'gui-button-layer'} />
+					<Button inverse c1 = '#D6D6D6' c2 ='#111111' down 	onClick={s.toggleTypesList} height={this.props.width} icon= 'icon-th-thumb' active = {this.props.show_types} index_offset={4} bClassName={'gui-button-layer'} />
+					
 				</I>
-				<Button inverse c1 = '#FFDEBF' c2 ='#2A2828' down 	onClick={this.showInfo} height={this.props.width} icon= 'icon-info-circled' active = {this.props.show_info} index_offset={4} bClassName={'gui-button-layer'} />
+	
+				<Button inverse c1 = '#D6D6D6' c2 ='#111111' up 	onClick={this.toggleFullscreen} height={this.props.width} icon= 'icon-angle-up' icon_alt= 'icon-angle-down' active = {this.state.fullscreen} index_offset={4} bClassName={'gui-button-layer'} />
+				<Button  inverse c1 = '#FFDEBF' c2 ='#2A2828' down 	onClick={this.showInfo} height={this.props.width} icon= 'icon-info-circled' active = {this.props.show_info} index_offset={4} bClassName={'gui-button-layer'} />
+			
 			</I>
 		)
 	}
@@ -405,7 +443,7 @@ var App = React.createClass({
 					</I>
 					
 					<Sidebar slide  show_types = {this.props.show_types} show_browser = {this.props.show_browser} show_info ={this.props.show_info} browser_tab = {this.props.browser_tab} vertical width = {50} />
-					<I slide index_pos={this.props.show_types ? 0 : 1} beta={100} offset={-50} >
+					<I outerClassName={'outer-view'} slide index_pos={this.props.show_types ? 0 : 1} beta={100} offset={-50} >
 						<TypeList beta = {20} current_type = {this.props.current_type} type_items = {this.props.type_items} />
 						<I beta = {100} id = 'view' onClick={this.showView} ref = "view-slide">
 							<canvas key = {this.props.current_type ? this.props.current_type.id : 0} id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />
