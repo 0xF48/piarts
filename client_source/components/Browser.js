@@ -78,7 +78,7 @@ var PieceItem = React.createClass({
 				<div className = 'piece-item' onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} onClick = {this.load}>
 					<div ref='bg' className = 'piece-item-bg' style={bg} />
 					{picked}
-					{type}
+					
 					<div className = 'overlay-item piece-item-stats' >
 						<span>
 							<span className="icon icon-heart" />

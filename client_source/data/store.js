@@ -293,7 +293,10 @@ function checkRender(getState){
 	    	var new_state = store.getState();
 
 			if(!new_state.show_browser && !new_state.show_types && !new_state.show_info && (old_state.show_info || old_state.show_browser || old_state.show_types )){
-				RENDER_ACTIVE = true
+				setTimeout(function() {
+					RENDER_ACTIVE = true
+				}, 400);
+				
 				//return next({type:'TOGGLE_RENDER',mode:true})
 			}else if( (new_state.show_browser || new_state.show_types || new_state.show_info) && (!old_state.show_info && !old_state.show_browser && !old_state.show_types )){
 				RENDER_ACTIVE = false
