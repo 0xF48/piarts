@@ -200,7 +200,7 @@ var Sidebar = React.createClass({
 	render: function(){
 		return (
 			<I {...this.props} id = 'sidebar' ref="sidebar" outerClassName="gui-sidebar" >
-				<I vertical beta={100} offset={-100} ref = 'sidebar_top'>
+				<I vertical beta={100} offset={-this.props.width-this.props.width/2} ref = 'sidebar_top'>
 					<Button inverse c1 = '#00B7FF' c2 ='#003850' down 	onClick={s.showPieceList.bind(null,'saved')} height={this.props.width} icon= 'icon-floppy' active = {this.state.active_button == 3} index_offset={4} bClassName={'gui-button-layer'} />
 					<Button inverse c1 = '#00FF76' c2 ='#003E1C' up 	onClick={s.showPieceList.bind(null,'recent')} height={this.props.width} icon= 'icon-leaf-1' active = {this.state.active_button == 0} index_offset={4} bClassName={'gui-button-layer'} />
 					<Button inverse c1 = '#FF0157' c2 ='#39000C' down 	onClick={s.showPieceList.bind(null,'liked')} height={this.props.width} icon= 'icon-heart' active = {this.state.active_button == 1} index_offset={4} bClassName={'gui-button-layer'} />
@@ -209,7 +209,7 @@ var Sidebar = React.createClass({
 					
 				</I>
 	
-				<Button inverse c1 = '#D6D6D6' c2 ='#111111' up 	onClick={this.toggleFullscreen} height={this.props.width} icon= 'icon-angle-up' icon_alt= 'icon-angle-down' active = {this.state.fullscreen} index_offset={4} bClassName={'gui-button-layer'} />
+				<Button inverse c1 = '#D6D6D6' c2 ='#111111' up 	onClick={this.toggleFullscreen} height={this.props.width/2} icon= 'icon-angle-up' icon_alt= 'icon-angle-down' active = {this.state.fullscreen} index_offset={4} bClassName={'gui-button-layer'} />
 				<Button  inverse c1 = '#D6D6D6' c2 ='#111111' down 	onClick={this.showInfo} height={this.props.width} icon= 'icon-info-circled' active = {this.props.show_info} index_offset={4} bClassName={'gui-button-layer'} />
 			
 			</I>
