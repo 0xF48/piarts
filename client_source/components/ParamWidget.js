@@ -368,7 +368,7 @@ var	Dragger = function(canvas){
 	var param_index
 
 
-	function start(index,e,value){
+	function start(index,e,value,bounds){
 		
 		
 		if(stage.active == true) return false
@@ -378,6 +378,8 @@ var	Dragger = function(canvas){
 		stage.cycles = 0;
 		stage.prev_angle = null;
 		stage.prev_a = null;
+		stage.min_val = bounds[0];
+		stage.max_val = bounds[1];
 
 
 		stage.draw_cycles = Math.floor(value*stage.cycles_per_unit)
@@ -444,19 +446,13 @@ var ParamWidget = React.createClass({
 	},
 
 	setDragger: function(i,e){
-		console.log(this.props.params)
-		//s.toggleDragger(true);
-		// if(this.state.active_knob == i){
-		// 	return this.endDragger()
-		// }
-		//console.log("START")
+		
 
 
 		var pos = this.refs.root.refs.root.getBoundingClientRect();
-		//console.log(pos)
 		this.dragger.stage.from_x = pos.left+pos.width/2 - 50
 		this.dragger.stage.from_y = pos.top+pos.height/2
-		this.dragger.start(i,e.nativeEvent,this.props.params[i]);
+		this.dragger.start(i,e.nativeEvent,this.props.params[i],this.props.current_type.bounds[i]);
 		document.addEventListener('mouseup',this.endDragger,false)
 
 		this.setState({

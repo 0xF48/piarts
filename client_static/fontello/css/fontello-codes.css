@@ -34,3 +34,7 @@
 .icon-angle-right:before { content: '\e820'; } /* '' */
 .icon-angle-double-right:before { content: '\e821'; } /* '' */
 .icon-eye:before { content: '\e822'; } /* '' */
+.icon-zoom-out:before { content: '\e823'; } /* '' */
+.icon-spread:before { content: '\e824'; } /* '' */
+.icon-code:before { content: '\e825'; } /* '' */
+.icon-database:before { content: '\e826'; } /* '' */

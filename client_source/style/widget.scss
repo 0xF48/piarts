@@ -20,14 +20,22 @@
 	height: 100%;
 	pointer-events: none;
 
-	.share-slide-favorite{
-		@include center;		
+	.share-slide-save{
+		@include center;	
+		color: #003850;
+		
 	}
 
 	.share-slide-share{
 		@include center;
-		//color: #2F8BAD;
 	}
+
+	.share-slide-view{
+		@include center;
+		color: #003850;
+	}
+
+
 
 	.share-slide-container{
 		position: relative;
@@ -46,11 +54,13 @@
 			// overflow: hidden;
 			position: relative;
 		}
+
 	}
 
 	b{
-		font-size: 11px;
+		font-size: 14px;
 	}
+
 
 	.icon-cog {
 		margin-top: -40px;

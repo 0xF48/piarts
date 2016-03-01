@@ -40,10 +40,14 @@ body{
 	justify-content: center;	
 }
 
+.site-info-outer{
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.23);
+}
 
 .site-info{
-	background: rgb(42, 40, 40);
-	color: #D8BDA8;
+	
+	background: #E8E8E8;
+    color: #000000;
 	box-sizing: inset;
 	padding: 14px;
 	font-size: 14px;

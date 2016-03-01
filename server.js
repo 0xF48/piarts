@@ -4,12 +4,13 @@ var debug = require('debug')('api');
 var colors = require('colors');
 var db = require('mongoose');
 var pack = require('./package');
-
 var app  = express();
+var cookieParser = require('cookie-parser')
 
 app.set('views','./client_views')
 app.set('view engine', 'ejs');
 app.use(express.static('client_static'));
+
 
 db.connect(pack.db_url);
 db.connection.on('error',console.error.bind(console,'connection error'));	
@@ -23,6 +24,13 @@ emailSchema.path('email').validate(function (email) {
 var Email = db.model('Email',emailSchema);
 
 var bodyParser = require('body-parser')
+// app.use(sessions({
+//   cookieName: 'user', // cookie name dictates the key name added to the request object 
+//   secret: '711wasaparttimejob', // should be a large unguessable string 
+//   duration: Infinity, // how long the session will stay valid in ms 
+// }));
+
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.post('/launch_email',function(req,res){
@@ -55,7 +63,9 @@ if(pack.maintenance){
 }
 
 
-require('./server_source/main.js')(app);
+
+
+require('./server_source/routes.js')(app);
 
 // app.use(function(req, res, next) {
 //     var err = new Error('Not Found');
@@ -64,6 +74,9 @@ require('./server_source/main.js')(app);
 // });
 
 app.set('port', process.env.PORT || pack.port);
+
+
+
 
 var server = app.listen(app.get('port'), function() {
   console.log('on port '.green + String(server.address().port).magenta);

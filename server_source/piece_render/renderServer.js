@@ -1,5 +1,5 @@
 var cfg = require('../../package.json')
-const DEV = cfg.dev
+const DEV = false//cfg.dev 
 const TYPE_BUILD_PATH = cfg.type_build_path
 const DATA_PATH = cfg.data_path
 
@@ -22,56 +22,55 @@ var type_modules = []
 
 
 net.createServer({allowHalfOpen: false},function(client) {
+
+
     if(client.remoteAddress != HOST){
         throw "bad address: "+client.remoteAddress
         client.end("hello")
     }
 
-    client.setNoDelay()
+    // client.setNoDelay()
 		
 
 
     client.on('data',function(data){
-
-		console.log("GOT DATA")
+    	//dom ref
 		var logger = document.getElementById('logger')
 		var canvas = document.getElementById('canvas')
+		
 
-		// document.body.removeChild(canvas)
-		// var canvas = document.createElement('canvas')
-		// canvas.setAttribute('id','canvas')
-		// document.body.insertBefore(canvas,logger)
 
+		//piece or type
 		var piece = JSON.parse(data)
-		log(piece.type.name+'  ['+piece.params+']  #'+piece.id+' '+piece.width+'x'+piece.height)
 
-
-
-
+		//set image width / height
 		canvas.width = piece.width
 		canvas.height = piece.height
 
+		//log piece
+		log(piece.type_name+'  ['+piece.params+']  #'+piece.id+' '+piece.width+'x'+piece.height)
 
 
-		var constructor = loadTypeModule(piece.type.name)
-		// console.log(canvas.height,canvas.width)
-
-		var module = constructor()[1](canvas)
 
 
-		module.set(piece.params)
-		module.loop()
+
+		//load module
+		var module = loadTypeModule(piece.type_name)(canvas)
+
+		//loop with params.
+		module.set(piece.params);
+		module.loop();
+
+
+		//get canvas data to png
 		var dataURL = canvas.toDataURL().replace(/^data:image\/(png|jpg);base64,/, "");
-
 		var buffer = new Buffer(dataURL,'base64')
 		
 
-		log( piece.save_path)
 
 		fs.writeFile(piece.save_path,buffer,'binary',function(err){
-			if(err) console.log('save image err',err)
-			client.write("done")
 			client.destroy()
+			log('waiting for connections')
 		})
 	})
 

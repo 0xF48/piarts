@@ -201,12 +201,11 @@ var Sidebar = React.createClass({
 		return (
 			<I {...this.props} id = 'sidebar' ref="sidebar" outerClassName="gui-sidebar" >
 				<I vertical beta={100} offset={-this.props.width-this.props.width/2} ref = 'sidebar_top'>
-					<Button inverse c1 = '#00B7FF' c2 ='#003850' down 	onClick={s.showPieceList.bind(null,'saved')} height={this.props.width} icon= 'icon-floppy' active = {this.state.active_button == 3} index_offset={4} bClassName={'gui-button-layer'} />
+					<Button inverse c1 = '#00B7FF' c2 ='#003850' down 	onClick={s.showPieceList.bind(null,'saved')} height={this.props.width} icon= 'icon-database' active = {this.state.active_button == 3} index_offset={4} bClassName={'gui-button-layer'} />
 					<Button inverse c1 = '#00FF76' c2 ='#003E1C' up 	onClick={s.showPieceList.bind(null,'recent')} height={this.props.width} icon= 'icon-leaf-1' active = {this.state.active_button == 0} index_offset={4} bClassName={'gui-button-layer'} />
 					<Button inverse c1 = '#FF0157' c2 ='#39000C' down 	onClick={s.showPieceList.bind(null,'liked')} height={this.props.width} icon= 'icon-heart' active = {this.state.active_button == 1} index_offset={4} bClassName={'gui-button-layer'} />
 					<Button inverse c1 = '#FFCB00' c2 ='#3A2E00' up 	onClick={s.showPieceList.bind(null,'picked')} height={this.props.width} icon= 'icon-isight' active = {this.state.active_button == 2} index_offset={4} bClassName={'gui-button-layer'} />
-					<Button inverse c1 = '#D6D6D6' c2 ='#111111' down 	onClick={s.toggleTypesList} height={this.props.width} icon= 'icon-th-thumb' active = {this.props.show_types} index_offset={4} bClassName={'gui-button-layer'} />
-					
+					<Button right onMouseEnter={function(){console.log("test")}} ease={Bounce.easeOut} inverse c1 = '#D6D6D6' c2 ='#111111' onClick={s.toggleTypesList} height={this.props.width} icon= 'icon-th-thumb' active = {this.props.show_types} index_offset={4} bClassName={'gui-button-layer'} />
 				</I>
 	
 				<Button inverse c1 = '#D6D6D6' c2 ='#111111' up 	onClick={this.toggleFullscreen} height={this.props.width/2} icon= 'icon-angle-up' icon_alt= 'icon-angle-down' active = {this.state.fullscreen} index_offset={4} bClassName={'gui-button-layer'} />
@@ -272,11 +271,10 @@ var TypeItem = connect(function(state){
 		})
 	},
 
-	load: function(){
-		console.log("TRIGGER LOAD")
+	showType: function(){
 		s.loadType(this.props.item,function(item){
-			s.setCurrentType(item)
-			s.setView()
+			s.setType(item)
+			s.saveParams(item.params)
 			s.showView()
 		});
 	},
@@ -284,22 +282,37 @@ var TypeItem = connect(function(state){
 	render: function(){
 		var active = this.props.current_type != null && this.props.current_type.id == this.props.item.id;
 		var item = this.props.item
-		var style = {
+		var symbol_style = {
 			color: 'rgb('+item.color[0]+','+item.color[1]+','+item.color[2]+')',
 			background: 'rgb('+getC(item.color[0]-this.state.c_offset+(active ? 50 : 0))+','+getC(item.color[1]-this.state.c_offset+(active ? 50 : 0))+','+getC(item.color[2]-this.state.c_offset+(active ? 50 : 0))+')',
-			boxShadow: 'inset rgba('+item.color[0]+','+item.color[1]+','+item.color[2]+',0.5) 0px 0px 1px, rgba(0,0,0,0.3) 0px 0px 2px',
+			boxShadow: 'inset rgba('+item.color[0]+','+item.color[1]+','+item.color[2]+',0.231373) 0px 0px 20px, rgba(0,0,0,0.3) 0px 0px 2px',
 		}
 
+		var global_style = {
+			color: 'rgb('+item.color[0]+','+item.color[1]+','+item.color[2]+')',
+		}
+
+		var bg = {
+			background: 'url('+( (this.props.w == 1 && this.props.h == 1)  ? item.preview.small : item.preview.medium)+') center',
+		}
+
+
+
 		return (
-			<GItem {...this.props} onClick = {this.load} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} >
+			<GItem {...this.props} onClick = {this.showType} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} >
 				
-				<div className = 'type_item' style={style}>
-					<Modal easeOut={Power3.easeOut} pos = 'top' className = 'type_item_modal' toggle={this.state.toggle_modal} >
-						<b className='icon-lock'></b>
-					</Modal>
-					<span className = 'type_item_symbol'>{item.symbol}</span>
-					<span className = 'type_item_name'>{item.name}</span>
-					<span className = 'type_item_count'>{item.piece_count}</span>
+				<div className = 'type-item' style = {global_style}>
+					<div ref='bg' className = ' type-item-bg' style={bg} />
+					<span className='overlay-item type-item-symbol' style={symbol_style} >{item.symbol}</span>
+					<span className="overlay-item type-item-name" >{item.name}</span>
+					<div className = 'overlay-item type-item-count' >
+						<span style = {global_style}>
+							<span className="icon icon-spread"/>
+							<span className="type-item-count-pieces">{item.piece_count}</span>
+							<span className="icon icon-sliders"/>
+							<span className="type-item-count-params">{item.params.length}</span>
+						</span>
+					</div>
 				</div>
 			</GItem>
 		)
@@ -339,7 +352,7 @@ var TypeList = React.createClass({
 
 		return (
 			<I {...this.props} scroll vertical outerClassName='type_list' >
-				<G list_id = "piece_types" fixed = {true} w= {1} h = {6} >
+				<G fill_up={true} fixed={true} list_id = "piece_types" w= {1} h = {3} >
 					{this.items}
 				</G>
 			</I>
@@ -402,22 +415,15 @@ var App = React.createClass({
 	},
 
 	showView: function(ee,e){
-
+		if(this.props.show_info) s.showView();
 		if(this.props.show_browser) s.toggleBrowser();
 		if(this.props.show_types && !this.props.show_browser) s.toggleTypesList();
 
 	},
 
 	componentDidUpdate: function(props){
-		// if(this.props.current_type == null) return
-		// if( (props.current_type == null && this.props.current_type != null) || (this.props.current_type.id != props.current_type.id)  ){
-		// 	console.log("SET VIEW",props.current_type,this.props.current_type)
-		// 	if(this.props.current_type != null){
-		// 		s.setView(this.refs.piece_canvas)
-		// 	}else{
-		// 		s.clearView()
-		// 	}
-		// }
+
+		
 
 		if(this.props.view_paused != props.view_paused){
 			s.toggleView(this.props.view_paused)
@@ -426,7 +432,10 @@ var App = React.createClass({
 		if(this.refs.piece_canvas){
 			this.refs.piece_canvas.width = this.refs.piece_canvas.parentElement.clientWidth;
 			this.refs.piece_canvas.height = this.refs.piece_canvas.parentElement.clientHeight;
+		}
 
+		if(this.props.current_type != props.current_type){
+			s.initCurrentType()
 		}
 
 	},
@@ -436,7 +445,7 @@ var App = React.createClass({
 		
 
 		return (
-			<I slide index_pos={this.props.show_info ? 1 : 0} vertical beta={100} ref="root" >
+			<I ease={Power4.easeOut} duration={0.5} slide index_pos={this.props.show_info ? 1 : 0} vertical beta={100} ref="root" >
 				<I slide beta={100} index_pos = {this.props.show_browser ? 0 : 1} ref="top" >
 					<I vertical slide beta = {40} >
 						<Browser {...this.props} vertical beta = {100}/>
@@ -444,17 +453,18 @@ var App = React.createClass({
 					
 					<Sidebar slide  show_types = {this.props.show_types} show_browser = {this.props.show_browser} show_info ={this.props.show_info} browser_tab = {this.props.browser_tab} vertical width = {50} />
 					<I outerClassName={'outer-view'} slide index_pos={this.props.show_types ? 0 : 1} beta={100} offset={-50} >
-						<TypeList beta = {20} current_type = {this.props.current_type} type_items = {this.props.type_items} />
+						<TypeList beta = {40} current_type = {this.props.current_type} type_items = {this.props.type_items} />
 						<I beta = {100} id = 'view' onClick={this.showView} ref = "view-slide">
 							<canvas key = {this.props.current_type ? this.props.current_type.id : 0} id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />
 							<UserWidget {...this.props} ref='widget' />
-							<div className='view-overlay' style={{pointerEvents: (this.props.show_browser || this.props.show_types) ? 'all' : 'none', 'opacity':(this.props.show_browser || this.props.show_types) ? 0.85 : 0}} >
+							<div className='view-overlay' style={{pointerEvents: (this.props.show_browser || this.props.show_types || this.props.show_info) ? 'all' : 'none', 'opacity':(this.props.show_browser || this.props.show_types || this.props.show_info) ? 0.85 : 0}} >
 								<span className='icon-angle-left'></span>
+								<span className='icon-angle-up'></span>
 							</div>
 						</I>
 					</I>
 				</I>
-				<I beta = {20} innerClassName='site-info'>
+				<I   beta = {100} offset = {-25} outerClassName='site-info-outer' innerClassName='site-info'>
 					<p>piarts is a site where you can create and order prints of digitally generated artwork.</p>
 					<br/>
 				</I>

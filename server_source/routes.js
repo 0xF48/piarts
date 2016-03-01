@@ -26,6 +26,19 @@ function getPiece(req,res,next,id){
 	})
 }
 
+function getType(req,res,next,id){
+	if( ! id ) res.sendStatus(500);
+	Type.findOne( {'_id' : id }).populate('type').exec(function(err,type){
+		if(type == null) return res.sendStatus(404)
+		if(err){
+			console.log(err)
+			return res.sendStatus(500);
+		} 
+		req.type = type;
+		next();
+	})
+}
+
 
 function addCheck(req,res,next){
 	next()
@@ -43,6 +56,10 @@ function likeCheck(req,res,next){
 
 router
 .use(function(req,res,next){
+	req.user = {verified:false}
+	req.user.local = req.cookies.local ? JSON.parse(req.cookies.local) || []
+
+
 	if(req.headers.authorization != null && req.headers.authorization == pack.auth) req.admin = true
 	else req.admin = false
 	next()
@@ -58,14 +75,12 @@ router
 
 
 .post('/types/add',function(req,res){
-	console.log(req.admin)
 	if(!req.admin) return res.sendStatus(500)
 	
 	Type.add(req.body).then(function(type,err){
 		if(type == null) res.sendStatus(500)
 		else res.json(type)
 	})
-
 })
 .get('/types',function(req,res){
 	Type
@@ -76,30 +91,45 @@ router
 		}))
 	})
 })
-.get('/types/script/:id.js',function(req,res){
-	Type.findOne({'_id':req.params.id}).exec(function(err,type){
-		if(type == null) return res.sendStatus(404)
-		else if(type.locked && !req.admin) return res.sendStatus(403)
-		res.sendFile(path.join(__dirname,'..','/piece_modules/builds/'+type.name+'.amd.js'));
-	})
+
+
+
+.get('/types/script/:type_id.js',function(req,res){
+	if(req.type.locked && !req.admin) return res.sendStatus(403)
+	res.sendFile(path.join(__dirname,'..','/piece_modules/builds/'+req.type.name+'.amd.js'));
+
 })
-.get('/types/:id',function(req,res){
-	Type.findOne({'_id':req.params.id}).exec(function(err,type){
-		if(type == null) return res.sendStatus(404)
-		else if(type.locked && !req.admin) return res.sendStatus(403)
-		var dat = type.public_json();
-		res.json(dat);
-	})
+.get('/types/:type_id',function(req,res){
+	
+	if(req.type.locked && !req.admin) return res.sendStatus(403)
+	var dat = req.type.public_json();
+	res.json(dat);
+
 })
-.put('/types/:id',function(req,res){
+.put('/types/:type_id',function(req,res){
 	var body = req.body
 	
 	if(!req.admin) return res.sendStatus(403)
-	Type.update({ _id: req.params.id}, { $set: body }, function(err,type){
-		if(type == null) return res.sendStatus(404)
-		res.json(type);
-	});
+	req.type.save(body).then(function(){
+		res.json(req.type);
+	})	
 })
+.get('/types/preview/:type_id',function(req,res){
+	var size = 'small'
+	if(req.query.scale == 'medium') var size = 'medium'
+	res.sendFile(path.join(__dirname,'..',DATA_PATH,'types',size,req.type.id+'.png'));
+})
+
+
+.param('type_id',getType)
+
+
+
+
+
+
+
+
 
 
 
@@ -136,8 +166,10 @@ router
 			sort_q = {_id: -1}
 			q = {picked: true}
 			break;
-		default:
+		case 'saved':
+			q = {' _id': { $in: req.user.local} }
 		case 'recent':
+		default:
 			sort_q = {_id: -1}
 			break;
 		
@@ -160,6 +192,8 @@ router
 .post('/pieces/add',addCheck,function(req,res){
 	Piece.add(req.body).then(function(piece){
 		if(piece == null) return res.sendStatus(500)
+		req.user.local.push(piece.id);
+		res.setHeader('Set-Cookie',JSON.stringify(req.user.local))
 		res.json(piece.public_json())
 	})
 })

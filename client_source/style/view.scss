@@ -4,6 +4,13 @@
 
 #view{
 	.view-overlay{
+		.icon-angle-up{
+ 			color: #fff;
+			position: absolute;
+			bottom: 3px;
+			left: 50%;
+			transform: translate(-50%,0)   	
+    	}
 		.icon-angle-left{
 			color: #fff;
 			position: absolute;

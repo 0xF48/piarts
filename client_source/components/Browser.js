@@ -10,13 +10,16 @@ var Pager = require('intui').Pager;
 var s = require('../data/store')
 var Button = require('intui').Button;
 
-
+function getC(c){
+	return (c < 0 ? 0 : Math.round(c))
+}
 var PieceItem = React.createClass({
 	mixins: [GMixin],
 	getInitialState: function(){
 		return {
 			// c_offset: 170
-			toggle_bg: false
+			toggle_bg: false,
+			c_offset: 170
 		}
 	},
 	toggleHover: function(){
@@ -28,7 +31,7 @@ var PieceItem = React.createClass({
 	load: function(e){
 
 		s.viewPiece(this.props.item);
-
+		
 		e.stopPropagation();
 	},
 
@@ -69,16 +72,22 @@ var PieceItem = React.createClass({
 		if(item.picked == true && this.props.browser_tab != 'picked'){
 			picked = <div className='overlay-item piece-item-picked' onClick={(function(e){s.showPieceList('picked');e.stopPropagation();})}><span className='icon-isight' /></div>
 		}
-		var type = (
-			<div className='overlay-item piece-item-type' style={type_style}>{item.raw_time}|{item.id}</div>
-		)
+
+		var active = this.props.current_type != null && this.props.current_type.id == type.id;
+
+		var symbol_style = {
+			color: 'rgb('+type.color[0]+','+type.color[1]+','+type.color[2]+')',
+			background: 'rgb('+getC(type.color[0]-this.state.c_offset+(active ? 50 : 0))+','+getC(type.color[1]-this.state.c_offset+(active ? 50 : 0))+','+getC(type.color[2]-this.state.c_offset+(active ? 50 : 0))+')',
+			boxShadow: 'inset rgba('+type.color[0]+','+type.color[1]+','+type.color[2]+',0.231373) 0px 0px 20px, rgba(0,0,0,0.3) 0px 0px 2px',
+		}
+
 		// console.log(item)
 		return (
 			<GItem {...this.props} >
 				<div className = 'piece-item' onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} onClick = {this.load}>
 					<div ref='bg' className = 'piece-item-bg' style={bg} />
 					{picked}
-					
+					<span className = 'overlay-item type-item-symbol' style={symbol_style}>{type.symbol}</span>
 					<div className = 'overlay-item piece-item-stats' >
 						<span>
 							<span className="icon icon-heart" />
@@ -142,12 +151,16 @@ var Browser = React.createClass({
 	
 	getPos: function(){
 		switch(this.props.browser_tab){
+			
 			case 'recent':
 				return 0
+
 			case 'liked':
 				return 1
+
 			case 'picked':
 				return 2
+
 			case 'saved':
 				return 3
 		}
@@ -185,7 +198,7 @@ var Browser = React.createClass({
 			}else{
 				h = Math.random()<0.25 ? 2 : 1
 			}
-			this.items.push(<PieceItem type={props.type_items[items[i].type_id]} browser_tab={props.browser_tab} index = {i} ease_dur={0.5} delay={0.1}  w={w} h={h} color = {color} item = {items[i]} key = {props.browser_tab+'_piece_item_'+items[i].id+(items[i].local ? '_local' : '_')} />)
+			this.items.push(<PieceItem current_type={props.current_type} type={props.type_items[items[i].type_id]} browser_tab={props.browser_tab} index = {i} ease_dur={0.5} delay={0.1}  w={w} h={h} color = {color} item = {items[i]} key = {props.browser_tab+'_piece_item_'+items[i].id+(items[i].local ? '_local' : '_')} />)
 		}
 	},
 

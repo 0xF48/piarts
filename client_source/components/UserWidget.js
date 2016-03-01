@@ -22,13 +22,13 @@ var SaveWidget = React.createClass({
 		//start save loader.
 		if(!this.props.saving_piece && props.saving_piece){
 			this.refs.loader.setState({
-				ease:Power4.easeOut,
+				ease:Power2.easeOut,
 				c_r: 0,
-				c_g: 255,
+				c_g: 235,
 				c_b: 255,
-				d: 1,
+				d: 4,
 				angle_start:0,
-				angle_end: Math.PI,
+				angle_end: Math.PI*1.5,
 			})
 			return true
 		}
@@ -37,8 +37,8 @@ var SaveWidget = React.createClass({
 		if(!props.saving_piece && this.props.saving_piece){
 			this.refs.loader.setState({
 				c_r: 0,
-				c_g: 255,
-				c_b: 0,
+				c_g: 235,
+				c_b: 255,
 				d: 1,
 				angle_start:0,
 				angle_end: Math.PI*2,
@@ -69,8 +69,8 @@ var SaveWidget = React.createClass({
 		console.log("SAVE toggled")
 		if(this.props.saving_piece) return
 		if(this.props.save_sharing) {
+			s.showPieceList('saved')
 			this.end()
-			
 		}else{
 			s.saveCurrentPiece()
 		}
@@ -98,24 +98,18 @@ var SaveWidget = React.createClass({
 
 	render: function(){
 		return (
-			<C {...this.props} padding={0} className='share_node' ref='root' expanded={this.props.save_sharing} onClick={this.saveShare}>
+			<C {...this.props} padding={0} className='share_node' ref='root' onClick={this.saveShare}>
 				<div className='share-slide-container'>
-					<CLoader ref = 'loader' className='loader' color='#2F8BAD' c_r={0} c_g={255} c_b={0} radius={70/4} width={3} />
+					<CLoader ref = 'loader' className='loader' color='#2F8BAD' c_r={255} c_g={255} c_b={255} radius={70/4} width={3} />
 					<I slide v beta={100} ref='slide' index_pos = {this.props.save_sharing ? 1 : 0} outerClassName='share_slide'>
-						<I beta={100} innerClassName='share-slide-favorite'>
-							<b className='icon-star' />
+						<I beta={100} innerClassName='share-slide-save'>
+							<b className='icon-database' />
 						</I>
-						<I beta={100} innerClassName='share-slide-share'>
-							<b className='icon-cancel' />
+						<I beta={100} innerClassName='share-slide-view'>
+							<b className='icon-eye' />
 						</I>	
 					</I>
 				</div>
-				<C distance={1} ref='share_node_view' beta={100} onClick={this.viewInBrowser}> 
-					<b className='icon-isight' />
-				</C>
-				<C distance={1} ref='share_node_buy' beta={100} onClick={this.sharePiece}>
-					<b className='icon-paper-plane' />
-				</C>
 			</C>
 		)
 	}
@@ -158,22 +152,6 @@ var UserWidget = React.createClass({
 		}
 	},
 
-	// toggleShortcut: function(e){
-	// 	e.preventDefault()
-	// 	if(this.props.dragger_active || !this.props.) return
-
-
-	// 	this.setState({
-	// 		expanded: !this.state.expanded
-	// 	})
-	// },
-
-
-	// shouldComponentUpdate: function(){
-	// 	if(!this.props.current_type) return false
-	// 	return true
-	// },
-
 	toggleRoot: function(){
 		if(!this.props.current_type) return
 
@@ -199,13 +177,6 @@ var UserWidget = React.createClass({
 		this.refs['save_widget'].saveShare()
 	},
 
-	// componentDidUpdate: function(props){
-	// 	if(props.expanded != this.props.expanded){
-	// 		this.setState({
-	// 			expanded: this.props.expanded
-	// 		})
-	// 	}
-	// },
 
 
 	//decide whether to expand the params or not based on whether we are saving.
@@ -242,7 +213,7 @@ var UserWidget = React.createClass({
 					<C distance={1.2}  beta = {45} scale={scale} selfClass="love_node" ref='love_node' onClick={this.setLike}>
 						<b className='icon-heart' style={{color: ((this.props.current_piece != null && this.props.liked_pieces.indexOf(this.props.current_piece.id) != -1) ? '#FF0072' : 'black')}}/>
 					</C>
-					<ParamWidget distance={1.3} beta={100} ref='param_widget' expanded={ this.paramState() } params={this.props.params} save_sharing={this.props.save_sharing} />
+					<ParamWidget distance={1.3} beta={100} ref='param_widget' expanded={ this.paramState() } params={this.props.params} current_type = {this.props.current_type} save_sharing={this.props.save_sharing} />
 					<SaveWidget distance={1.2} beta={45} ref='save_widget' saving_piece={this.props.saving_piece} save_sharing={this.props.save_sharing}/>
 
 				</C>		

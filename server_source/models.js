@@ -17,54 +17,92 @@ var fs = require('fs')
 
 var TypeSchema = mongoose.Schema({
 	name: {type:String,required:true},
-	path: {type:String,required: true,unique:true},
+
 	color: [{type:Number,required:true}],
 	symbol: {type:String,required:true,unique:true},
+	
+
 	piece_count: {type:Number,default:0},
-	locked: {type:Boolean,default:true},
+
+
+	bounds: Array,
+	params: [{type:Number,required:true}],
+
+
+	locked: {type:Boolean,default:false},
+	preview: {
+		medium: {type: String},
+		small: {type: String},
+		large:  {type: String},
+	},
 });
+
+
+//public json
+TypeSchema.methods.public_json = function(){
+	return {
+		id: this._id,
+		color:this.color,
+		symbol:this.symbol,
+		param_count: this.param_count,
+		bounds: this.bounds,
+		params: this.params,
+		piece_count: this.piece_count,
+		name: this.name,
+		locked: this.locked,
+		preview: this.preview
+	}
+}
+
+
+
+
+//render the preview
+TypeSchema.methods.renderPreview = function(){
+	var self = this;
+
+	return Promise.map(['small','medium','large'],function(size){
+		self.preview[size] = '/data/types/preview/'+self.id+'?scale='+size
+		return render.renderType(self,size)
+	}).then(function(){
+		console.log("DONE TYPE RENDER PREVIEW")
+		return self.save()
+	})
+}
+
+
 
 TypeSchema.statics.add = function(body){
 	var data = {
 		color: body.color,
 		symbol: body.symbol,
 		name: body.name,
-		locked: body.locked
+		bounds: body.bounds,
+		params: body.params,
+		locked: body.locked,
 	}
-
+	if(data.bounds == null || data.bounds.length != data.params.length) throw 'bad bounds'
 	
 	try {
-		fs.statSync('./piece_modules/builds/'+data.name+'.js')
-		data.path = './piece_modules/builds/'+data.name+'.js'
+		fs.statSync('./piece_modules/src/'+data.name)
 	}catch(e){
-		console.log('cant add type, no build found.')
-		return p.resolve(null)
+		throw 'cant add type, no source found.'
 	}
 
 
 
 	return Type.findOne({name:data.name}).then(function(found_same){
 		if(found_same != null){
-			console.log('add conflict -> ',found_same)
+			console.error('add type conflict -> '+found_same)
 			return p.resolve(null)
 		}
+
 		var type = new Type(data)
-		return type.save()
+
+		return type.renderPreview()
 	})
 }
 
-
-
-TypeSchema.methods.public_json = function(){
-	return {
-		id: this._id,
-		color:this.color,
-		symbol:this.symbol,
-		piece_count: this.piece_count,
-		name: this.name,
-		locked: this.locked,
-	}
-}
 
 
 
@@ -117,11 +155,6 @@ PieceSchema.methods.public_json = function(){
 
 
 PieceSchema.statics.add = function(body){
-
-	// console.log("ADD",body)
-
-
-
 	return Type.findOne({_id:body.type_id}).then(function(found){
 		if(found == null) return p.resolve(null)
 
@@ -132,12 +165,9 @@ PieceSchema.statics.add = function(body){
 		});
 
 		return Promise.map(['small','medium','large'],function(size){
-			return render(piece,size).then(function(url){
-				piece.preview[size] = '/data/pieces/preview/'+piece.id+'?scale='+size
-				return Promise.resolve()
-			})
+			piece.preview[size] = '/data/pieces/preview/'+piece.id+'?scale='+size
+			return render.renderPiece(piece,size)
 		}).then(function(){
-			console.log("DONE")
 			return piece.save()
 		})
 		
