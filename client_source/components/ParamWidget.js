@@ -459,6 +459,13 @@ var ParamWidget = React.createClass({
 			active_knob: i,
 		})
 
+		if(this.props.save_sharing){
+			s.store.dispatch({
+				type:'END_SAVE',
+				toggle: false
+			})
+		}
+
 		e.preventDefault();
 
 		
@@ -471,10 +478,6 @@ var ParamWidget = React.createClass({
 		this.setState({
 			active_knob: -1,
 		})
-		// setTimeout(function() {
-		// 	s.toggleDragger();
-		// }, 100);
-		
 	},
 
 	dragger: null,
@@ -509,16 +512,6 @@ var ParamWidget = React.createClass({
 		this.refs['knob_0'].refs.root.addEventListener('click', function(){console.log('CLICKED')},false)
 	},
 
-
-	toggleSelf: function(){
-		if(this.props.save_sharing){
-			s.store.dispatch({
-				type:'TOGGLE_SAVE_SHARE',
-				toggle: false
-			})
-		}
-
-	},
 
 	componentWillReceiveProps: function(props){
 		if(this.state.expanded == false && props.expanded == true){

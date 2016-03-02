@@ -57,7 +57,6 @@ const default_state = {
 	error: null,
 	type: 'canvas',
 	render_active: true,
-	save_sharing: false,
 	saving_piece: false,		
 }
 module.exports.default_state = default_state
@@ -236,15 +235,9 @@ function mainReducer(state, action){
 				piece_items: mergeToFilters(state,action.piece_item),
 				saving_piece: false
 			});		
-		case 'TOGGLE_SAVE_SHARE':
-			return merge(n,state,{
-				save_sharing : action.toggle
-			});				
-			
 		case 'TOGGLE_SAVE':
 			return merge(n,state,{
 				saving_piece : action.toggle,
-				save_sharing : !action.toggle
 			});			
 
 	}
@@ -398,13 +391,6 @@ module.exports.showView = showView
 
 
 
-module.exports.toggleSaveShare = function(mode){
-	store.dispatch({
-		type:'TOGGLE_SAVE_SHARE',
-		toggle: mode
-	})
-}
-
 
 module.exports.toggleDragger = function(mode){
 	store.dispatch({
@@ -549,7 +535,8 @@ function updatePieceList(filter,cb){
 	.end(function(err,res){
 
 		if(!res.body.length) return cb ? cb() : null
-		//console.log("GOT LIST BODY",res.body);
+		console.log("GOT PIECE LIST BODY",res.body);
+		res.body
 		store.dispatch({
 			type: 'UPDATE_LIST',
 			filter: filter,

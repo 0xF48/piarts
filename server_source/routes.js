@@ -57,7 +57,10 @@ function likeCheck(req,res,next){
 router
 .use(function(req,res,next){
 	req.user = {verified:false}
-	req.user.local = req.cookies.local ? JSON.parse(req.cookies.local) || []
+	req.user.local = req.cookies.local ? JSON.parse(req.cookies.local) : []
+
+	console.log(req.cookies)
+	console.log(req.user.local)
 
 
 	if(req.headers.authorization != null && req.headers.authorization == pack.auth) req.admin = true
@@ -167,14 +170,14 @@ router
 			q = {picked: true}
 			break;
 		case 'saved':
-			q = {' _id': { $in: req.user.local} }
+			q = { _id: { $in: req.user.local} }
 		case 'recent':
 		default:
 			sort_q = {_id: -1}
 			break;
 		
 	}
-
+	console.log('query is', q)
 	
 	Piece.find(q)
 	.skip(skip)
@@ -184,7 +187,9 @@ router
 	.exec(function(err,pieces){
 		if(err) return res.sendStatus(500);
 		res.json(pieces.map(function(piece){
-			return piece.public_json()
+			var pub_json = piece.public_json()
+			if(filter == 'saved') pub_json.local = true
+			return pub_json
 		}))
 	})
 })
@@ -193,7 +198,7 @@ router
 	Piece.add(req.body).then(function(piece){
 		if(piece == null) return res.sendStatus(500)
 		req.user.local.push(piece.id);
-		res.setHeader('Set-Cookie',JSON.stringify(req.user.local))
+		res.setHeader('Set-Cookie',"local="+JSON.stringify(req.user.local))
 		res.json(piece.public_json())
 	})
 })
