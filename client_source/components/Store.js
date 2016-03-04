@@ -69,7 +69,7 @@ var Store = React.createClass({
 		return (
 			<I outerClassName = 'store-wrapper'>
 				<I slide index_pos = { this.state.item != null ? 1 : 0} className = 'store-selection'>
-				
+
 					<Modal>
 						<div className='store-grid-overlay'><span className = 'icon-angle-up' /></div>
 					</Modal>
@@ -88,6 +88,7 @@ var Store = React.createClass({
 							{store_item_variations}
 						</G>
 					</I>
+					
 				</I>
 				
 				<I beta = {50} slide className = 'store-selection'>

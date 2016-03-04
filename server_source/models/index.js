@@ -1,6 +1,6 @@
 module.exports = {
 	Type: require('./typeModel'),
 	Piece: require('./pieceModel'),
-	Item: require('./itemModel')
-	other: require('./other')
+	Item: require('./itemModel'),
+	other: require('./otherModels'),
 }

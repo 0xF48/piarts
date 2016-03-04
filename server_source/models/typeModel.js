@@ -1,12 +1,12 @@
-var Schema = require('mongoose').Schema
-var model = require('mongoose').model
-var render = require('./piece_render/renderController')
+var m = require('mongoose')
+var Schema = m.Schema
+var render = require('../piece_render/renderController')
 var prom = require('bluebird')
 var PreviewSchema = require('./otherModels').PreviewSchema
 var path = require('path')
 
 
-var Type = Schema({
+var Type = new Schema({
 	name: {type:String,required:true},
 
 	color: [{type:Number,required:true}],
@@ -21,7 +21,7 @@ var Type = Schema({
 
 
 	locked: {type:Boolean,default:false},
-	preview: PeviewSchema
+	preview: PreviewSchema
 });
 
 
@@ -81,5 +81,5 @@ Type.statics.add = function(data){
 }
 
 
-var Type = model('Type', Type);
+module.exports = m.model('Type', Type);
 

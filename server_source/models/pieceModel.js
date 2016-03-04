@@ -1,7 +1,8 @@
-var Schema = require('mongoose').Schema
-var model = require('mongoose').model
+var m = require('mongoose')
+var Schema = m.Schema
+var model = m.model
 var prom = require('bluebird')
-var render = require('./piece_render/renderController')
+var render = require('../piece_render/renderController')
 var path = require('path')
 var Type = require('./typeModel')
 
@@ -9,15 +10,15 @@ var PreviewSchema = require('./otherModels').PreviewSchema
 
 
 
-var Piece = Schema({
+var Piece = new Schema({
 	params: [{type:Number}],
 	type: { type: Schema.Types.ObjectId, ref: 'Type'},
 	views: {type: Number, default: 0},
 	likes: {type: Number, default: 0},
 	created: {type: Date},
 	picked: {type: Boolean, default: false},
-	preview: PeviewSchema,
-	prints: PeviewSchema,
+	preview: PreviewSchema,
+	prints: PreviewSchema,
 });
 
 
@@ -65,4 +66,4 @@ Piece.statics.add = function(body){
 
 
 
-module.exports = model('Piece', Piece);
+module.exports = m.model('Piece', Piece);

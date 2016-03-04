@@ -1,3 +1,4 @@
+var express = require('express')
 var router = express.Router();
 var Item = require('../models/pieceModel.js')
 
@@ -17,6 +18,7 @@ function getItem(req,res,next,id){
 
 router
 .post('/add',function(req,res){
+	if(!req.user.is_admin) return res.sendStatus(403)
 	Item.add(req.body).then(function(item){
 		res.josn(item.public())
 	}).catch(function(e){
@@ -25,7 +27,7 @@ router
 })
 
 .get('/:item',function(req,res){
-
+	if(!req.user.is_admin) 
 })
 
 .param('item',getItem)

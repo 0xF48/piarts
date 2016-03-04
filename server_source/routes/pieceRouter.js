@@ -2,8 +2,8 @@ const LIMIT = 20;
 
 var express = require('express');
 var router = express.Router();
-var pack = require('../package');
-var Piece = require('./models').Piece;
+var pack = require('../../package');
+var Piece = require('../models').Piece;
 var path = require('path')
 
 
@@ -47,12 +47,9 @@ function getPiece(req,res,next,id){
 
 
 router
-.get('/pieces',function(req,res){
+.get('/',function(req,res){
 	var skip = req.query.skip;
 	var filter = req.query.filter;
-//	console.log("FILTER",filter);
-//	console.log("QUERY",req.query)
-	
 	var sort_q = {};
 	var q = {};
 
@@ -99,7 +96,7 @@ router
 	})
 })
 
-.post('/pieces/add',addCheck,function(req,res){
+.post('/add',addCheck,function(req,res){
 	Piece.add(req.body).then(function(piece){
 		if(piece == null) return res.sendStatus(500)
 		req.user.local.push(piece.id);
@@ -108,37 +105,34 @@ router
 	})
 })
 
-.put('/pieces/view/:piece_id',viewCheck,function(req,res){
+.put('/view/:piece_id',viewCheck,function(req,res){
 
 	req.piece.update({views:req.piece.views+1}).then(function(){
 		res.sendStatus(200)
 	})
 })
 
-.put('/pieces/like/:piece_id',likeCheck,function(req,res){
+.put('/like/:piece_id',likeCheck,function(req,res){
 	req.piece.update({likes:req.piece.likes+1}).then(function(){
 		res.sendStatus(200)
 	})
 })
 
-.put('/pieces/pick/:piece_id',likeCheck,function(req,res){
-	if( !req.admin ) return res.setState(403)
-
+.put('/pick/:piece_id',likeCheck,function(req,res){
+	if( !req.user.admin ) return res.setState(403)
 	req.piece.picked = true
 	req.piece.save().then(function(){
 		res.sendStatus(200)
 	})
 })
 
-.get('/pieces/preview/:piece_id',function(req,res){
+.get('/preview/:piece_id',function(req,res){
 	var size = 'small'
 	if(req.query.scale == 'medium') var size = 'medium'
-	
-
-	res.sendFile(path.join(__dirname,'..',pack.data_path,'pieces',size,req.piece.id+'.png'));
+	res.sendFile(path.join(__dirname,'..','..',pack.data_path,'pieces',size,req.piece.id+'.png'));
 })
 
-.get('/pieces/:piece_id',function(req,res){
+.get('/:piece_id',function(req,res){
 	res.json(req.piece.public());
 })
 

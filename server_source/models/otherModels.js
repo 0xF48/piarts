@@ -1,8 +1,11 @@
 var Schema = require('mongoose').Schema
 var Model = require('mongoose').Model
 
-module.exports.PeviewSchema = Schema({
+var Preview = Schema({
 	medium: {type: String},
 	small: {type: String},
 	large:  {type: String},			
 })
+
+
+module.exports.PreviewSchema = Preview
