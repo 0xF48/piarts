@@ -81,13 +81,20 @@ var PieceItem = React.createClass({
 			boxShadow: 'inset rgba('+type.color[0]+','+type.color[1]+','+type.color[2]+',0.231373) 0px 0px 20px, rgba(0,0,0,0.3) 0px 0px 2px',
 		}
 
+		var store_style = {
+			background: 'rgb('+type.color[0]+','+type.color[1]+','+type.color[2]+')',
+			color: 'rgb('+getC(type.color[0]-this.state.c_offset+(active ? 50 : 0))+','+getC(type.color[1]-this.state.c_offset+(active ? 50 : 0))+','+getC(type.color[2]-this.state.c_offset+(active ? 50 : 0))+')',
+			boxShadow: 'inset rgba('+type.color[0]+','+type.color[1]+','+type.color[2]+',0.231373) 0px 0px 20px, rgba(0,0,0,0.3) 0px 0px 2px',
+		}
+
 		// console.log(item)
 		return (
 			<GItem {...this.props} >
 				<div className = 'piece-item' onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} onClick = {this.load}>
 					<div ref='bg' className = 'piece-item-bg' style={bg} />
 					{picked}
-					<span className = 'overlay-item type-item-symbol' style={symbol_style}>{type.symbol}</span>
+					<span className = 'overlay-item piece-item-symbol' style={symbol_style}>{type.symbol}</span>
+					<span onClick = {s.showStore.bind(null,item)} className = 'overlay-item piece-item-store ' style={store_style}><span className='icon-picture' /></span>
 					<div className = 'overlay-item piece-item-stats' >
 						<span>
 							<span className="icon icon-heart" />

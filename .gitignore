@@ -36,3 +36,4 @@ piece_modules
 data
 server_source/nwjs/
 **/**/.DS_Store
+credentials.json

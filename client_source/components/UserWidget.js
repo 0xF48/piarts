@@ -48,14 +48,6 @@ var SaveWidget = React.createClass({
 		
 	},
 
-	// toggleShare: function(){
-	// 	if(!this.state.sharing) return
-	// 	this.setState({
-	// 		sharing: false
-	// 	})
-	// },
-
-
 	save: function(){
 		if(this.props.current_piece != null){
 			throw 'cant save when there is a current_piece'

@@ -11,105 +11,12 @@ var G = require('intui').Grid;
 var GItem = require('intui').GridItem;
 var GMixin = require('intui').GridMixin;
 var UserWidget = require('./UserWidget');
-var s = require('../data/store')
+var s = require('../data/store');
+var Store = require('./Store');
 
 function getC(c){
 	return (c < 0 ? 0 : Math.round(c))
 }
-
-/* intui layout methods */
-
-var Modal = React.createClass({
-	getDefaultProps: function(){
-		return {
-			toggle: false
-			,pos: 'top'
-			,easeIn: Bounce.easeOut
-			,easeOut: Expo.easeIn
-			,durIn: 0.6
-			,durOut: 0.4
-		}
-	}
-	,componentDidMount: function(){
-		//this.styl.display = 'initial'
-		var p = this.props.pos
-		var d = this.getDim();
-		//window.addEventListener('resize',this.forceUpdate);
-		TweenLite.set(this.refs.modal,{
-			x: (p == 'left' ? -d[0] : p == 'right' ? d[0] : 0)
-			,y:  (p == 'top' ? -d[1] : p == 'bottom' ? d[1] : 0)
-
-		})
-	}
-	,getDim: function(){
-		return [this.refs.modal.clientWidth,this.refs.modal.clientHeight]
-	}
-	,componentWillUpdate: function(props){
-		if(props.toggle == this.props.toggle){
-			var p = this.props.pos
-			var d = this.getDim();
-			if(!props.toggle){
-				TweenLite.set(this.refs.modal,{
-				 	x: (p == 'left' ? -d[0] : p == 'right' ? d[0] : 0)
-				 	,y: (p == 'top' ? -d[1] : p == 'bottom' ? d[1] : 0)
-				})				
-			}else{
-				TweenLite.set(this.refs.modal,{
-				 	x:0
-				 	,y: 0
-				})					
-			}
-
-		}
-
-		// TweenLite.set(this.refs.modal,{
-		// 	x: (p == 'top' ? -d[1] : p == 'bottom' ? d[1] : 0)
-		// 	,y: (p == 'left' ? -d[0] : p == 'right' ? d[0] : 0)
-		// })
-	}
-	,componentDidUpdate: function(props){
-		//console.log('UPDATED',this.props.toggle)
-		var p = this.props.pos
-		var d = this.getDim();
-		if(this.props.toggle != props.toggle){
-			if(this.props.toggle){
-				TweenLite.to(this.refs.modal,this.props.durIn,{
-					x: 0
-					,y: 0
-					,ease: this.props.easeIn
-				})
-			}else{
-				TweenLite.to(this.refs.modal,this.props.durOut,{
-					y: (p == 'top' ? -d[1] : p == 'bottom' ? d[1] : 0)
-					,x: (p == 'left' ? -d[0] : p == 'right' ? d[0] : 0)
-					,ease: this.props.easeOut
-				})				
-			}
-		}
-	}
-
-	,styl: {
-		height: '100%'
-		,width: '100%'
-		,top:'0'
-		,left: '0'
-		,position: 'absolute'
-		,zIndex: 10
-	}
-
-	,render: function(){
-		return (
-			<div ref = 'modal' className={this.props.className} style={this.styl}>
-				{this.props.children}
-			</div>
-		)
-	}
-})
-
-
-/* intui layout methods */
-
-
 
 
 
@@ -442,6 +349,7 @@ var App = React.createClass({
 
 
 	render: function(){
+
 		
 
 		return (
@@ -452,7 +360,7 @@ var App = React.createClass({
 					</I>
 					
 					<Sidebar slide  show_types = {this.props.show_types} show_browser = {this.props.show_browser} show_info ={this.props.show_info} browser_tab = {this.props.browser_tab} vertical width = {50} />
-					<I outerClassName={'outer-view'} slide index_pos={this.props.show_types ? 0 : 1} beta={100} offset={-50} >
+					<I outerClassName={'outer-view'} slide index_pos={this.props.show_store ? 2 : this.props.show_types ? 0 : 1} beta={100} offset={-50} >
 						<TypeList beta = {40} current_type = {this.props.current_type} type_items = {this.props.type_items} />
 						<I beta = {100} id = 'view' onClick={this.showView} ref = "view-slide">
 							<canvas key = {this.props.current_type ? this.props.current_type.id : 0} id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />
@@ -462,9 +370,10 @@ var App = React.createClass({
 								<span className='icon-angle-up'></span>
 							</div>
 						</I>
+						<Store beta = {100} piece={this.props.current_piece}/>
 					</I>
 				</I>
-				<I   beta = {100} offset = {-25} outerClassName='site-info-outer' innerClassName='site-info'>
+				<I beta = {100} offset = {-25} outerClassName='site-info-outer' innerClassName='site-info'>
 					<p>piarts is a site where you can create and order prints of digitally generated artwork.</p>
 					<br/>
 				</I>
@@ -474,4 +383,5 @@ var App = React.createClass({
 })
 
 
-module.exports = App
+module.exports = App;
+

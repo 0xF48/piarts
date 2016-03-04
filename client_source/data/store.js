@@ -52,6 +52,7 @@ const default_state = {
 	dragger_active: false,
 	browser_tab : null,
 	show_types: false,
+	show_store: false,
 	show_info: false,
 	show_browser: false,
 	error: null,
@@ -124,7 +125,8 @@ function mainReducer(state, action){
 		case 'SET_CURRENT_PIECE':
 			return merge(n,state,{
 				current_piece: action.piece_item,
-				current_type: action.type_item != null ? action.type_item  : state.current_type 
+				current_type: action.type_item != null ? action.type_item  : state.current_type,
+				params: action.piece_item.params
 			})
 
   		case 'SET_TYPE':
@@ -160,6 +162,7 @@ function mainReducer(state, action){
    			return merge(n, state, {
    				show_info: state.show_browser ? false : state.show_info,
 				show_browser:  show_browser,
+				show_store: show_browser == true ? !show_browser : state.show_store
 				// show_types: show_types,
       		})
    		case 'SET_BROWSER_TAB':
@@ -169,6 +172,7 @@ function mainReducer(state, action){
   		case 'SET_PARAMS':
   			//console.log('save params',action.params)
   			return merge(n, state, {
+  				current_piece: null,
 				params:  action.params
       		})
   		case 'UPDATE_LIST':
@@ -238,7 +242,17 @@ function mainReducer(state, action){
 		case 'TOGGLE_SAVE':
 			return merge(n,state,{
 				saving_piece : action.toggle,
-			});			
+			});
+
+
+
+
+		case 'SHOW_STORE':
+			return merge(n,state,{
+				show_store: true,
+				show_browser:false,
+				current_piece: action.current_piece,
+			})
 
 	}
 	return state
@@ -546,6 +560,10 @@ function updatePieceList(filter,cb){
 	})
 }
 
+module.exports.showStore = showStore;
+function showStore(piece){
+	store.dispatch({ type : "SHOW_STORE", current_piece : piece })
+}
 
 
 
@@ -556,6 +574,7 @@ function setCurrentPiece(piece,type){
 	store.dispatch({
 		type: 'SET_CURRENT_PIECE',
 		piece_item: piece,
+		type_item: type,
 	})
 }
 
@@ -577,7 +596,7 @@ function viewPiece(piece){
 
 		req.put('/data/pieces/view/'+piece.id)
 		.end(function(err){
-			if(err) console.error(err)
+			if(err) throw err
 		})
 
 		showView()
@@ -611,6 +630,7 @@ function savePiece(type,params,picked){
 
 module.exports.saveParams = saveParams
 function saveParams(new_params){
+	console.log("SAVE PARAMS")
 	params = new_params || params
 	
 		
@@ -627,16 +647,6 @@ module.exports.setParam = setParam
 function setParam(i,x){
 	params[i] = x
 	current_view.set(params)
-}
-
-
-module.exports.setPiece = setPiece
-function setPiece(type,new_params){
-	store.dispatch({
-		type: 'SET_PIECE',
-		current_type: type,
-		params: new_params
-	})
 }
 
 
@@ -686,7 +696,8 @@ function saveCurrentPiece(){
 		if(err) throw "UPLOAD ERROR";
 		store.dispatch({
 			type: 'SET_CURRENT_PIECE',
-			piece_item: res.body
+			piece_item: res.body,
+
 		})	
 		store.dispatch({
 			type: 'ADD_PIECE',

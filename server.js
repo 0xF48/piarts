@@ -65,7 +65,7 @@ if(pack.maintenance){
 
 
 
-require('./server_source/routes.js')(app);
+require('./server_source')(app);
 
 // app.use(function(req, res, next) {
 //     var err = new Error('Not Found');

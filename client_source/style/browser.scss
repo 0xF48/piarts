@@ -75,6 +75,19 @@
 			transform: translate(-50%,-50%);
 			border-radius: 50%;
 
+		}	
+
+		.piece-item-store{
+			border-radius: 50% 2px 50% 50%;
+			position: absolute;
+			right: 0px;
+			height: 20px;
+			width: 20px;
+			top: 0;
+		}
+
+		.icon-picture{
+			line-height: 20px;
 		}
 
 		.piece-item-date{
@@ -105,7 +118,7 @@
 			}
 		}
 
-		.type-item-symbol{
+		.piece-item-symbol{
 			border-radius: 2px 50% 50% 50%;
 			position: absolute;
 			left: 0;

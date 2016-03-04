@@ -1,0 +1,8 @@
+.store-wrapper{
+	background: #00D4FF;
+}
+
+.store-wrapper-error{
+	background: #FFB400;
+	@include center;
+}
