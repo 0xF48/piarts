@@ -59,6 +59,7 @@
     "lodash.assign": "^3.2.0",
     "mongoose": "^4.3.4",
     "redux-tiny-router": "^0.6.1",
+    "stripe": "^4.4.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "webpack": "^1.12.14"

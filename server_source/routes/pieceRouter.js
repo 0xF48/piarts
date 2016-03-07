@@ -89,7 +89,7 @@ router
 	.exec(function(err,pieces){
 		if(err) return res.sendStatus(500);
 		res.json(pieces.map(function(piece){
-			var pub_json = piece.public()
+			var pub_json = piece._public()
 			if(filter == 'saved') pub_json.local = true
 			return pub_json
 		}))
@@ -98,10 +98,10 @@ router
 
 .post('/add',addCheck,function(req,res){
 	Piece.add(req.body).then(function(piece){
-		if(piece == null) return res.sendStatus(500)
+		if(piece == null || piece.errors) return res.sendStatus(500)
 		req.user.local.push(piece.id);
 		res.setHeader('Set-Cookie',"local="+JSON.stringify(req.user.local))
-		res.json(piece.public())
+		res.json(piece._public())
 	})
 })
 
@@ -127,13 +127,13 @@ router
 })
 
 .get('/preview/:piece_id',function(req,res){
-	var size = 'small'
-	if(req.query.scale == 'medium') var size = 'medium'
+	var size = 'small';
+	if(req.query.size == 'medium') var size = 'medium'
 	res.sendFile(path.join(__dirname,'..','..',pack.data_path,'pieces',size,req.piece.id+'.png'));
 })
 
 .get('/:piece_id',function(req,res){
-	res.json(req.piece.public());
+	res.json(req.piece._public());
 })
 
 .param('piece_id',getPiece)

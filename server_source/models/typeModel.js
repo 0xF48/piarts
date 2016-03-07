@@ -48,7 +48,7 @@ Type.methods.renderPreview = function(){
 	var self = this;
 
 	return prom.map(['small','medium','large'],function(size){
-		self.preview[size] = '/data/types/preview/'+self.id+'?scale='+size
+		self.preview[size] = '/data/types/preview/'+self.id+'?size='+size
 		return render.renderType(self,size)
 	}).then(function(){
 		console.log("DONE TYPE RENDER PREVIEW")
@@ -74,12 +74,14 @@ Type.statics.add = function(data){
 			return p.resolve(null)
 		}
 
-		var type = new Type(data)
+		var type = new Model(data)
 
 		return type.renderPreview()
 	})
 }
 
 
-module.exports = m.model('Type', Type);
+var Model = m.model('Type', Type);
+
+module.exports = Model
 

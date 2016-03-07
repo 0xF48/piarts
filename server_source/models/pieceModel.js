@@ -22,7 +22,7 @@ var Piece = new Schema({
 });
 
 
-Piece.methods.public = function(){
+Piece.methods._public = function(){
 	return {
 		id: this._id,
 		likes: this.likes,
@@ -43,14 +43,14 @@ Piece.statics.add = function(body){
 	return Type.findOne({_id:body.type_id}).then(function(found){
 		if(found == null) return p.resolve(null)
 
-		var piece = new Piece({
+		var piece = new Model({
 			created: Date.now(),
 			params: body.params,
 			type: found
 		});
 
 		return prom.map(['small','medium','large'],function(size){
-			piece.preview[size] = '/data/pieces/preview/'+piece.id+'?scale='+size
+			piece.preview[size] = '/data/pieces/preview/'+piece.id+'?size='+size
 			return render.renderPiece(piece,size)
 		}).then(function(){
 			return piece.save()
@@ -63,7 +63,7 @@ Piece.statics.add = function(body){
 
 
 
+var Model = m.model('Piece', Piece);
 
 
-
-module.exports = m.model('Piece', Piece);
+module.exports = Model

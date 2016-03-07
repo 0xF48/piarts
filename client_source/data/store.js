@@ -444,7 +444,6 @@ function loadType(type,cb){
 
 	if(type_modules[type.name]) return cb ? cb(type) : null
 
-
 	requirejs(['data/types/script/'+type.id],function(module){
 		type_modules[type.name] = module
 		cb(type)

@@ -26,15 +26,11 @@ router
 .post('/add',function(req,res){
 	if(!req.user.admin) return res.sendStatus(500)
 	
-	Type.add(req.body).then(function(type,err){
+	Type.add(req.body).then(function(type){
 		if(type == null) res.sendStatus(500)
-		else res.json(type)
+		else res.json(type.public())
 	})
 })
-
-
-
-
 
 /* get type script */
 .get('/script/:type_id.js',function(req,res){
@@ -42,7 +38,6 @@ router
 	res.sendFile(path.join(__dirname,'..','..','/piece_modules/builds/'+req.type.name+'.amd.js'));
 
 })
-
 
 /* get type by id */
 .get('/:type_id',function(req,res){
@@ -52,7 +47,6 @@ router
 	res.json(dat);
 
 })
-
 
 /* edit type */
 .put('/:type_id',function(req,res){
@@ -64,15 +58,12 @@ router
 	})	
 })
 
-
 /* get type preview */
 .get('/preview/:type_id',function(req,res){
 	var size = 'small'
-	if(req.query.scale == 'medium') var size = 'medium'
+	if(req.query.size == 'medium') var size = 'medium'
 	res.sendFile(path.join(__dirname,'..','..',pack.data_path,'types',size,req.type.id+'.png'));
 })
-
-
 
 /* type id param prefill to req.type */
 .param('type_id',function(req,res,next,id){

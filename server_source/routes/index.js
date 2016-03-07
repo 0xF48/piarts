@@ -3,6 +3,7 @@ var router = express.Router();
 var typeRouter = require('./typeRouter')
 var pieceRouter = require('./pieceRouter')
 var storeRouter = require('./storeRouter')
+var pack = require('../../package.json')
 
 
 
@@ -16,8 +17,8 @@ router
 	console.log(req.user.local)
 
 
-	if(req.headers.authorization != null && req.headers.authorization == pack.auth) req.user.admin = true
-	else req.user.admin = false
+	if(req.headers.authorization != null && req.headers.authorization == pack.auth) req.user.admin = {}
+	else req.user.admin = null
 	next()
 })
 
