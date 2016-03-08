@@ -47,6 +47,8 @@ const default_state = {
 		saved: []
 	},
 
+	store_items: [],
+	current_store_item: null,
 
 	type_items: {},
 	dragger_active: false,
@@ -80,7 +82,7 @@ function mergeToFilters(state,pieces){
 	var all =  _uniq(pieces.concat(state.piece_items.recent),function(piece){
 		return piece.id;
 	})
-	
+
 	for(var i in all){
 		all[i].created_at = new Date(all[i].created_at)
 		all[i].raw_time = Date.parse(all[i].created_at)
@@ -111,7 +113,7 @@ function mainReducer(state, action){
   				dragger_active: !state.dragger_active
   			})
   		case 'TOGGLE_RENDER':
-  			console.log("TOGGLE RENDER",action.mode)
+  			// console.log("TOGGLE RENDER",action.mode)
   			return merge(n, state, {
   				render_active: action.mode
   			})
@@ -143,6 +145,7 @@ function mainReducer(state, action){
   		case 'TOGGLE_TYPELIST':
    			return merge(n, state, {
 				show_types:  !state.show_types,
+				show_store: state.show_store == true && !state.show_types == true ? false : state.show_store,
       		})
       	case 'SHOW_VIEW':
    			return merge(n, state, {
@@ -217,7 +220,11 @@ function mainReducer(state, action){
 				liked_pieces: state.liked_pieces,
 			})
 
-
+		case 'SET_STORE_ITEMS':
+			if(action.store_items == null) return state
+			return merge(n,state,{
+				store_items: action.store_items
+			})
 
 
 		case 'ADD_PIECE':
@@ -245,12 +252,22 @@ function mainReducer(state, action){
 			});
 
 
-
+		case 'SET_CURRENT_ITEM':
+			return merge(n,state,{
+				current_store_item: action.current_store_item,
+			})			
 
 		case 'SHOW_STORE':
+
+			/* load store items ? */
+			if(state.store_items.length == 0){
+				getStoreItems();
+			}
+
+
 			return merge(n,state,{
 				show_store: true,
-				show_browser:false,
+				show_browser: false,
 				current_piece: action.current_piece,
 			})
 
@@ -500,7 +517,7 @@ function initCurrentType(){
 
 
 function clearView(){
-	console.log("CLEAR VIEW")
+	//console.log("CLEAR VIEW")
 	//clear view
 	if(current_view == null) return 
 	loops.splice(loops.indexOf(current_view.loop),1)
@@ -548,7 +565,7 @@ function updatePieceList(filter,cb){
 	.end(function(err,res){
 
 		if(!res.body.length) return cb ? cb() : null
-		console.log("GOT PIECE LIST BODY",res.body);
+		//console.log("GOT PIECE LIST BODY",res.body);
 		res.body
 		store.dispatch({
 			type: 'UPDATE_LIST',
@@ -558,6 +575,7 @@ function updatePieceList(filter,cb){
 		if(cb != null) cb()
 	})
 }
+
 
 module.exports.showStore = showStore;
 function showStore(piece){
@@ -629,7 +647,7 @@ function savePiece(type,params,picked){
 
 module.exports.saveParams = saveParams
 function saveParams(new_params){
-	console.log("SAVE PARAMS")
+	//console.log("SAVE PARAMS")
 	params = new_params || params
 	
 		
@@ -682,7 +700,7 @@ function makeCurrentPiece(canvas){
 	//set the new loop.
 	loops[0] = current_type.loop;
 
-	console.log("ADDED PIECE LOOP",loops);
+	//console.log("ADDED PIECE LOOP",loops);
 }
 
 
@@ -691,7 +709,6 @@ function saveCurrentPiece(){
 	var state = store.getState();
 	savePiece(state.current_type,state.params)
 	.end(function(err,res){
-		console.log("SAVED")
 		if(err) throw "UPLOAD ERROR";
 		store.dispatch({
 			type: 'SET_CURRENT_PIECE',
@@ -727,6 +744,26 @@ function setLike(piece){
 
 
 
+/* stripe store */
+function getStoreItems(){
+	req.get('data/store/items').end(function(err,res){
+		//console.log('got store items',res.body)
+		if(err) throw err
+		store.dispatch({
+			type: 'SET_STORE_ITEMS',
+			store_items: res.body
+		})	
+	})
+}
+
+
+module.exports.setCurrentItem = setCurrentItem
+function setCurrentItem(item){
+	store.dispatch({
+		type: 'SET_CURRENT_ITEM',
+		current_store_item: item
+	})
+}
 
 
 

@@ -3,7 +3,9 @@ var SlideMixin = require('intui').Mixin;
 var I = require('intui').Slide
 var G = require('intui').Grid
 var Modal = require('intui').Modal
-
+var GItem = require('intui').GridItem
+var GMixin = require('intui').GridMixin
+var s = require('../data/store')
 
 var StripePurchase = React.createClass({
 	mixins: [SlideMixin],
@@ -20,23 +22,23 @@ var StripePurchase = React.createClass({
 		return (
 			<I>
 				<form action="" method="POST" id="payment-form">
-					<span class="payment-errors"></span>
+					<span className="payment-errors"></span>
 
-					<div class="form-row">
+					<div className="form-row">
 					<label>
 					<span>Card Number</span>
 					<input type="text" size="20" data-stripe="number"/>
 					</label>
 					</div>
 
-					<div class="form-row">
+					<div className="form-row">
 					<label>
 					<span>CVC</span>
 					<input type="text" size="4" data-stripe="cvc"/>
 					</label>
 					</div>
 
-					<div class="form-row">
+					<div className="form-row">
 					<label>
 					<span>Expiration (MM/YYYY)</span>
 					<input type="text" size="2" data-stripe="exp-month"/>
@@ -54,62 +56,129 @@ var StripePurchase = React.createClass({
 
 
 
+/* store item */
+var StoreItem = React.createClass({
+	mixins: [GMixin],
+	getDefaultProps: function(){
+		return {
+			piece: null,
+			item: null
+		}
+	},
+	componentDidMount: function(){
 
+	},
+	selectItem: function(){
+		s.setCurrentItem(this.item)
+	},
+	render: function(){
+		return (
+			<GItem {...this.props} onClick={this.selectItem} >
+				<div className='store-item-container'>
+					<p>{this.props.item.name}</p>
+				</div>
+				
+			</GItem>
+		)
+	}
+})
+
+
+var StoreVariation = React.createClass({
+	mixins: [GMixin],
+	getDefaultProps: function(){
+		return {
+			item: null,
+			piece: null
+		}
+	},
+	render: function(){
+		return (
+			<GItem {...this.props} onClick={this.selectItem}>
+				<div>test</div>
+			</GItem>
+		)
+	}
+})
 
 
 
 var Store = React.createClass({
 	mixins:[SlideMixin],
 	componentDidMount: function(){
-		console.log("STOR MOUNTED")
+		console.log("STOR MOUNTED");
 	},
 
 	getInitialState: function(){
 		return {
 			variation: null,
-			item: null,
 		}
+		this.store_items = []
+		this.store_variations = []
 	},
 	
-	// shouldComponentUpdate: function(props,state){
-	// 	console.log("SHOULD UPDATE")
-	// 	if(props.piece == null) return false
-	// 	return true
-	// },
+	shouldComponentUpdate: function(props,state){
+		console.log("SHOULD UPDATE")
+		if(props.store_items.length != this.props.store_items.length){
+			this.makeItemList(props.store_items)
+		}
+		return true
+	},
+
+	makeItemList: function(items){	
+		this.store_items = items.map(function(item){
+			return ( <StoreItem key={item._id} item = {item} w ={1} h={1} /> )
+		})
+	},
+
+	makeVariationList: function(props,state){
+		this.variations = state.item.variations.map
+	},
+
+	getPos: function(){
+		if(this.state.item != null && this.state.variation == null){
+			return 1
+		}else if(this.state.variation != null && this.state.item != null){
+			return 2
+		}else if(this.state.item == null && this.state.variation == null){
+			return 0
+		}
+	},
 
 	render: function(){
-		console.log("RENDER STORE")
+		console.log("RENDER STORE");
+
 
 		if(this.props.piece == null){
 			return (
 				<I innerClassName = 'store-wrapper-error'>
-					<p>no piece selected?</p>
+					<p> no piece selected? </p>
 				</I>
 			)
 		}
 
-		var store_items = store_item_variations = []
-
+		
+		var index_pos = this.getPos()
 
 
 
 		return (
-			<I slide index_pos = {this.state.item != null && this.state.variation != null ? 1 : 0} outerClassName = 'store-wrapper'>
-				<I beta = {100} slide index_pos = { this.state.item != null ? 1 : 0} className = 'store-selection'>
-					<Modal>
-						<div active = {this.state.item != null ? true : false} className='store-grid-overlay'><span className = 'icon-angle-up' /></div>
-					</Modal>
-					<I beta = {100} slide >
-						<Modal>
-							<div active = {this.state.variation != null ? true : false} className='store-grid-overlay'><span className = 'icon-angle-up' /></div>
-						</Modal>
-						<G list_id = {'store-selections'} >
-							{store_items}
-						</G>
-					</I>
+			<I slide vertical index_pos = { index_pos } outerClassName = 'store-wrapper'>	
+				<Modal active = {index_pos > 1 ? 1 : 0} >
+					<div className='store-grid-overlay'><span className = 'icon-angle-up' /></div>
+				</Modal>
+				<I beta = {50}>
+					<G fixed={true} w = {3} h = {1} list_id = {'store-items'} className='store-items-wrapper'>
+						{this.store_items}
+					</G>
 				</I>
-				<I beta = {90} slide className = 'store-selection'>
-					<StripePurchase piece={this.props.piece}  variation={this.state.variation}  item={this.state.item} />
+				<I beta = {50} innerClassName='store-variations-wrapper'>
+					<G fill_up={true} fixed={true} w ={4} h={1} list_id = {'store-selections'} >
+						{this.store_variations}
+					</G>
+				</I>
+				<I beta = {90} slide outerClassName = 'store-selection'>
+					<StripePurchase piece={this.props.piece} variation={this.state.variation} item={this.state.item} />
 				</I>
 			</I>
 		)

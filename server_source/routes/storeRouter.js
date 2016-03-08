@@ -3,7 +3,8 @@ var router = express.Router();
 var Item = require('../models/itemModel.js')
 var path = require('path')
 var pack = require('../../package');
-
+var cred = require('../../credentials');
+var stripe = require('stripe')(cred.stripe_test.private);
 
 
 /* store routes */
@@ -16,7 +17,6 @@ function getItem(req,res,next,id){
 		req.item = item
 		next()
 	})
-
 }
 
 
@@ -68,7 +68,6 @@ router
 	if(req.query.size == 'medium') var size = 'medium'
 	res.sendFile(path.join(__dirname,'..','..',pack.data_path,'variations',size,req.item.variations[Number(req.params.index)]._id+'.png'));
 })
-
 
 /* get item */
 .get('/items/:item',function(req,res){

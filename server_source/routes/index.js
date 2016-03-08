@@ -13,8 +13,8 @@ router
 	req.user = {verified:false}
 	req.user.local = req.cookies.local ? JSON.parse(req.cookies.local) : []
 
-	console.log(req.cookies)
-	console.log(req.user.local)
+	// console.log(req.cookies)
+	// console.log(req.user.local)
 
 
 	if(req.headers.authorization != null && req.headers.authorization == pack.auth) req.user.admin = {}

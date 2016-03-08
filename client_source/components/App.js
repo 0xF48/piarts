@@ -370,7 +370,7 @@ var App = React.createClass({
 								<span className='icon-angle-up'></span>
 							</div>
 						</I>
-						<Store beta = {100} piece={this.props.current_piece}/>
+						<Store beta = {100} piece={this.props.current_piece} store_items={this.props.store_items} current_store_item={this.props.current_store_item} />
 					</I>
 				</I>
 				<I beta = {100} offset = {-25} outerClassName='site-info-outer' innerClassName='site-info'>

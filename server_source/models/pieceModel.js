@@ -43,11 +43,15 @@ Piece.statics.add = function(body){
 	return Type.findOne({_id:body.type_id}).then(function(found){
 		if(found == null) return p.resolve(null)
 
+
+
 		var piece = new Model({
 			created: Date.now(),
 			params: body.params,
 			type: found
 		});
+
+		console.log('NEW PIECE')
 
 		return prom.map(['small','medium','large'],function(size){
 			piece.preview[size] = '/data/pieces/preview/'+piece.id+'?size='+size
@@ -55,7 +59,6 @@ Piece.statics.add = function(body){
 		}).then(function(){
 			return piece.save()
 		})
-		
 	})
 }
 
