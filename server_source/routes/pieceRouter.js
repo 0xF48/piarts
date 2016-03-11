@@ -79,7 +79,6 @@ router
 			break;
 		
 	}
-	console.log('query is', q)
 	
 	Piece.find(q)
 	.skip(skip)
@@ -89,7 +88,7 @@ router
 	.exec(function(err,pieces){
 		if(err) return res.sendStatus(500);
 		res.json(pieces.map(function(piece){
-			var pub_json = piece._public()
+			var pub_json = piece.public()
 			if(filter == 'saved') pub_json.local = true
 			return pub_json
 		}))
@@ -101,8 +100,7 @@ router
 		if(piece == null || piece.errors) return res.sendStatus(500)
 		req.user.local.push(piece.id);
 		res.setHeader('Set-Cookie',"local="+JSON.stringify(req.user.local))
-		console.log('ADD PIECE',piee)
-		res.json(piece._public())
+		res.json(piece.public())
 	})
 })
 
@@ -134,7 +132,7 @@ router
 })
 
 .get('/:piece_id',function(req,res){
-	res.json(req.piece._public());
+	res.json(req.piece.public());
 })
 
 .param('piece_id',getPiece)

@@ -71,7 +71,7 @@ Type.statics.add = function(data){
 	return Type.findOne({name:data.name}).then(function(found_same){
 		if(found_same != null){
 			console.error('add type conflict -> '+found_same)
-			return p.resolve(null)
+			return prom.resolve(null)
 		}
 
 		var type = new Model(data)

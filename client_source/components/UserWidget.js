@@ -13,50 +13,52 @@ var SaveWidget = React.createClass({
 
 	getInitialState: function(){
 		return {
-			sharing: false
+			// done: false
 		}
+	
 	},
 
 	componentWillReceiveProps: function(props){
-		//console.log(this.props.saving_piece)
+		
+		//default back to start
+		if(!this.props.saving_piece && !props.saving_piece){
+			this.refs.loader.setState({
+				ease:Power2.easeOut,
+				d: 1,
+				c_r: 0, c_g: 255, c_b: 235,
+				angle_start:0, angle_end: 0,
+			})
+			
+
+		}
+
 		//start save loader.
 		if(!this.props.saving_piece && props.saving_piece){
 			this.refs.loader.setState({
 				ease:Power2.easeOut,
-				c_r: 0,
-				c_g: 235,
-				c_b: 255,
-				d: 4,
-				angle_start:0,
-				angle_end: Math.PI*1.5,
+				d: 6,
+				c_r: 0, c_g: 255, c_b: 235,
+				angle_start:0, angle_end: Math.PI*1.3,
 			})
-			return true
+			
 		}
 
 		//done save loader
 		if(!props.saving_piece && this.props.saving_piece){
 			this.refs.loader.setState({
-				c_r: 0,
-				c_g: 235,
-				c_b: 255,
 				d: 1,
-				angle_start:0,
-				angle_end: Math.PI*2,
+				c_r: 0, c_g: 235, c_b: 255,
+				angle_start:0, angle_end: Math.PI*2,
 			})
-			return true
+
 		}
-		
 	},
 
 	save: function(){
-		if(this.props.current_piece != null){
-			throw 'cant save when there is a current_piece'
-		}
-		console.log("SAVE started")
+		console.log("SAVE started",this.done)
 		if(this.props.saving_piece) return
-		if(this.props.save_sharing) {
+		if(this.props.current_piece){
 			s.showPieceList('saved')
-			this.end()
 		}else{
 			s.saveCurrentPiece()
 		}
@@ -67,23 +69,8 @@ var SaveWidget = React.createClass({
 		// window.tt = this.refs['root']
 	},
 
-
-	//cancel and return to normal mode
-	end: function(){
-		s.toggleSaveShare(false)
-	},
-
-
-	//view the piece in the browser
-	viewInBrowser: function(){
-		s.showPieceList('saved')
-		this.end()
-	},
-
-
-
 	render: function(){
-		console.log('curent piece ',this.props.current_piece)
+		// console.log('curent piece ',this.props.current_piece)
 		return (
 			<C {...this.props} padding={0} className='share_node' ref='root' onClick={this.save}>
 				<div className='share-slide-container'>

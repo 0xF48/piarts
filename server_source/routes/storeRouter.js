@@ -40,11 +40,6 @@ router
 	})
 })
 
-
-
-
-
-
 /* edit item */
 .put('/items/:item',function(req,res){
 	if(!req.user.admin) return res.sendStatus(403)
@@ -52,8 +47,6 @@ router
 		res.send_json(req.item._public())
 	})
 })
-
-
 
 /* get item variation preview of a specific index */
 .get('/items/:item/preview',function(req,res){

@@ -95,6 +95,9 @@ var PieceItem = React.createClass({
 					{picked}
 					<span className = 'overlay-item piece-item-symbol' style={symbol_style}>{type.symbol}</span>
 					<span onClick = {s.showStore.bind(null,item)} className = 'overlay-item piece-item-store ' style={store_style}><span className='icon-picture' /></span>
+					<div className = 'overlay-item piece-item-date' >
+						<span>{item.created_at.toDateString()}</span>
+					</div>
 					<div className = 'overlay-item piece-item-stats' >
 						<span>
 							<span className="icon icon-heart" />

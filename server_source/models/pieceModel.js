@@ -22,7 +22,7 @@ var Piece = new Schema({
 });
 
 
-Piece.methods._public = function(){
+Piece.methods.public = function(){
 	return {
 		id: this._id,
 		likes: this.likes,
@@ -37,12 +37,29 @@ Piece.methods._public = function(){
 }
 // var gm = require('gm');
 
+Piece.methods.renderPreview = function(){
+	var self = this;
+	self.preview = {}
+	console.log('render piece preview')
+	return prom.map(['small','medium','large'],function(size){
+		console.log("RENDER",size)
+		self.preview[size] = '/data/pieces/preview/'+self.id+'?size='+size
+		console.log("PIECE RENDER",size)
+
+		return render.renderPiece(self,size)
+	}).then(function(){
+		console.log("DONE PIECE RENDER PREVIEW")
+		return self.save()
+	})
+}
 
 
 Piece.statics.add = function(body){
+	console.log('ADD PIECE',body)
 	return Type.findOne({_id:body.type_id}).then(function(found){
-		if(found == null) return p.resolve(null)
+		if(found == null) return prom.resolve(null)
 
+		console.log("NEW PIECE")
 
 
 		var piece = new Model({
@@ -51,14 +68,7 @@ Piece.statics.add = function(body){
 			type: found
 		});
 
-		console.log('NEW PIECE')
-
-		return prom.map(['small','medium','large'],function(size){
-			piece.preview[size] = '/data/pieces/preview/'+piece.id+'?size='+size
-			return render.renderPiece(piece,size)
-		}).then(function(){
-			return piece.save()
-		})
+		return piece.renderPreview()
 	})
 }
 

@@ -89,13 +89,11 @@
 
 		.piece-item-date{
 			position: absolute;
-			box-sizing : border-box;
-			padding:7px;
-			left:0;
-			top:0;
-			color: #fff;
-			background: rgba(255,255,255,0.3);
+			line-height: 15px;
+			right:0;
+			bottom:30px;			
 		}
+		
 		.piece-item-picked{
 			cursor: pointer;
 			position: absolute;

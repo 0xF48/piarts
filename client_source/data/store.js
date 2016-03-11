@@ -228,20 +228,6 @@ function mainReducer(state, action){
 
 
 		case 'ADD_PIECE':
-  			if(action.local){
-  				var saved_pieces = JSON.parse(localStorage.getItem('saved_pieces'))
-  				for(var i in saved_pieces){
-  					if(saved_pieces[i] == action.piece_item.id){
-  						throw 'cant add piece to local storage, it already exists.'
-  						return
-  					}
-  				}
-  				action.piece_item.local = true;
-  				saved_pieces.push(action.piece_item.id)
-  				localStorage.setItem('saved_pieces',JSON.stringify(saved_pieces))
-  			}
-			
-
 			return merge(n,state,{
 				piece_items: mergeToFilters(state,action.piece_item),
 				saving_piece: false
@@ -375,7 +361,7 @@ function getTypeList(){
 	.end(function(err,res){
 
 		if(!res.body.length) throw "got bad type array : "+JSON.stringify(res.body)
-		console.log("GOT LIST BODY",res.body);
+		
 		
 		var types = {}
 		
@@ -706,18 +692,25 @@ function makeCurrentPiece(canvas){
 
 module.exports.saveCurrentPiece = saveCurrentPiece;
 function saveCurrentPiece(){
+	if(store.getState().current_piece != null){
+		throw 'cant save when there is a current_piece'
+	}
 	var state = store.getState();
 	savePiece(state.current_type,state.params)
 	.end(function(err,res){
+		console.log("SAVED PIECE",err,res)
 		if(err) throw "UPLOAD ERROR";
 		store.dispatch({
 			type: 'SET_CURRENT_PIECE',
 			piece_item: res.body,
+		})
 
-		})	
+
+		//mark as local
+		res.body.local = true
+		
 		store.dispatch({
 			type: 'ADD_PIECE',
-			local: true,
 			piece_item: res.body
 		})
 		store.dispatch({

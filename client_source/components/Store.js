@@ -68,13 +68,10 @@ var StoreItem = React.createClass({
 	componentDidMount: function(){
 
 	},
-	selectItem: function(){
-		s.setCurrentItem(this.item)
-	},
 	render: function(){
 		return (
-			<GItem {...this.props} onClick={this.selectItem} >
-				<div className='store-item-container'>
+			<GItem {...this.props} >
+				<div onClick={this.props.onClick} className='store-item-container'>
 					<p>{this.props.item.name}</p>
 				</div>
 				
@@ -106,28 +103,38 @@ var StoreVariation = React.createClass({
 var Store = React.createClass({
 	mixins:[SlideMixin],
 	componentDidMount: function(){
-		console.log("STOR MOUNTED");
+		
 	},
 
 	getInitialState: function(){
 		return {
 			variation: null,
+			item: null,
 		}
 		this.store_items = []
 		this.store_variations = []
 	},
 	
 	shouldComponentUpdate: function(props,state){
-		console.log("SHOULD UPDATE")
+		
 		if(props.store_items.length != this.props.store_items.length){
 			this.makeItemList(props.store_items)
 		}
 		return true
 	},
 
+	setStoreItem: function(e){
+		console.log("SELECT",e.target.value)
+
+	},
+
+	setVariationItem: function(e){
+
+	},
+
 	makeItemList: function(items){	
-		this.store_items = items.map(function(item){
-			return ( <StoreItem key={item._id} item = {item} w ={1} h={1} /> )
+		this.store_items = items.map(function(item,i){
+			return ( <StoreItem value = {i} onClick = {this.setStoreItem} key={item._id} item = {item} w ={1} h={1} /> )
 		})
 	},
 
@@ -146,7 +153,7 @@ var Store = React.createClass({
 	},
 
 	render: function(){
-		console.log("RENDER STORE");
+		
 
 
 		if(this.props.piece == null){
@@ -168,7 +175,7 @@ var Store = React.createClass({
 					<div className='store-grid-overlay'><span className = 'icon-angle-up' /></div>
 				</Modal>
 				<I beta = {50}>
-					<G fixed={true} w = {3} h = {1} list_id = {'store-items'} className='store-items-wrapper'>
+					<G fixed={true} w = {3} h = {2} list_id = {'store-items'} className='store-items-wrapper'>
 						{this.store_items}
 					</G>
 				</I>
