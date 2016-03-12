@@ -55,7 +55,7 @@ Item.methods.charge = function(body){
 
 Item.methods._public = function(){
 	return {
-		_id: this._id,
+		id: this._id,
 		max_price: this.max_price,
 		min_price:this.min_price,
 		varations: this.variations,

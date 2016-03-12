@@ -188,7 +188,6 @@ var Browser = React.createClass({
 
 	makeList: function(props,state,items){
 		var w = h = 1
-		console.log(this.refs.wrapper.width())
 		if(this.refs.wrapper.width() <= 400){
 			w = 2
 		}

@@ -7,6 +7,10 @@ var GItem = require('intui').GridItem
 var GMixin = require('intui').GridMixin
 var s = require('../data/store')
 
+var react_redux = require('react-redux');
+var connect = react_redux.connect;
+
+
 var StripePurchase = React.createClass({
 	mixins: [SlideMixin],
 
@@ -57,28 +61,42 @@ var StripePurchase = React.createClass({
 
 
 /* store item */
-var StoreItem = React.createClass({
+var StoreItem = connect(function(state){
+	return {
+		current_store_item: state.current_store_item
+	}
+})(React.createClass({
 	mixins: [GMixin],
 	getDefaultProps: function(){
 		return {
 			piece: null,
-			item: null
+			item: null,
+			selected: false
 		}
 	},
+
 	componentDidMount: function(){
 
 	},
+
+	setCurrentStoreItem: function(){
+		s.setCurrentItem(this.props.item)
+	},
+
 	render: function(){
+		var name = (this.props.current_store_item != null && this.props.current_store_item.id == this.props.item.id) ? "TEST" : this.props.item.name;
 		return (
 			<GItem {...this.props} >
-				<div onClick={this.props.onClick} className='store-item-container'>
-					<p>{this.props.item.name}</p>
+				<div onClick={this.setCurrentStoreItem} className='store-item-container'>
+					<p>{name}</p>
+					<div className = 'overlay-item store-item-price' >
+						<b>{this.props.item.min_price}</b><span> - </span><b>{this.props.item.max_price}</b>
+					</div>
 				</div>
-				
 			</GItem>
 		)
 	}
-})
+}));
 
 
 var StoreVariation = React.createClass({
@@ -108,16 +126,16 @@ var Store = React.createClass({
 
 	getInitialState: function(){
 		return {
-			variation: null,
-			item: null,
+			selected_variationid: null,
+			selected_itemid: null,
 		}
 		this.store_items = []
 		this.store_variations = []
 	},
 	
 	shouldComponentUpdate: function(props,state){
-		
 		if(props.store_items.length != this.props.store_items.length){
+
 			this.makeItemList(props.store_items)
 		}
 		return true
@@ -125,7 +143,9 @@ var Store = React.createClass({
 
 	setStoreItem: function(e){
 		console.log("SELECT",e.target.value)
+		this.setState({
 
+		})
 	},
 
 	setVariationItem: function(e){
@@ -134,8 +154,8 @@ var Store = React.createClass({
 
 	makeItemList: function(items){	
 		this.store_items = items.map(function(item,i){
-			return ( <StoreItem value = {i} onClick = {this.setStoreItem} key={item._id} item = {item} w ={1} h={1} /> )
-		})
+			return ( <StoreItem value = {i} key={item.id} item = {item} w ={1} h={1} /> )
+		}.bind(this))
 	},
 
 	makeVariationList: function(props,state){
@@ -153,9 +173,6 @@ var Store = React.createClass({
 	},
 
 	render: function(){
-		
-
-
 		if(this.props.piece == null){
 			return (
 				<I innerClassName = 'store-wrapper-error'>
@@ -164,10 +181,7 @@ var Store = React.createClass({
 			)
 		}
 
-		
 		var index_pos = this.getPos()
-
-
 
 		return (
 			<I slide vertical index_pos = { index_pos } outerClassName = 'store-wrapper'>	
@@ -175,12 +189,12 @@ var Store = React.createClass({
 					<div className='store-grid-overlay'><span className = 'icon-angle-up' /></div>
 				</Modal>
 				<I beta = {50}>
-					<G fixed={true} w = {3} h = {2} list_id = {'store-items'} className='store-items-wrapper'>
+					<G fixed={true} w = {3} h = {2} listid = {'store-items'} className='store-items-wrapper'>
 						{this.store_items}
 					</G>
 				</I>
 				<I beta = {50} innerClassName='store-variations-wrapper'>
-					<G fill_up={true} fixed={true} w ={4} h={1} list_id = {'store-selections'} >
+					<G fill_up={true} fixed={true} w ={4} h={1} listid = {'store-selections'} >
 						{this.store_variations}
 					</G>
 				</I>

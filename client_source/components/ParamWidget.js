@@ -459,16 +459,7 @@ var ParamWidget = React.createClass({
 			active_knob: i,
 		})
 
-		if(this.props.save_sharing){
-			s.store.dispatch({
-				type:'END_SAVE',
-				toggle: false
-			})
-		}
-
-		e.preventDefault();
-
-		
+		e.preventDefault();		
 	},
 
 	endDragger: function(){

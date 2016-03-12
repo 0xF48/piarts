@@ -179,16 +179,12 @@ var TypeItem = connect(function(state){
 	},
 
 	showType: function(){
-		s.loadType(this.props.item,function(item){
-			s.setType(item)
-			s.saveParams(item.params)
-			s.showView()
-		});
+		s.showType(this.props.item)
 	},
 
 	render: function(){
 		var active = this.props.current_type != null && this.props.current_type.id == this.props.item.id;
-		var item = this.props.item
+		var item = this.props.item;
 		var symbol_style = {
 			color: 'rgb('+item.color[0]+','+item.color[1]+','+item.color[2]+')',
 			background: 'rgb('+getC(item.color[0]-this.state.c_offset+(active ? 50 : 0))+','+getC(item.color[1]-this.state.c_offset+(active ? 50 : 0))+','+getC(item.color[2]-this.state.c_offset+(active ? 50 : 0))+')',
@@ -207,7 +203,6 @@ var TypeItem = connect(function(state){
 
 		return (
 			<GItem {...this.props} onClick = {this.showType} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} >
-				
 				<div className = 'type-item' style = {global_style}>
 					<div ref='bg' className = ' type-item-bg' style={bg} />
 					<span className='overlay-item type-item-symbol' style={symbol_style} >{item.symbol}</span>
@@ -256,7 +251,6 @@ var TypeList = React.createClass({
 
 	items: [],
 	render: function(){
-
 		return (
 			<I {...this.props} scroll vertical outerClassName='type_list' >
 				<G fill_up={true} fixed={true} list_id = "piece_types" w= {1} h = {3} >

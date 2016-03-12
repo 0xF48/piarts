@@ -35,7 +35,7 @@ Piece.methods.public = function(){
 		preview: this.preview
 	}
 }
-// var gm = require('gm');
+
 
 Piece.methods.renderPreview = function(){
 	var self = this;

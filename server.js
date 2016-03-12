@@ -11,6 +11,14 @@ app.set('views','./client_views')
 app.set('view engine', 'ejs');
 app.use(express.static('client_static'));
 
+var Promise = require('bluebird')
+process.on('unhandledRejection', function(error, promise) {
+  console.error("NIGGER");
+});
+// process.on("unhandledRejection", function(reason, promise) {
+	
+//     // See Promise.onPossiblyUnhandledRejection for parameter documentation
+// });
 
 db.connect(pack.db_url);
 db.connection.on('error',console.error.bind(console,'connection error'));	

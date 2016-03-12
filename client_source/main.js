@@ -38,6 +38,12 @@ render(
 
 
 
+
+
+// s.showPieceList('recent');
+
+
+
 // var Example = require('intui').Example
 
 // render(
