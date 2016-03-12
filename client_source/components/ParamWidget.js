@@ -408,7 +408,8 @@ var	Dragger = function(canvas){
 		document.body.style.cursor = 'initial'
 		document.removeEventListener('mousemove',mouseMove)
 		//document.removeEventListener(listener2)
-		s.saveParams();
+		s.setParams();
+		s.clearCurrentPiece();
 		hideAll(function(){
 			TweenLite.ticker.removeEventListener("tick",render);
 		});

@@ -316,10 +316,10 @@ var App = React.createClass({
 	},
 
 	showView: function(ee,e){
-		if(this.props.show_info) s.showView();
-		if(this.props.show_browser) s.toggleBrowser();
-		if(this.props.show_types && !this.props.show_browser) s.toggleTypesList();
-
+		console.log("SHOW VIEW")
+		s.showView();
+		ee.stopPropagation();
+		// if(this.props.show_types && !this.props.show_browser) s.toggleTypesList();
 	},
 
 	componentDidUpdate: function(props){
@@ -354,17 +354,18 @@ var App = React.createClass({
 					</I>
 					
 					<Sidebar slide  show_types = {this.props.show_types} show_browser = {this.props.show_browser} show_info ={this.props.show_info} browser_tab = {this.props.browser_tab} vertical width = {50} />
-					<I outerClassName={'outer-view'} slide index_pos={this.props.show_store ? 2 : this.props.show_types ? 0 : 1} beta={100} offset={-50} >
+					<I ease = {Power4.easeOut} outerClassName={'outer-view'} slide index_pos={this.props.show_store ? 2 : this.props.show_types ? 0 : 1} beta={100} offset={-50} >
 						<TypeList beta = {40} current_type = {this.props.current_type} type_items = {this.props.type_items} />
-						<I beta = {100} id = 'view' onClick={this.showView} ref = "view-slide">
+						<I beta = {100} id = 'view' ref = "view-slide">
 							<canvas key = {this.props.current_type ? this.props.current_type.id : 0} id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />
 							<UserWidget {...this.props} ref='widget' />
-							<div className='view-overlay' style={{pointerEvents: (this.props.show_browser || this.props.show_types || this.props.show_info) ? 'all' : 'none', 'opacity':(this.props.show_browser || this.props.show_types || this.props.show_info) ? 0.85 : 0}} >
+							<div className='view-overlay' onClick={this.showView} style={{pointerEvents: (this.props.show_store || this.props.show_browser || this.props.show_types || this.props.show_info) ? 'all' : 'none', 'opacity':(this.props.show_store || this.props.show_browser || this.props.show_types || this.props.show_info) ? 0.85 : 0}} >
 								<span className='icon-angle-left'></span>
+								<span className='icon-angle-right'></span>
 								<span className='icon-angle-up'></span>
 							</div>
 						</I>
-						<Store beta = {100} piece={this.props.current_piece} store_items={this.props.store_items} current_store_item={this.props.current_store_item} />
+						<Store beta = {100} offset = {-25}  piece={this.props.current_piece} store_items={this.props.store_items} current_store_item={this.props.current_store_item} />
 					</I>
 				</I>
 				<I beta = {100} offset = {-25} outerClassName='site-info-outer' innerClassName='site-info'>

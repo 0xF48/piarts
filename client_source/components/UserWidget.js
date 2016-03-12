@@ -58,7 +58,7 @@ var SaveWidget = React.createClass({
 		console.log("SAVE started",this.done)
 		if(this.props.saving_piece) return
 		if(this.props.current_piece){
-			s.showPieceList('saved')
+			s.showStore(this.props.current_piece)
 		}else{
 			s.saveCurrentPiece()
 		}
@@ -80,7 +80,7 @@ var SaveWidget = React.createClass({
 							<b className='icon-database' />
 						</I>
 						<I beta={100} innerClassName='share-slide-view'>
-							<b className='icon-eye' />
+							<b className='icon-picture' />
 						</I>	
 					</I>
 				</div>
@@ -107,7 +107,7 @@ var UserWidget = React.createClass({
 
 	},
 
-	componentDidUpdate: function(){
+	componentDidUpdate: function(props,state){
 		this.syncCanvasDragger();
 	},
 
@@ -154,17 +154,27 @@ var UserWidget = React.createClass({
 	setLike: function(){
 		console.log("set like")
 		if(this.props.current_piece != null){
-			s.setLike(this.props.current_piece)
+			if(this.props.liked_pieces.indexOf(this.props.current_piece.id) != -1){
+				s.removeLike(this.props.current_piece)
+			}else{
+				s.setLike(this.props.current_piece)
+			}
+			
 		}
 	},
 
 
 	render: function(){
 		var scale = 1;
+		var bg = ''
 		if(this.props.current_piece != null){
 			if(this.props.liked_pieces.indexOf(this.props.current_piece.id) != -1){
-				scale = 0.7
+				scale = 0.9
+				bg = 'active'
 			}
+			
+			
+		
 		}else{
 			scale = 0
 		}
@@ -174,7 +184,7 @@ var UserWidget = React.createClass({
 				<canvas  tabIndex='1' ref='canvas' className = 'user-widget-canvas' />
 				<C padding = {6} rootStyle={{top:'50%'}} rootClass = 'user-widget-dom' ref='root_node' expanded={this.state.expanded} onClick={this.toggleRoot} size={85} angle = {-Math.PI/2} >
 					<b className='icon-cog' />
-					<C distance={1.2}  beta = {45} scale={scale} selfClass="love_node" ref='love_node' onClick={this.setLike}>
+					<C distance={1.2}  beta = {45} scale={scale} selfClass={"love_node "+bg} ref='love_node' onClick={this.setLike}>
 						<b className='icon-heart' style={{color: ((this.props.current_piece != null && this.props.liked_pieces.indexOf(this.props.current_piece.id) != -1) ? '#FF0072' : 'black')}}/>
 					</C>
 					<ParamWidget distance={1.3} beta={100} ref='param_widget' expanded={ this.paramState() } params={this.props.params} current_type = {this.props.current_type} save_sharing={this.props.save_sharing} />

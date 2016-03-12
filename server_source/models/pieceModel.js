@@ -36,7 +36,6 @@ Piece.methods.public = function(){
 	}
 }
 
-
 Piece.methods.renderPreview = function(){
 	var self = this;
 	self.preview = {}

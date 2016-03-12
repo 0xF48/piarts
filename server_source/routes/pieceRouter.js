@@ -96,6 +96,7 @@ router
 })
 
 .post('/add',addCheck,function(req,res){
+	console.log(req.body)
 	Piece.add(req.body).then(function(piece){
 		if(piece == null || piece.errors) return res.sendStatus(500)
 		req.user.local.push(piece.id);

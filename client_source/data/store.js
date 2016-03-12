@@ -126,7 +126,7 @@ function mainReducer(state, action){
 			return merge(n,state,{
 				current_piece: action.piece_item,
 				current_type: action.type_item != null ? action.type_item  : state.current_type,
-				params: action.piece_item.params
+				params:  action.piece_item != null ? action.piece_item.params : state.params
 			})
 		
 		//set the store items.
@@ -157,7 +157,8 @@ function mainReducer(state, action){
    			return merge(n, state, {
    				show_info: false,
 				show_types:  false,
-				show_browser: false
+				show_browser: false,
+				show_store: false
       		})
 
 
@@ -194,6 +195,10 @@ function mainReducer(state, action){
   				current_piece: null,
 				params:  action.params
       		})
+      	case 'SET_PARAMS':
+  			return merge(n, state, {
+				params:  action.params
+      		})      		
 
 
       	//update the piece item list.
@@ -226,14 +231,32 @@ function mainReducer(state, action){
 		//add 1 like to a piece item when somebody hearts it.
 		case 'ADD_PIECE_LIKE':
 			if(state.liked_pieces.indexOf(action.piece_item.id) != -1) return state
+			
 			action.piece_item.likes ++
+			
 			var liked_pieces = JSON.parse(localStorage.getItem('liked_pieces'))
-			localStorage.setItem('liked_pieces',JSON.stringify(liked_pieces.concat(action.piece_item.id)))
+			liked_pieces = liked_pieces.concat(action.piece_item.id)
+
+			localStorage.setItem('liked_pieces',JSON.stringify(liked_pieces))
+			
 			return merge(n,state,{
-				liked_pieces: state.liked_pieces.concat(action.piece_item.id),
+				liked_pieces: liked_pieces,
 				piece_items: mergeToFilters(state,action.piece_item),
 			})
+		case 'REMOVE_PIECE_LIKE':
+			if(state.liked_pieces.indexOf(action.piece_item.id) == -1) return state
+			
+			action.piece_item.likes --
+			
+			var liked_pieces = JSON.parse(localStorage.getItem('liked_pieces'))
+			liked_pieces.splice(liked_pieces.indexOf(action.piece_item.id),1)
 
+			localStorage.setItem('liked_pieces',JSON.stringify(liked_pieces))
+
+			return merge(n,state,{
+				liked_pieces: liked_pieces,
+				piece_items: mergeToFilters(state,action.piece_item),
+			})
 
 		//add a new piece to the list after it is saved
 		case 'ADD_PIECE':
@@ -289,16 +312,18 @@ function mainReducer(state, action){
 function checkRender(getState){
 	return function(next){
 		return function(action){
-			console.log("DISPATCH",action)
+			// console.log("DISPATCH",action)
 			var old_state = store.getState();
 	   		var returnValue = next(action)
 	    	var new_state = store.getState();
 
-			if(!new_state.show_browser && !new_state.show_types && !new_state.show_info && (old_state.show_info || old_state.show_browser || old_state.show_types )){
+			if(!new_state.show_store && !new_state.show_browser && !new_state.show_types && !new_state.show_info && (old_state.show_store || old_state.show_info || old_state.show_browser || old_state.show_types )){
 				setTimeout(function() {
+					console.log("RENDER ON")
 					RENDER_ACTIVE = true
 				}, 400);
-			}else if( (new_state.show_browser || new_state.show_types || new_state.show_info) && (!old_state.show_info && !old_state.show_browser && !old_state.show_types )){
+			}else if( (new_state.show_store || new_state.show_browser || new_state.show_types || new_state.show_info) && (!old_state.show_store && !old_state.show_info && !old_state.show_browser && !old_state.show_types )){
+				console.log("RENDER OFF")
 				RENDER_ACTIVE = false
 			}
 			return returnValue
@@ -465,7 +490,7 @@ module.exports.setType = setType
 function setType(type_item){
 	var current_type = store.getState().current_type
 	if(current_type && current_type.id == type_item.id){
-		return saveParams(type_item.params)
+		return setParams(type_item.params)
 	}
 	store.dispatch({
 		type: 'SET_CURRENT_TYPE',
@@ -485,7 +510,7 @@ function initCurrentType(){
 	var module = type_modules[type_item.name]
 	current_view = module(canvas)
 	loops.push(current_view.loop)
-	saveParams(type_item.params)
+	setParams(type_item.params)
 }
 
 
@@ -564,12 +589,12 @@ function showType(type_item){
 		console.log("SET TYPE",item)
 		s.setType(item)
 		s.showView()
-		s.saveParams(item.params)
+		s.setParams(item.params)
 	});
 }
 
-module.exports.viewPiece = viewPiece
-function viewPiece(piece){
+module.exports.showPiece = showPiece
+function showPiece(piece){
 
 	//either set the current type or load the type from the server.
 	loadType(s.store.getState().type_items[piece.type_id],function(type_item){
@@ -580,13 +605,11 @@ function viewPiece(piece){
 		//add a view counte to the piece.
 		IncrementPieceView(piece)
 
+		//set the piece params
+		setParams(piece.params)
+	
 		//show the view
 		showView()
-
-		//set the piece params
-		current_view.set(piece.params)
-		current_view.loop()
-	
 
 	});
 }
@@ -610,11 +633,11 @@ function savePiece(type,params,picked){
 	})
 }
 
-module.exports.saveParams = saveParams
-function saveParams(new_params){
-	//console.log("SAVE PARAMS")
+
+module.exports.setParams = setParams
+function setParams(new_params){
 	if(new_params != null){
-		params = Object.assign({},new_params)
+		params = new_params.slice(0,new_params.length)
 	}
 	
 	
@@ -622,10 +645,21 @@ function saveParams(new_params){
 	current_view.loop()
 	
 	store.dispatch({
-		type: 'SAVE_PARAMS',
+		type: 'SET_PARAMS',
 		params: params
 	})
 }
+
+
+module.exports.clearCurrentPiece = clearCurrentPiece
+function clearCurrentPiece(){
+	store.dispatch({
+		type: 'SET_CURRENT_PIECE',
+		current_piece: null
+	})	
+}
+
+
 
 module.exports.setParam = setParam
 function setParam(i,x){
@@ -706,8 +740,21 @@ function setLike(piece){
 	store.dispatch({
 		type:'ADD_PIECE_LIKE',
 		piece_item: piece
-	})	
+	})
+
 	req.put('data/pieces/like/'+piece.id).end(function(err){
+		if(err) throw err
+	})
+}
+
+module.exports.removeLike = removeLike;
+function removeLike(piece){
+	store.dispatch({
+		type:'REMOVE_PIECE_LIKE',
+		piece_item: piece
+	})
+
+	req.delete('data/pieces/like/'+piece.id).end(function(err){
 		if(err) throw err
 	})
 }
@@ -751,10 +798,10 @@ updatePieceList('saved');
 
 function preload(){
 	var types = store.getState().type_items;
-	var example = types[res.body[0].id]
+	var example = types[Object.keys(types)[0]];
 	loadType(example,function(module){
 		setType(example)
-		saveParams(example.params)
+		setParams(example.params)
 		showView()
 	})
 }

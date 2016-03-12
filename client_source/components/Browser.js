@@ -29,14 +29,11 @@ var PieceItem = React.createClass({
 		// })
 	},
 	load: function(e){
-
-		s.viewPiece(this.props.item);
-		
+		s.showPiece(this.props.item);
 		e.stopPropagation();
 	},
 
 	toggleHover: function(){
-		console.log("toggle")
 		this.setState({
 			toggle_bg: !this.state.toggle_bg
 		})
@@ -47,6 +44,11 @@ var PieceItem = React.createClass({
 			
 		})
 		
+	},
+
+	showStore: function(e){
+		s.showStore(this.props.item)
+		e.stopPropagation();
 	},
 
 	render: function(){
@@ -94,7 +96,6 @@ var PieceItem = React.createClass({
 					<div ref='bg' className = 'piece-item-bg' style={bg} />
 					{picked}
 					<span className = 'overlay-item piece-item-symbol' style={symbol_style}>{type.symbol}</span>
-					<span onClick = {s.showStore.bind(null,item)} className = 'overlay-item piece-item-store ' style={store_style}><span className='icon-picture' /></span>
 					<div className = 'overlay-item piece-item-date' >
 						<span>{item.created_at.toDateString()}</span>
 					</div>
@@ -173,6 +174,7 @@ var Browser = React.createClass({
 
 			case 'saved':
 				return 3
+
 		}
 	},
 
@@ -207,7 +209,7 @@ var Browser = React.createClass({
 			}else{
 				h = Math.random()<0.25 ? 2 : 1
 			}
-			this.items.push(<PieceItem current_type={props.current_type} type={props.type_items[items[i].type_id]} browser_tab={props.browser_tab} index = {i} ease_dur={0.5} delay={0.1}  w={w} h={h} color = {color} item = {items[i]} key = {props.browser_tab+'_piece_item_'+items[i].id+(items[i].local ? '_local' : '_')} />)
+			this.items.push(<PieceItem ease={Power1.easeOut} current_type={props.current_type} type={props.type_items[items[i].type_id]} browser_tab={props.browser_tab} index = {i} ease_dur={0.5} delay={0.1}  w={w} h={h} color = {color} item = {items[i]} key = {props.browser_tab+'_piece_item_'+items[i].id+(items[i].local ? '_local' : '_')} />)
 		}
 	},
 
@@ -243,10 +245,8 @@ var Browser = React.createClass({
 	},
 
 	render: function(){
-
 		return (
 			<I beta = {this.props.beta} vertical outerClassName = 'piece_list_wrapper' scroll vertical ref="wrapper">
-			
 				<G ref = "grid" offset = {this.state.list_offset} fill_up={true} fixed={true} w = {2} h={3} list_id = {this.props.browser_tab} className='piece_list' style = {{height: 'calc(100% - 50px)'}} >
 					{this.items}
 				</G>

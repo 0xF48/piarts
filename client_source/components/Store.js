@@ -175,7 +175,7 @@ var Store = React.createClass({
 	render: function(){
 		if(this.props.piece == null){
 			return (
-				<I innerClassName = 'store-wrapper-error'>
+				<I beta = {this.props.beta} offset = {this.props.offset} innerClassName = 'store-wrapper-error'>
 					<p> no piece selected? </p>
 				</I>
 			)
@@ -184,12 +184,12 @@ var Store = React.createClass({
 		var index_pos = this.getPos()
 
 		return (
-			<I slide vertical index_pos = { index_pos } outerClassName = 'store-wrapper'>	
+			<I beta = {this.props.beta} offset = {this.props.offset} slide vertical index_pos = { index_pos } outerClassName = 'store-wrapper'>	
 				<Modal active = {index_pos > 1 ? 1 : 0} >
 					<div className='store-grid-overlay'><span className = 'icon-angle-up' /></div>
 				</Modal>
 				<I beta = {50}>
-					<G fixed={true} w = {3} h = {2} listid = {'store-items'} className='store-items-wrapper'>
+					<G fixed={true} w = {3} h = {1} listid = {'store-items'} className='store-items-wrapper'>
 						{this.store_items}
 					</G>
 				</I>
