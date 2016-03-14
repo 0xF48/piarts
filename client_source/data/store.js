@@ -6,7 +6,7 @@ var _sort = require('lodash/collection/sortBy');
 var createStore = require('redux').createStore;
 var merge = Object.assign;
 
-
+var DEV_PAUSE_RENDER = true
 
 
 const MAX_PARAMS = 5;
@@ -17,10 +17,10 @@ var type_modules = {};
 var params = [];
 module.exports.params = params;
 
-if(!localStorage.getItem('liked_pieces')) localStorage.setItem('liked_pieces',[])
+
 if(!localStorage.getItem('liked_pieces')) localStorage.setItem('liked_pieces',"[]")
 
-const default_state = {
+var default_state = {
 	user: {
 		is_admin: true
 	},
@@ -62,6 +62,8 @@ const default_state = {
 	render_active: true,
 	saving_piece: false,		
 }
+
+
 module.exports.default_state = default_state
 
 
@@ -358,7 +360,7 @@ module.exports.loops = loops;
 var RENDER_ACTIVE = true
 function render(){
 	requestAnimationFrame(render);
-	if( ! RENDER_ACTIVE ) return
+	if( ! RENDER_ACTIVE || DEV_PAUSE_RENDER ) return
 	for(var i = 0;i<loops.length;i++){
 		if(loops[i] != null) loops[i]();
 	}
@@ -808,5 +810,26 @@ function preload(){
 
 
 window.store = store //debug
+
+
+
+
+
+
+
+/* stripe */
+
+// Stripe.setPublishableKey('pk_test_lr4wW6MKoacSUk98vkMbv4ap');
+
+
+
+
+
+
+
+
+
+
+
 
 

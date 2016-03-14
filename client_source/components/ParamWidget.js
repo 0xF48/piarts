@@ -314,7 +314,7 @@ var	Dragger = function(canvas){
 		}else{
 			stage.val = val
 		}
-
+ 
 		/* check draw cycles */
 		checkDrawCycle()
 

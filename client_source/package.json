@@ -13,6 +13,7 @@
     "curl-amd": "git+https://github.com/cujojs/curl.git",
     "gsap": "^1.18.2",
     "history": "^1.17.0",
+    "jquery": "^2.2.1",
     "lodash": "^3.10.1",
     "pathjs": "^0.8.1",
     "react": "^0.14.3",

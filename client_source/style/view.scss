@@ -1,40 +1,39 @@
 .outer-view{
 	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.76);
 }
+.view-overlay{
+	.icon-angle-up{
+			color: #fff;
+		position: absolute;
+		bottom: 3px;
+		left: 50%;
+		transform: translate(-50%,0)   	
+	}
+	.icon-angle-right{
+		color: #fff;
+		position: absolute;
+		right: 3px;
+		top: 50%;
+		transform: translate(0,-50%)
+	}
+	.icon-angle-left{
+		color: #fff;
+		position: absolute;
+		left: 3px;
+		top: 50%;
+		transform: translate(0,-50%)
+	}
+	z-index: 10;
+	position: absolute;
+	top:0;
+	left:0;
+	width: 100%;
+	height:100%;
+	background:#000;
+	transition: opacity 0.5s;
+}
 
 #view{
-	.view-overlay{
-		.icon-angle-up{
- 			color: #fff;
-			position: absolute;
-			bottom: 3px;
-			left: 50%;
-			transform: translate(-50%,0)   	
-    	}
-    	.icon-angle-right{
-			color: #fff;
-			position: absolute;
-			right: 3px;
-			top: 50%;
-			transform: translate(0,-50%)
-    	}
-		.icon-angle-left{
-			color: #fff;
-			position: absolute;
-			left: 3px;
-			top: 50%;
-			transform: translate(0,-50%)
-		}
-		z-index: 10;
-		position: absolute;
-		top:0;
-		left:0;
-		width: 100%;
-		height:100%;
-		background:#000;
-		transition: opacity 0.5s;
-	}
-
 	.view-canvas{
 		pointer-events: none;
 		position: absolute;

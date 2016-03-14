@@ -58,7 +58,7 @@ Item.methods._public = function(){
 		id: this._id,
 		max_price: this.max_price,
 		min_price:this.min_price,
-		varations: this.variations,
+		variations: this.variations,
 		preview: this.preview,
 		name: this.name
 	}

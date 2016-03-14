@@ -1,5 +1,53 @@
-.store-wrapper{
 
+.input-hint{
+	position: absolute;
+	top:4px;
+	left:4px;
+	color: rgba(0,0,0,0.5);
+	font-size: 12px;
+}
+
+.store-purchase-info{
+	@include center;
+	background: #fff;
+	box-shadow: inset #CCCCCC 0px 0px 1px;
+	p{
+		padding: 15px
+	}
+}
+
+.store-purchase-auth{
+	@include center;
+	background: #3ACB2D;
+}
+
+.store-wrapper{
+	.store-selection-stats{
+		position: absolute;
+		bottom: 3.5%;
+		left: 50%;
+		transform: translate(-50%, 0%);
+		.overlay-item{
+			height: 50px;
+    		width: 50px;
+    		float:left;
+    		@include center;
+		}
+	}
+}
+.store-purchase-container{
+	background: #fff;
+	.store-purchase-footer{
+		background: #004609;
+	}
+	.store-purchase-count{
+
+	}
+	.store-purchase-price{
+		background: #00FFC6;
+		color: #000;
+		@include center;
+	}
 }
 
 .store-item-container{

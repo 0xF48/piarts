@@ -108,9 +108,9 @@ var Sidebar = React.createClass({
 		return (
 			<I {...this.props} id = 'sidebar' ref="sidebar" outerClassName="gui-sidebar" >
 				<I vertical beta={100} offset={-this.props.width-this.props.width/2} ref = 'sidebar_top'>
-					<Button inverse c1 = '#00B7FF' c2 ='#003850' down 	onClick={s.showPieceList.bind(null,'saved')} height={this.props.width} icon= 'icon-database' active = {this.state.active_button == 3} index_offset={4} bClassName={'gui-button-layer'} />
+					<Button inverse c1 = '#00B7FF' c2 ='#003850' down 	onClick={s.showPieceList.bind(null,'saved')}  height={this.props.width} icon= 'icon-database' active = {this.state.active_button == 3} index_offset={4} bClassName={'gui-button-layer'} />
 					<Button inverse c1 = '#00FF76' c2 ='#003E1C' up 	onClick={s.showPieceList.bind(null,'recent')} height={this.props.width} icon= 'icon-leaf-1' active = {this.state.active_button == 0} index_offset={4} bClassName={'gui-button-layer'} />
-					<Button inverse c1 = '#FF0157' c2 ='#39000C' down 	onClick={s.showPieceList.bind(null,'liked')} height={this.props.width} icon= 'icon-heart' active = {this.state.active_button == 1} index_offset={4} bClassName={'gui-button-layer'} />
+					<Button inverse c1 = '#FF0157' c2 ='#39000C' down 	onClick={s.showPieceList.bind(null,'liked')}  height={this.props.width} icon= 'icon-heart' active = {this.state.active_button == 1} index_offset={4} bClassName={'gui-button-layer'} />
 					<Button inverse c1 = '#FFCB00' c2 ='#3A2E00' up 	onClick={s.showPieceList.bind(null,'picked')} height={this.props.width} icon= 'icon-isight' active = {this.state.active_button == 2} index_offset={4} bClassName={'gui-button-layer'} />
 					<Button right onMouseEnter={function(){console.log("test")}} ease={Bounce.easeOut} inverse c1 = '#D6D6D6' c2 ='#111111' onClick={s.toggleTypesList} height={this.props.width} icon= 'icon-th-thumb' active = {this.props.show_types} index_offset={4} bClassName={'gui-button-layer'} />
 				</I>
@@ -347,14 +347,14 @@ var App = React.createClass({
 		
 
 		return (
-			<I ease={Power4.easeOut} duration={0.5} slide index_pos={this.props.show_info ? 1 : 0} vertical beta={100} ref="root" >
+			<I ease={Power4.easeOut} slide index_pos={this.props.show_info ? 1 : 0} vertical beta={100} ref="root" >
 				<I slide beta={100} index_pos = {this.props.show_browser ? 0 : 1} ref="top" >
 					<I vertical slide beta = {40} >
 						<Browser {...this.props} vertical beta = {100}/>
 					</I>
 					
 					<Sidebar slide  show_types = {this.props.show_types} show_browser = {this.props.show_browser} show_info ={this.props.show_info} browser_tab = {this.props.browser_tab} vertical width = {50} />
-					<I ease = {Power4.easeOut} duration={0.75} outerClassName={'outer-view'} slide index_pos={this.props.show_store ? 2 : this.props.show_types ? 0 : 1} beta={100} offset={-50} >
+					<I ease = {Power4.easeOut}  outerClassName={'outer-view'} slide index_pos={this.props.show_store ? 2 : this.props.show_types ? 0 : 1} beta={100} offset={-50} >
 						<TypeList beta = {40} current_type = {this.props.current_type} type_items = {this.props.type_items} />
 						<I beta = {100} id = 'view' ref = "view-slide">
 							<canvas key = {this.props.current_type ? this.props.current_type.id : 0} id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />

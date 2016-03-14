@@ -1,3 +1,46 @@
+
+/* INPUT START */
+._intui_input {
+  /* padding: 10px; */
+  width: 60%;
+  border: none;
+  font-size: 16px;
+  font-weight: 300;
+  background: none;
+  outline: none;
+  color: #000;
+  padding-bottom: 4px;
+  font-size: 18px;
+  border-bottom: #000 1px solid;
+  
+}
+
+
+._intui_input_cover{
+    @include center;
+    font-size: 18px;
+}
+
+._intui_input_wrapper{
+  @include center;
+  ::-webkit-input-placeholder{
+    text-decoration: none;
+    font-weight: 100;
+    font-size: 14px;
+    color: rgba(255,255,255,0.2);
+  }
+
+  ::-webkit-inner-spin-button{
+    -webkit-appearance: none;
+    color: rgba(0,255,255,0.2);
+  }
+}
+
+/* INPUT END */
+
+
+
+
 ._intui_el {
   display: -webkit-box;
   display: -webkit-flex;
