@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<style>
+	body{
+		background: #000;
+		margin:0;
+		color: #fff;
+		font-family: sans-serif;
+	}
+	#preview{
+		position: absolute;
+		top:0;
+		left:0;
+		width: 100%;
+		height: 100%;
+	}
+	#pause-button{
+		right: 0;
+		top: 0;
+		position: absolute;
+		padding:10px;
+		color: #fff;
+		background: rgba(255,255,255,0.3);
+		cursor: pointer;
+		z-index: 2;
+	}
+	#types{
+		position: absolute;
+		z-index: 2;
+		left: 0;
+		top: 0;
+	}
+	#types > .container{
+		cursor: pointer;
+		width: auto;
+		height: auto;
+		background: rgba(255,255,255,0.3);
+		margin: 4px;
+		padding: 4px;
+	}
+
+	#params{
+		background: rgba(255,255,255,0.3);
+		margin: 4px;
+		padding: 4px;
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		z-index: 2;
+	}
+</style>
+  <body>
+  	<div id = 'pause-button'><span>| | |</span></div>
+  	<div id = 'types' ></div>
+  	<div id = 'params' >
+  		<input value='0.33' />
+  		<input value='0.2' />
+  		<input value='3.4' />
+  		<input value='0.5' />
+  		<input value='0.5' />
+  	</div>
+    <canvas id = 'preview'></canvas>
+  </body>
+</html>
+<script src="./viewServer.js"></script>

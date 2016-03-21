@@ -1,5 +1,14 @@
 
+
+
+
+
 /* INPUT START */
+
+._intui_form_toggle_slide{
+   @include center;
+}
+
 ._intui_input {
   /* padding: 10px; */
   width: 60%;
@@ -12,7 +21,13 @@
   padding-bottom: 4px;
   font-size: 18px;
   border-bottom: #000 1px solid;
-  
+}
+
+._intui_input_error {
+  background: linear-gradient(45deg,#FF0036,#FF3801);
+  color: #fff;
+  font-weight: 500;
+  @include center;
 }
 
 

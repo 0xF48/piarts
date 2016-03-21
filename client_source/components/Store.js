@@ -18,6 +18,7 @@ var connect = react_redux.connect;
 
 
 
+var PaymentForm = require('./PaymentForm')
 
 
 
@@ -25,154 +26,6 @@ var connect = react_redux.connect;
 
 
 
-
-
-
-
-
-
-
-
-var StripePurchase = React.createClass({
-	mixins: [SlideMixin],
-
-	getDefaultProps: function(){
-		return {
-			piece: null,
-			item: null,
-			variation: null,
-			purchaseDone: false
-		}
-	},
-
-	getInitialState: function(){
-		return {
-			count: 1,
-			card_ccn: ["","","",""],
-			card_vn: 0,
-			card_exp: 0,
-		}
-	},
-
-	setCount: function(count){
-		if(count == '') return false
-		this.setState({
-			count: count,
-
-		})
-	},
-
-	// check_ccn: function(c_number){
-	// 	console.log("CHECK",c_number)
-	// 	// Stripe.card.validateCardNumber(number)
-	// 	this.setState({
-	// 		card_ccn: 
-	// 	})
-	// },
-
-	set_ccn_part: function(index,value){
-		this.setState({
-			card_ccn: this.state.card_ccn.map(function(val,i){
-				if(i == index) return value
-				return val
-			})
-		})
-	},
-
-	// submit: function(){
-	// 	Stripe.card.createToken({
-	// 		number: 	this.state.card_ccn,
-	// 		cvc: 		this.state.card_cvc,
-	// 		exp_month: 	this.state.card_exp.month,
-	// 		exp_year: 	this.state.card_exp.year,
-	// 	})
-	// },
-
-	parse_ccn: function(ccn){
-		return (ccn[0].replace(/\d/g,"•") || '    ') +' - '+(ccn[1].replace(/\d/g,"•") ||'    ')+' - '+(ccn[2].replace(/\d/g,"•") ||'    ')+' - '+(ccn[3] ||'    ')
-	},
-
-	// purchase: function(){
-	// 	console.log("Start purchase")
-	// },
-
-	render: function(){
-		// console.log("RENDER stripe",this.state.card_ccn)
-		var price = 10
-		var count = 1
-
-		var c1 = '#FFF8F7'
-		var c2 = '#2D2C2C'
-
-		var ccn = this.parse_ccn(this.state.card_ccn);
-
-		var cardField = (
-			<IMNF ease={Bounce.easeOut} overflow_focus = {true} hint = "ccn" innerClassName = 'store-purchase-ccn' beta = {50} c1 = {c1} c2 ={c2} value = {ccn} >
-				<INF inverse maxChar = {4} value = {this.state.card_ccn[0]} onChange={this.set_ccn_part.bind(this,0)} c1 = {c2} c2 ={c1}  hint="xoxo" >
-					<span style={{fontSize:'12px'}}>{ this.state.card_ccn[0] || '-' }</span>
-				</INF>
-				<INF inverse maxChar = {4} value = {this.state.card_ccn[1]} onChange={this.set_ccn_part.bind(this,1)} c1 = {c2} c2 ={c1} hint="xoxo" >
-					<span style={{fontSize:'12px'}}>{ this.state.card_ccn[1] || '-' }</span>
-				</INF>
-				<INF inverse maxChar = {4} value = {this.state.card_ccn[2]} onChange={this.set_ccn_part.bind(this,2)}  c1 = {c2} c2 ={c1} hint="xoxo" >
-					<span style={{fontSize:'12px'}}>{ this.state.card_ccn[2] || '-' }</span>
-				</INF>
-				<INF inverse maxChar = {4} value = {this.state.card_ccn[3]} onChange={this.set_ccn_part.bind(this,3)} c1 = {c2} c2 ={c1}  hint="xoxo" >
-					<span style={{fontSize:'12px'}}>{ this.state.card_ccn[3] || '-' }</span>
-				</INF>
-			
-				<span className = 'input-hint'>credit card number</span>
-				<span className = 'input-value'>{ccn}</span>
-			</IMNF>
-		)
-
-
-
-		return (
-			<I vertical beta = {this.props.beta} outerClassName = 'store-purchase-container' >
-				
-				<I beta = {100} offset = {-150} innerClassName = {'store-purchase-info'} >
-					<p>
-						thanks for the support! we use stripe for secure and reliable payment processing.
-					</p>
-				</I>
-				<I vertical height = {150} innerClassName='store-purchase-footer'>
-					<I height = {100}>
-						<I beta = {100} offset = {-100} vertical >
-							{cardField}
-							<I beta = {50} >
-								<INF hint = "cvc" inverse innerClassName = 'store-purchase-cvc' beta = {50}  c1 = {c1} c2 ={c2}  value = {this.state.count} data-stripe="cvc" >
-									<span className = 'input-hint'>verification number</span>
-									<span className = 'input-value'>{this.state.card_cvc}</span>
-								</INF>
-								<INF hint = "exp month year" inverse innerClassName = 'store-purchase-exp' beta = {50}  c1 = {c1} c2= {c2} value = {this.state.count} data-stripe="exp-month" >
-									<span className = 'input-hint'>expiration year</span>
-									<span className = 'input-value'>{this.state.card_exp}</span>
-								</INF>
-							</I>					
-						</I>
-						<I width = {100} innerClassName = 'store-purchase-auth'>
-							<span>account</span>
-						</I>
-					</I>
-					<I height = {50}>
-						<I beta = {50} offset={-50} innerClassName = 'store-purchase-price' >
-							<span className = 'input-hint'>total price</span>
-							<span>${price}</span>
-						</I>
-						<INF hint = "amount" bounce = {true} innerClassName = 'store-purchase-count' beta = {50} offset={-50} c1 = '#FFF5AC' c2 ='#3B3B2D' onChange = {this.setCount} type = {Number} value = {this.state.count} >
-							<span className = 'input-hint'>how many</span>
-							<span className = 'input-value'>{this.state.count}</span>
-						</INF>
-						<IB width = {100} inverse c1 = '#00B7FF' c2 ='#003850' right onClick={this.purchase} active = {this.props.purchaseDone} index_offset={4} bClassName={'gui-button-layer'}>
-							<span className='icon-angle-right'></span>
-						</IB>					
-					</I>
-				</I>
-			</I>
-		)
-	}
-})
 
 
 
@@ -412,7 +265,7 @@ var Store = React.createClass({
 						</G>
 					</I>
 				</I>
-				<StripePurchase beta={85} piece = {this.props.piece} variation = {this.state.variation} item = {this.props.current_store_item} />
+				<PaymentForm beta={85} piece = {this.props.piece} variation = {this.state.variation} item = {this.props.current_store_item} />
 
 			</I>
 		)

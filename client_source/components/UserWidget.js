@@ -7,6 +7,16 @@ var ParamWidget = require('./ParamWidget');
 var CircleMixin = require('circui').Mixin;
 
 
+
+
+
+
+
+
+
+
+
+
 var SaveWidget = React.createClass({
 
 	mixins: [CircleMixin],
@@ -32,7 +42,7 @@ var SaveWidget = React.createClass({
 
 		}
 
-		//start save loader.
+		//start the save loader loader has started but is now over
 		if(!this.props.saving_piece && props.saving_piece){
 			this.refs.loader.setState({
 				ease:Power2.easeOut,
@@ -43,7 +53,7 @@ var SaveWidget = React.createClass({
 			
 		}
 
-		//done save loader
+		//save loader is done saving props was true and is now false
 		if(!props.saving_piece && this.props.saving_piece){
 			this.refs.loader.setState({
 				d: 1,
@@ -55,8 +65,8 @@ var SaveWidget = React.createClass({
 	},
 
 	save: function(){
-		console.log("SAVE started",this.done)
-		if(this.props.saving_piece) return
+		console.log("SAVE started")
+		if(this.props.saving_piece) throw 'cannot save current'
 		if(this.props.current_piece){
 			s.showStore(this.props.current_piece)
 		}else{
@@ -88,6 +98,13 @@ var SaveWidget = React.createClass({
 		)
 	}
 })
+
+
+
+
+
+
+
 
 
 

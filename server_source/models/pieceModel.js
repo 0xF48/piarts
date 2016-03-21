@@ -2,10 +2,10 @@ var m = require('mongoose')
 var Schema = m.Schema
 var model = m.model
 var prom = require('bluebird')
-var render = require('../piece_render/renderController')
+var renderer = require('../workers/renderer/renderController')
 var path = require('path')
 var Type = require('./typeModel')
-
+var ObjectId = require('mongoose').Types.ObjectId
 var PreviewSchema = require('./otherModels').PreviewSchema
 
 
@@ -23,6 +23,7 @@ var Piece = new Schema({
 
 
 Piece.methods.public = function(){
+	if(this.type == null) return null
 	return {
 		id: this._id,
 		likes: this.likes,
@@ -44,8 +45,7 @@ Piece.methods.renderPreview = function(){
 		console.log("RENDER",size)
 		self.preview[size] = '/data/pieces/preview/'+self.id+'?size='+size
 		console.log("PIECE RENDER",size)
-
-		return render.renderPiece(self,size)
+		return renderer.renderPiece(self,size)
 	}).then(function(){
 		console.log("DONE PIECE RENDER PREVIEW")
 		return self.save()
@@ -55,19 +55,28 @@ Piece.methods.renderPreview = function(){
 
 Piece.statics.add = function(body){
 	console.log('ADD PIECE',body)
-	return Type.findOne({_id:body.type_id}).then(function(found){
-		if(found == null) return prom.resolve(null)
 
-		console.log("NEW PIECE")
+	return new Promise(function(res,rej){
+		try {
+			var id = ObjectId(body.type_id)
+		}catch(e){
+			return res('bad type id')
+		}
 
+		Type.findOne({'_id':id},function(err,found){
+			if(err != null || found == null){
+				return res('type not found')
+			}
+			console.log("FOUND",err,found)
 
-		var piece = new Model({
-			created: Date.now(),
-			params: body.params,
-			type: found
-		});
+			var piece = new Model({
+				created: Date.now(),
+				params: body.params,
+				type: found
+			});
 
-		return piece.renderPreview()
+			return res(piece.renderPreview())
+		})
 	})
 }
 

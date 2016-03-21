@@ -107,7 +107,6 @@ var PieceItem = React.createClass({
 							<span className='span-eye'>{item.views}</span>
 						</span>
 					</div>
-					
 				</div>
 			</GItem>
 		)
@@ -247,7 +246,7 @@ var Browser = React.createClass({
 	render: function(){
 		return (
 			<I beta = {this.props.beta} vertical outerClassName = 'piece_list_wrapper' scroll vertical ref="wrapper">
-				<G ref = "grid" offset = {this.state.list_offset} fill_up={true} fixed={true} w = {2} h={3} list_id = {this.props.browser_tab} className='piece_list' style = {{height: 'calc(100% - 50px)'}} >
+				<G ref = "grid" ease= {Linear} offset = {this.state.list_offset} fill_up={true} fixed={true} w = {2} h={3} list_id = {this.props.browser_tab} className='piece_list' style = {{height: 'calc(100% - 50px)'}} >
 					{this.items}
 				</G>
 				<div className = 'list_refresh_button'>

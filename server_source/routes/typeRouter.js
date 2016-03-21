@@ -48,6 +48,14 @@ router
 
 })
 
+/*delete type*/
+.delete('/:type_id',function(req,res){
+	if(req.type.locked && !req.user.admin) return res.sendStatus(403)
+	req.type.remove();
+	console.log('removed type',req.type.id)
+	res.send('deleted').status(200)
+})
+
 /* edit type */
 .put('/:type_id',function(req,res){
 	var body = req.body

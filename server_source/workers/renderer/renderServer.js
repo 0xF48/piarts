@@ -1,4 +1,4 @@
-var cfg = require('../../package.json')
+var cfg = require('../../../package.json')
 const DEV = false//cfg.dev 
 const TYPE_BUILD_PATH = cfg.type_build_path
 const DATA_PATH = cfg.data_path
@@ -84,6 +84,6 @@ net.createServer({allowHalfOpen: false},function(client) {
 
 function loadTypeModule(type_name){
 	if(!DEV && type_modules[type_name] != null) return type_modules[type_name]
-	else type_modules[type_name] = require(path.join('../..',TYPE_BUILD_PATH,type_name+'.common.js'))
+	else type_modules[type_name] = require(path.join('../../..',TYPE_BUILD_PATH,type_name+'.common.js'))
 	return type_modules[type_name]
 }

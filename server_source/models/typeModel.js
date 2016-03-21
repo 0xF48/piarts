@@ -1,10 +1,10 @@
 var m = require('mongoose')
 var Schema = m.Schema
-var render = require('../piece_render/renderController')
+var render = require('../workers/renderer/renderController')
 var prom = require('bluebird')
 var PreviewSchema = require('./otherModels').PreviewSchema
 var path = require('path')
-
+var fs = require('fs')
 
 var Type = new Schema({
 	name: {type:String,required:true},
@@ -47,8 +47,10 @@ Type.methods.public = function(){
 Type.methods.renderPreview = function(){
 	var self = this;
 
+	self.preview = {}
 	return prom.map(['small','medium','large'],function(size){
 		self.preview[size] = '/data/types/preview/'+self.id+'?size='+size
+		console.log("RENDER")
 		return render.renderType(self,size)
 	}).then(function(){
 		console.log("DONE TYPE RENDER PREVIEW")
@@ -63,20 +65,21 @@ Type.statics.add = function(data){
 	try {
 		fs.statSync('./piece_modules/src/'+data.name)
 	}catch(e){
-		throw 'cant add type, no source found.'
+		throw new Error(e)
 	}
 
 
 
-	return Type.findOne({name:data.name}).then(function(found_same){
+	return Model.findOne({name:data.name}).then(function(found_same){
+
 		if(found_same != null){
 			console.error('add type conflict -> '+found_same)
 			return prom.resolve(null)
+		}else{
+
+			var type = new Model(data)
+			return type.renderPreview()
 		}
-
-		var type = new Model(data)
-
-		return type.renderPreview()
 	})
 }
 

@@ -7,6 +7,58 @@
 	font-size: 12px;
 }
 
+
+
+.store-stripe-button{
+	background: #006B45;
+	transition: background 0.5s ease;
+	@include center;
+	.icon-help{
+		position: absolute;
+		left: 0px;
+		bottom:0px;
+		height: 20px;
+		width: 20px;
+		color: #00FFA1;
+		line-height: 15px;
+		background: rgba(0,0,0,0.5)
+	}
+	.icon-ok{
+		margin: 3px;
+		font-size: 25px;
+		color: #00FFA1;
+	}
+	.icon-cc-stripe{
+		margin: 3px;
+		font-size: 25px;
+		opacity: 0.7;
+		color: #00FFA1;
+	}
+}
+.store-stripe-button:hover{
+	background: #008959;
+}
+.store-stripe-banner{
+    background: #003F3D;
+    @include center;
+	.store-stripe-logo{
+		-webkit-filter: hue-rotate(100deg) brightness(300%);
+		width: auto;
+		height: 70%;
+	}
+}
+
+.store-stripe-account{
+	@include center;
+	background: #00EE80;
+	color: #fff;
+
+}
+
+
+
+
+
 .store-purchase-info{
 	@include center;
 	background: #fff;

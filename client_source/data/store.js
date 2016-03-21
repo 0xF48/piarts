@@ -6,7 +6,7 @@ var _sort = require('lodash/collection/sortBy');
 var createStore = require('redux').createStore;
 var merge = Object.assign;
 
-var DEV_PAUSE_RENDER = true
+var DEV_PAUSE_RENDER = false
 
 
 const MAX_PARAMS = 5;
@@ -79,7 +79,9 @@ function sortTime(a){
 function mergeToFilters(state,pieces){
 	// console.log("MERGE TO FILTERS",pieces)
 	if(pieces.length == null) pieces = [pieces];
-	
+	pieces = pieces.filter(function(p){
+		return p != null
+	})
 
 	var all =  _uniq(pieces.concat(state.piece_items.recent),function(piece){
 		return piece.id;
@@ -264,7 +266,7 @@ function mainReducer(state, action){
 		case 'ADD_PIECE':
 			return merge(n,state,{
 				piece_items: mergeToFilters(state,action.piece_item),
-				saving_piece: false
+				saving_piece: action.saving_piece || state.saving_piece
 			});		
 
 
@@ -297,6 +299,14 @@ function mainReducer(state, action){
 				current_piece: action.current_piece,
 			})
 
+
+
+		case 'ADD_SAVED_PIECE':
+			return merge(n,state,{
+				saving_piece: false,
+				current_piece: action.piece_item,
+				piece_items: mergeToFilters(state,action.piece_item),
+			})
 	}
 	return state
 }
@@ -708,31 +718,30 @@ function makeCurrentPiece(canvas){
 
 module.exports.saveCurrentPiece = saveCurrentPiece;
 function saveCurrentPiece(){
+	
 	if(store.getState().current_piece != null){
 		throw 'cant save when there is a current_piece'
 	}
+
+
 	var state = store.getState();
+
+
+
 	savePiece(state.current_type,state.params)
 	.end(function(err,res){
 		console.log("SAVED PIECE",err,res)
 		if(err) throw "UPLOAD ERROR";
+
+
+
 		store.dispatch({
-			type: 'SET_CURRENT_PIECE',
+			type: 'ADD_SAVED_PIECE',
 			piece_item: res.body,
 		})
 
-
 		//mark as local
 		res.body.local = true
-		
-		store.dispatch({
-			type: 'ADD_PIECE',
-			piece_item: res.body
-		})
-		store.dispatch({
-			type: 'TOGGLE_SAVE',
-			toggle: false
-		})
 	});
 }
 
@@ -817,9 +826,16 @@ window.store = store //debug
 
 
 
-/* stripe */
-
-// Stripe.setPublishableKey('pk_test_lr4wW6MKoacSUk98vkMbv4ap');
+// /* stripe */
+// module.exports.stripe_handler = StripeCheckout.configure({
+// 	key: 'pk_test_6pRNASCoBOKtIshFeQd4XMUh',
+// 	image: '/stripe_logo.png',
+// 	locale: 'auto',
+// 	token: function(token) {
+// 		alert("GOT TOKEN")
+// 	}
+// });
+// // Stripe.setPublishableKey('pk_test_lr4wW6MKoacSUk98vkMbv4ap');
 
 
 
