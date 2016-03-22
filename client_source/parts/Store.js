@@ -11,7 +11,7 @@ var G = require('intui').Grid
 var Modal = require('intui').Modal
 var GItem = require('intui').GridItem
 var GMixin = require('intui').GridMixin
-var s = require('../data/store')
+var s = require('../state')
 
 var react_redux = require('react-redux');
 var connect = react_redux.connect;
@@ -143,6 +143,15 @@ var Store = React.createClass({
 		
 	},
 
+	getDefaultProps: function(props){
+		return {
+			item_grid_w: 3,
+			item_grid_h: 1,
+			var_grid_w: 3,
+			var_grid_h: 1,
+		}
+	},
+
 	getInitialState: function(){
 		return {
 			selected_variationid: null,
@@ -194,14 +203,18 @@ var Store = React.createClass({
 
 	makeVariationList: function(items){
 		this.variation_items = items.map(function(item,i){
-			return ( <VariationItem onClick={this.setVariation.bind(this,item)} key={item._id} item={item} w={1} h={1} /> )
+			return ( <VariationItem onClick={this.setVariation.bind(this,item)} key={item._id} item={item} w={-1} h={-1} /> )
 		}.bind(this))
 	},
 
 
-	makeItemList: function(items){	
+
+	makeItemList: function(items){
+
+
+
 		this.store_items = items.map(function(item,i){
-			return ( <StoreItem value={i} key={item.id} item={item} w={1} h={1} /> )
+			return ( <StoreItem value={i} key={item.id} item={item} w={-1} h={-1} /> )
 		}.bind(this))
 	},
 

@@ -2,7 +2,7 @@ var C = require('circui').Circle;
 var I = require('intui').Slide;
 var connect = require('react-redux').connect;
 var CLoader = require('circui').Loader;
-var s = require('../data/store.js');
+var s = require('../state');
 var ParamWidget = require('./ParamWidget');
 var CircleMixin = require('circui').Mixin;
 

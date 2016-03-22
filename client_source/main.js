@@ -4,7 +4,7 @@ var Provider = react_redux.Provider;
 var render = require('react-dom').render;
 // var React = require('react');
 var connect = react_redux.connect;
-var s = require('./data/store');
+var s = require('./state');
 
 
 
@@ -27,7 +27,7 @@ function select(state){
 
 
 
-var ConnectedApp = connect(select)(require('./components/App'));
+var ConnectedApp = connect(select)(require('./parts/App'));
 
 render(
   <Provider store={s.store}>

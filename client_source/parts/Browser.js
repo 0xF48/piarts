@@ -7,7 +7,7 @@ var G = require('intui').Grid;
 var GItem = require('intui').GridItem;
 var GMixin = require('intui').GridMixin;
 var Pager = require('intui').Pager;
-var s = require('../data/store')
+var s = require('../state')
 var Button = require('intui').Button;
 
 function getC(c){
@@ -72,7 +72,7 @@ var PieceItem = React.createClass({
 		}
 		var picked = null
 		if(item.picked == true && this.props.browser_tab != 'picked'){
-			picked = <div className='overlay-item piece-item-picked' onClick={(function(e){s.showPieceList('picked');e.stopPropagation();})}><span className='icon-isight' /></div>
+			picked = <div className='overlay-item piece-item-picked' onClick={(function(e){s.toggleBrowserTab('picked');e.stopPropagation();})}><span className='icon-isight' /></div>
 		}
 
 		var active = this.props.current_type != null && this.props.current_type.id == type.id;

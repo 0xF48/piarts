@@ -12,7 +12,7 @@ var DEV_PAUSE_RENDER = false
 const MAX_PARAMS = 5;
 var type_modules = {};
 
-
+var TAB_TIMEOUT = 0
 
 var params = [];
 module.exports.params = params;
@@ -188,9 +188,13 @@ function mainReducer(state, action){
 
       	//set the browser tab (likes,favorites, local,...etc)
    		case 'SET_BROWSER_TAB':
-    		return merge(n, state, {
+
+			return merge(n, state, {
+				show_browser: true,
 				browser_tab: action.tab
-      		}) 
+  			})
+   			
+
 
 
       	//save the current params to the state.
@@ -302,6 +306,7 @@ function mainReducer(state, action){
 
 
 		case 'ADD_SAVED_PIECE':
+			action.piece_item.local = true
 			return merge(n,state,{
 				saving_piece: false,
 				current_piece: action.piece_item,
@@ -458,23 +463,27 @@ module.exports.toggleDragger = function(mode){
 	})		
 }
 
-module.exports.showPieceList = showPieceList
-function showPieceList(tab){
+module.exports.toggleBrowserTab = toggleBrowserTab
+function toggleBrowserTab(tab){
+	if(Date.now() - TAB_TIMEOUT < 500) return
+
 	var state = store.getState()
 	var piece_items = state.piece_items;
 
-	if(!state.show_browser){
-		store.dispatch({
-			type: 'TOGGLE_BROWSER'
-		})
-	}
 	
-	updatePieceList(tab,function(){
-		store.dispatch({
-			type: 'SET_BROWSER_TAB',
-			tab: tab, 
-		})
-	});
+	TAB_TIMEOUT = Date.now()
+	store.dispatch({
+		type: 'SET_BROWSER_TAB',
+		tab: tab, 
+	})
+
+	setTimeout(function() {
+		updatePieceList(tab,function(){
+			console.log('UPDATED PIECE LIST FOR TAB',tab)
+		});		
+	}, 500);
+	
+
 }
 
 
@@ -795,7 +804,6 @@ function setCurrentItem(item){
 		current_store_item: item
 	})
 }
-
 
 
 
