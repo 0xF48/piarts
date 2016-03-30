@@ -70,13 +70,19 @@ var StoreItem = connect(function(state){
 	},
 
 	render: function(){
-		var name = (this.props.current_store_item != null && this.props.current_store_item.id == this.props.item.id) ? "TEST" : this.props.item.name;
+		var item = this.props.item
+		var bg = { 
+			background: 'url('+( (this.props.w == 1 && this.props.h == 1)  ? item.preview.small : item.preview.medium)+') center'
+		}
 		return (
 			<GItem {...this.props} >
-				<div onClick={this.setCurrentStoreItem} className='store-item-container'>
-					<p>{name}</p>
-					<div className = 'overlay-item store-item-price' >
-						<b>{this.props.item.min_price}</b><span> - </span><b>{this.props.item.max_price}</b>
+				<div className = 'store-item-container'>
+					<div onClick={this.setCurrentStoreItem} className='store-item-image'>
+						<div className = 'store-item-bg' style = {bg} />
+					</div>
+					<div onClick={this.setCurrentStoreItem} className='store-item-description'>
+						<span className='store-item-name'>{item.name}</span>
+						<p>{item.description}</p>
 					</div>
 				</div>
 			</GItem>
@@ -110,22 +116,21 @@ var VariationItem = React.createClass({
 		}
 	},
 	render: function(){
+		var bg = {}
 		return (
 			<GItem {...this.props} >
 				<div className='store-item-container'>
-					<div>{this.props.item.price}</div>
+					<div className='store-variation-image'>
+						<div className = 'store-item-bg' style = {bg} />
+					</div>
+					<div className='store-item-description'>
+						<span>{this.props.item.price}</span>
+					</div>
 				</div>
 			</GItem>
 		)
 	}
 })
-
-
-
-
-
-
-
 
 
 
@@ -203,7 +208,7 @@ var Store = React.createClass({
 
 	makeVariationList: function(items){
 		this.variation_items = items.map(function(item,i){
-			return ( <VariationItem onClick={this.setVariation.bind(this,item)} key={item._id} item={item} w={-1} h={-1} /> )
+			return ( <VariationItem onClick={this.setVariation.bind(this,item)} key={item._id} item={item} w={1} h={1} /> )
 		}.bind(this))
 	},
 
@@ -214,7 +219,7 @@ var Store = React.createClass({
 
 
 		this.store_items = items.map(function(item,i){
-			return ( <StoreItem value={i} key={item.id} item={item} w={-1} h={-1} /> )
+			return ( <StoreItem value={i} key={item.id} item={item} w={window.innerHeight < 700 ? 2 : 1} h={1} /> )
 		}.bind(this))
 	},
 
@@ -258,22 +263,29 @@ var Store = React.createClass({
 
 
 		return (
-			<I ease_params={[0.3, 0.3]}  ease = {  Elastic.easeOut } duration={0.5}  slide vertical beta = {this.props.beta} offset = {this.props.offset} index_pos = { this.state.variation  ? 1 : 0 } outerClassName = 'store-wrapper'>
-				<I  beta = {100} vertical >	
-					
-					<div  style={{pointerEvents: this.state.variation ? 'all' : 'none', 'opacity': (this.state.variation ? 0.85 : 0 )}} onClick = {this.clearVariation} className='view-overlay'>
+			<I ease_params={[0.3, 0.3]}  ease = {  Elastic.easeOut } duration={0.5}  slide vertical beta = {this.props.beta} offset = {this.props.offset} index_pos = { this.state.variation  ? 2 : 0 } outerClassName = 'store-wrapper'>
+				<I beta = {30} innerClassName ='store-about' >
+					<b className = 'title'>our store</b>
+					<p>We are currently only offering prints to pay for server expenses, but may offer more options as more pieces and features get added such as metal 3d meshes or videos, thanks for your support. We use stripe for secure payment processing.</p>
+					<p>Select an item and then a variation to proceed to the payment slide</p>
+				</I>
+				<I beta = {70} slide innerClassName = 'store-grid'>	
+					<div style={{pointerEvents: this.state.variation ? 'all' : 'none', 'opacity': (this.state.variation ? 0.85 : 0 )}} onClick = {this.clearVariation} className='view-overlay'>
 						<span className = 'icon-angle-up' />
 						{this.renderSelectionData()}
-						
 					</div>
-					
-					<I beta = {50}>
-						<G fixed={true} w = {3} h = {2} listid = {'store-items'} className='store-items-wrapper'>
+					<I beta = {100}>
+						<div style={{pointerEvents: this.state.item ? 'all' : 'none', 'opacity': (this.state.variation ? 0.85 : 0 )}} onClick = {this.clearItem} className='view-overlay'>
+							<span className = 'icon-angle-right' />
+						</div>
+						<span className='store-items-title title2'>select item</span>
+						<G fixed={false} w = {1} h = {2} listid = {'store-items'} className='store-items-wrapper'>
 							{this.store_items}
 						</G>
 					</I>
-					<I beta = {50} innerClassName='store-variations-wrapper'>
-						<G fill_up={true} fixed={true} w ={3} h={2} list_id = { this.props.current_store_item != null ? this.props.current_store_item.id : '' } >
+					<I beta = {90} >
+						<span className='store-variations-title title2'>select variation</span>
+						<G fill_up={true} fixed={false} w ={1} h={2} list_id = { this.props.current_store_item != null ? this.props.current_store_item.id : ''} className='store-variations-wrapper'  >
 							{this.variation_items}
 						</G>
 					</I>

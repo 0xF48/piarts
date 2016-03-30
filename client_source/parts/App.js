@@ -9,10 +9,13 @@ var SlideMixin = require('intui').Mixin;
 var Button = require('intui').Button;
 var G = require('intui').Grid;
 var GItem = require('intui').GridItem;
+var ITip = require('intui').ToolTip;
 var GMixin = require('intui').GridMixin;
 var UserWidget = require('./UserWidget');
 var s = require('../state');
 var Store = require('./Store');
+var IToggle = require('intui').ToggleField;
+
 
 function getC(c){
 	return (c < 0 ? 0 : Math.round(c))
@@ -112,7 +115,9 @@ var Sidebar = React.createClass({
 					<Button inverse c1 = '#00FF76' c2 ='#003E1C' up 	onClick={s.toggleBrowserTab.bind(null,'recent')} height={this.props.width} icon= 'icon-leaf-1' active = {this.state.active_button == 0} index_offset={4} bClassName={'gui-button-layer'} />
 					<Button inverse c1 = '#FF0157' c2 ='#39000C' down 	onClick={s.toggleBrowserTab.bind(null,'liked')}  height={this.props.width} icon= 'icon-heart' active = {this.state.active_button == 1} index_offset={4} bClassName={'gui-button-layer'} />
 					<Button inverse c1 = '#FFCB00' c2 ='#3A2E00' up 	onClick={s.toggleBrowserTab.bind(null,'picked')} height={this.props.width} icon= 'icon-isight' active = {this.state.active_button == 2} index_offset={4} bClassName={'gui-button-layer'} />
-					<Button right onMouseEnter={function(){console.log("test")}} ease={Bounce.easeOut} inverse c1 = '#D6D6D6' c2 ='#111111' onClick={s.toggleTypesList} height={this.props.width} icon= 'icon-th-thumb' active = {this.props.show_types} index_offset={4} bClassName={'gui-button-layer'} />
+					<I height={this.props.width} />
+					<Button down onMouseEnter={function(){console.log("test")}} ease={Bounce.easeOut} inverse c1 = '#D6D6D6' c2 ='#111111' onClick={s.toggleTypesList} height={this.props.width} icon= 'icon-th-thumb' active = {this.props.show_types} index_offset={4} bClassName={'gui-button-layer'} />
+					<Button inverse c1 = '#D6D6D6' c2 ='#111111' up onClick={s.toggleSettings.bind(null)} height={this.props.width} icon= 'icon-cog' active = {this.props.show_settings} index_offset={4} bClassName={'gui-button-layer'} />
 				</I>
 	
 				<Button inverse c1 = '#D6D6D6' c2 ='#111111' up 	onClick={this.toggleFullscreen} height={this.props.width/2} icon= 'icon-angle-up' icon_alt= 'icon-angle-down' active = {this.state.fullscreen} index_offset={4} bClassName={'gui-button-layer'} />
@@ -281,7 +286,27 @@ var TypeList = React.createClass({
 var Browser = require('./Browser')
 
 
+var Settings = React.createClass({
+	mixins: [SlideMixin],
 
+	toggleTips: function(){
+		s.toggleTipDisplay(!this.props.show_tips)
+	},
+	render: function(){
+		var size = 30;
+
+		return(
+			<I vertical beta = {this.props.beta} innerClassName = {'gui-settings'}>
+				<I height = {50} outerClassName = 'gui-settings-option'>
+					<IToggle onClick = { this.toggleTips } active = {this.props.show_tips} beta = {20} size = {size} color='#FFF9F9'  />
+					<I beta = {80} innerClassName = 'gui-settings-option-slide'>
+						<span>display tips</span>
+					</I>
+				</I>
+			</I>
+		)
+	}
+})
 
 
 
@@ -347,27 +372,44 @@ var App = React.createClass({
 		
 
 		return (
-			<I ease={Power4.easeOut} slide index_pos={this.props.show_info ? 1 : 0} vertical beta={100} ref="root" >
+			<I ease={Power4.easeOut} slide index_pos={this.props.show_info ? 2 : this.props.show_store ? 1 : 0} vertical beta={100} ref="root" >
 				<I slide beta={100} index_pos = {this.props.show_browser ? 0 : 1} ref="top" >
-					<I vertical slide beta = {40} >
-						<Browser {...this.props} vertical beta = {100}/>
-					</I>
 					
-					<Sidebar slide  show_types = {this.props.show_types} show_browser = {this.props.show_browser} show_info ={this.props.show_info} browser_tab = {this.props.browser_tab} vertical width = {50} />
-					<I ease = {Power4.easeOut}  outerClassName={'outer-view'} slide index_pos={this.props.show_store ? 2 : this.props.show_types ? 0 : 1} beta={100} offset={-50} >
-						<TypeList beta = {40} current_type = {this.props.current_type} type_items = {this.props.type_items} />
+					<Browser {...this.props} vertical beta = {40}/>
+					
+					<Sidebar slide show_settings = {this.props.show_settings} show_types = {this.props.show_types} show_browser = {this.props.show_browser} show_info ={this.props.show_info} browser_tab = {this.props.browser_tab} vertical width = {50} />
+					
+					<I ease = {Power4.easeOut}  outerClassName={'outer-view'} slide index_pos={this.props.show_settings || this.props.show_types ? 0 : 1} beta={100} offset={-50} >
+						
+						<I slide beta = {40} index_pos = {this.props.show_settings ? 1 : 0} >
+							<TypeList beta = {100} current_type = {this.props.current_type} type_items = {this.props.type_items} />
+							<Settings {...this.props} beta = {100} />
+						</I>
+						
 						<I beta = {100} id = 'view' ref = "view-slide">
+							
+
+							<ITip onClick={s.showStore} outerClassName = 'store-link-icon' origin_in={'bottom'} origin_out={'left'} display = { this.props.current_piece ? true : false}>
+								<span className='icon-picture' />
+							</ITip>
+							
 							<canvas key = {this.props.current_type ? this.props.current_type.id : 0} id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />
+							
 							<UserWidget {...this.props} ref='widget' />
-							<div className='view-overlay' onClick={this.showView} style={{pointerEvents: (this.props.show_store || this.props.show_browser || this.props.show_types || this.props.show_info) ? 'all' : 'none', 'opacity':(this.props.show_store || this.props.show_browser || this.props.show_types || this.props.show_info) ? 0.85 : 0}} >
+							
+							<div className='view-overlay' onClick={this.showView} style={{pointerEvents: (this.props.show_browser || this.props.show_types || this.props.show_settings ) ? 'all' : 'none', 'opacity':(this.props.show_settings || this.props.show_browser || this.props.show_types) ? 0.85 : 0}} >
 								<span className='icon-angle-left'></span>
 								<span className='icon-angle-right'></span>
-								<span className='icon-angle-up'></span>
 							</div>
 						</I>
-						<Store beta = {100} offset = {-25}  piece={this.props.current_piece} store_items={this.props.store_items} current_store_item={this.props.current_store_item} />
 					</I>
+					
+					<div className='view-overlay'  onClick={this.showView} style={{pointerEvents: (this.props.show_store || this.props.show_info) ? 'all' : 'none', 'opacity':(this.props.show_store || this.props.show_info) ? 0.85 : 0}} >
+						<span className='icon-angle-up' style = {{left:'65%'}}></span>
+					</div>
+
 				</I>
+				<Store beta = {70} piece={this.props.current_piece} store_items={this.props.store_items} current_store_item={this.props.current_store_item} />
 				<I beta = {100} offset = {-25} outerClassName='site-info-outer' innerClassName='site-info'>
 					<p>piarts is a site where you can create and order prints of digitally generated artwork.</p>
 					<br/>

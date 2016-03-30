@@ -6,7 +6,7 @@ var _sort = require('lodash/collection/sortBy');
 var createStore = require('redux').createStore;
 var merge = Object.assign;
 
-var DEV_PAUSE_RENDER = false
+var DEV_PAUSE_RENDER = true
 
 
 const MAX_PARAMS = 5;
@@ -25,42 +25,38 @@ var default_state = {
 		is_admin: true
 	},
 	view_paused: false,
-
 	params: [1,1,1,1,1], //max 5.
-
 	current_type: null,
 	current_piece: null,
-
 	liked_pieces: JSON.parse(localStorage.getItem('liked_pieces')),
-
-
 	recent_offset: 0,
 	picked_offset: 0,
 	liked_offset: 0,
 	saved_offset: 0,
-
-
 	piece_items: {
 		recent: [],
 		picked: [],
 		liked: 	[],
 		saved: []
 	},
-
 	store_items: [],
 	current_store_item: null,
-
 	type_items: {},
 	dragger_active: false,
 	browser_tab : null,
 	show_types: false,
 	show_store: false,
+	show_settings: false,
 	show_info: false,
 	show_browser: false,
 	error: null,
 	type: 'canvas',
 	render_active: true,
-	saving_piece: false,		
+	saving_piece: false,
+
+	//default settings
+	show_tips: true,
+	framerate: 60, //todo	
 }
 
 
@@ -152,6 +148,7 @@ function mainReducer(state, action){
   		case 'TOGGLE_TYPELIST':
    			return merge(n, state, {
 				show_types:  !state.show_types,
+				show_settings: !state.show_types ? false : state.show_settings,
 				show_store: state.show_store == true && !state.show_types == true ? false : state.show_store,
       		})
 
@@ -159,6 +156,7 @@ function mainReducer(state, action){
       	//show current view
       	case 'SHOW_VIEW':
    			return merge(n, state, {
+   				show_settings: false,
    				show_info: false,
 				show_types:  false,
 				show_browser: false,
@@ -195,7 +193,16 @@ function mainReducer(state, action){
   			})
    			
 
+		case 'SHOW_SETTINGS':
+			return merge(n,state,{
+				show_types: action.toggle ? false : state.show_types, //types and settings are in the same slide
+				show_settings: action.toggle
+			})
 
+		case 'SHOW_TIPS':
+			return merge(n,state,{
+				show_tips: action.toggle,
+			})
 
       	//save the current params to the state.
   		case 'SAVE_PARAMS':
@@ -804,6 +811,35 @@ function setCurrentItem(item){
 		current_store_item: item
 	})
 }
+
+module.exports.toggleSettings = toggleSettings
+function toggleSettings(toggle){
+	var set = store.getState().show_settings
+	// console.log("TOGGLE SETT",toggle)
+	store.dispatch({
+		type: 'SHOW_SETTINGS',
+		toggle: toggle || !set
+	})
+}
+
+module.exports.toggleTipDisplay = toggleTipDisplay
+function toggleTipDisplay(toggle){
+	var set = store.getState().show_tips
+	store.dispatch({
+		type: 'SHOW_TIPS',
+		toggle: toggle || !set
+	})
+}
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -9,6 +9,7 @@ var stripe = require('stripe')(cred.stripe_test.private);
 
 /* store routes */
 function getItem(req,res,next,id){
+	console.log("FIND",id)
 	Item.findOne({'_id':id}).then(function(item,err){
 
 		if(item == null){
@@ -46,6 +47,12 @@ router
 	req.item.save(req.body).then(function(){
 		res.send_json(req.item._public())
 	})
+})
+
+.delete('/items/:item',function(req,res){
+	if(!req.user.admin) return res.sendStatus(403)
+	req.item.remove()
+	res.sendStatus(200)
 })
 
 /* get item variation preview of a specific index */

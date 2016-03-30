@@ -1,4 +1,40 @@
 
+.title{
+	color: #000;
+	text-transform: uppercase;
+	font-weight: 100;
+	font-size: 18px;
+	margin-bottom: 5px;
+}
+
+
+.title2{
+	color: #000;
+	font-weight: 100;
+	text-transform: uppercase;
+	font-size: 16px;
+	margin-bottom: 3px;
+}
+
+
+// .flex-item{
+// 	.description{
+// 		height: auto;
+// 		flex: 1;
+// 		height: 100%;
+// 		padding: 5px;
+// 		/* margin-left: 5px; */
+// 		box-sizing: border-box;
+// 		background: #0090FF;
+// 		/* border-radius: 3px; */
+// 		/* border: 1px solid #E2E2E2; */
+// 		color: #fff;
+// 	}
+// }
+
+
+
+
 .input-hint{
 	position: absolute;
 	top:4px;
@@ -6,9 +42,6 @@
 	color: rgba(0,0,0,0.5);
 	font-size: 12px;
 }
-
-
-
 .store-stripe-button{
 	background: #006B45;
 	transition: background 0.5s ease;
@@ -47,17 +80,12 @@
 		height: 70%;
 	}
 }
-
 .store-stripe-account{
 	@include center;
 	background: #00EE80;
 	color: #fff;
 
 }
-
-
-
-
 
 .store-purchase-info{
 	@include center;
@@ -71,21 +99,6 @@
 .store-purchase-auth{
 	@include center;
 	background: #3ACB2D;
-}
-
-.store-wrapper{
-	.store-selection-stats{
-		position: absolute;
-		bottom: 3.5%;
-		left: 50%;
-		transform: translate(-50%, 0%);
-		.overlay-item{
-			height: 50px;
-    		width: 50px;
-    		float:left;
-    		@include center;
-		}
-	}
 }
 .store-purchase-container{
 	background: #fff;
@@ -102,24 +115,137 @@
 	}
 }
 
-.store-item-container{
-	box-sizing : border-box;
-	margin: 4px;
-	position: relative;
-	width: calc(100% - 8px);
-	height: calc(100% - 8px);
-	@include center;
-	overflow: hidden;
-	box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.4), inset 0px 0px 100px rgb(0, 0, 0);
-	border: 1px solid rgba(132, 132, 132, 0.1);
-	font-size: 10px;
-	background: #3C3C3C;
-	.store-item-price{
-		position: absolute;
-		left:0;
-		bottom:0;
+
+
+
+
+
+
+
+
+
+
+.store-link-icon{
+	font-size: 15px;
+	left: 0px;
+	bottom: 0px;
+	height: 50px;
+	width:50px;	
+	div{
+		border-radius: 0px 3px 0px 0px;
+		@include center;
+		padding: 0px;
+		background: #fff;
+		color: #202020;
 	}
 }
+
+
+.store-wrapper{
+	background: #fff;
+	color: #1D1D1D;
+	font-size: 12px;
+	
+	.store-about, .store-grid{
+		box-sizing: border-box;
+		padding: 10px;
+	}
+	.store-about p {
+		padding: 10px;
+		font-size: 14px;
+	}
+
+	.store-items-title, .store-variations-title{
+		top: 0px;
+		left:0px;
+		padding: 5px;
+	}
+
+
+	.store-variation-container{
+		box-sizing : border-box;
+		position: relative;
+		width: calc(100% - 8px);
+		height: calc(100% - 8px);
+		@include center;
+		justify-content: flex-start;
+		flex-direction: row;
+		overflow: hidden;
+
+		.store-variation-image{
+			width: calc(50% - 2px);
+			height: 100%;
+			margin-right: 2px;
+			background: #000;
+			border-radius: 3px;
+		}
+
+		.store-variation-description{
+			height: auto;
+			flex: 1;
+			height: 100%;
+			padding: 5px;
+			margin-left: 5px;
+			box-sizing: border-box;
+			background: #F5F5F5;
+			border-radius: 3px;
+			border: 1px solid #E2E2E2;
+			p{
+				padding: 4px;
+			}		
+			.store-item-name{
+				color: #000;
+				text-transform: uppercase;
+				font-size: 14px;
+
+			}
+		}
+	}
+
+
+	.store-item-container{
+		box-sizing : border-box;
+		position: relative;
+		width: calc(100% - 8px);
+		height: calc(100% - 8px);
+		@include center;
+		justify-content: flex-start;
+		flex-direction: column;
+		overflow: hidden;
+		.store-item-image{
+			height: calc(50% - 2px);
+			width: 100%;
+			margin-bottom: 2px;
+			background: #000;
+			border-radius: 3px;
+		}
+		.store-item-description{
+			height: auto;
+			flex: 1;
+			width: 100%;
+			padding: 5px;
+			margin-top: 5px;
+			box-sizing: border-box;
+			background: #F5F5F5;
+			border-radius: 3px;
+			border: 1px solid #E2E2E2;
+			p{
+				padding: 4px;
+			}		
+			.store-item-name{
+				color: #000;
+				text-transform: uppercase;
+				font-size: 14px;
+
+			}
+		}
+	}
+}
+
+
+
+
+
 
 .store-wrapper-error{
 	background: #FFB400;
@@ -127,15 +253,12 @@
 }
 
 .store-items-wrapper{
-	background: #111111;
 	position: relative;
-	height: calc(100%-50px);
-	padding: 4px;
+	height: calc(100% - 25px) !important;
+	margin-top: 10px;
 	transform: translateZ(0);
-	box-sizing : border-box;
-
 }
 
 .store-variations-wrapper{
-	background: #454445;
+	// background: #454445;
 }

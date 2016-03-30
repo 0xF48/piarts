@@ -28,6 +28,18 @@ var SaveWidget = React.createClass({
 	
 	},
 
+	setLike: function(){
+		console.log("set like")
+		if(this.props.current_piece != null){
+			if(this.props.liked_pieces.indexOf(this.props.current_piece.id) != -1){
+				s.removeLike(this.props.current_piece)
+			}else{
+				s.setLike(this.props.current_piece)
+			}
+			
+		}
+	},
+
 	componentWillReceiveProps: function(props){
 		
 		//default back to start
@@ -35,19 +47,17 @@ var SaveWidget = React.createClass({
 			this.refs.loader.setState({
 				ease:Power2.easeOut,
 				d: 1,
-				c_r: 0, c_g: 255, c_b: 235,
+				c_r: 255, c_g: 255, c_b: 48,
 				angle_start:0, angle_end: 0,
 			})
-			
-
 		}
 
-		//start the save loader loader has started but is now over
+		//start the save loader loader has started but is not over
 		if(!this.props.saving_piece && props.saving_piece){
 			this.refs.loader.setState({
 				ease:Power2.easeOut,
 				d: 6,
-				c_r: 0, c_g: 255, c_b: 235,
+				c_r: 255, c_g: 0, c_b: 48,
 				angle_start:0, angle_end: Math.PI*1.3,
 			})
 			
@@ -57,7 +67,7 @@ var SaveWidget = React.createClass({
 		if(!props.saving_piece && this.props.saving_piece){
 			this.refs.loader.setState({
 				d: 1,
-				c_r: 0, c_g: 235, c_b: 255,
+				c_r: 255, c_g: 0, c_b: 48,
 				angle_start:0, angle_end: Math.PI*2,
 			})
 
@@ -68,7 +78,8 @@ var SaveWidget = React.createClass({
 		console.log("SAVE started")
 		if(this.props.saving_piece) throw 'cannot save current'
 		if(this.props.current_piece){
-			s.showStore(this.props.current_piece)
+			this.setLike()
+			// s.showStore(this.props.current_piece)
 		}else{
 			s.saveCurrentPiece()
 		}
@@ -80,6 +91,11 @@ var SaveWidget = React.createClass({
 	},
 
 	render: function(){
+		var like_style = {color:'#FF0030',background:'#fff'} 
+		if(this.props.current_piece != null && this.props.liked_pieces.indexOf(this.props.current_piece.id) != -1){
+			like_style = {color:'#fff',background:'#FF0030'}
+		}
+
 		// console.log('curent piece ',this.props.current_piece)
 		return (
 			<C {...this.props} padding={0} className='share_node' ref='root' onClick={this.save}>
@@ -89,8 +105,8 @@ var SaveWidget = React.createClass({
 						<I beta={100} innerClassName='share-slide-save'>
 							<b className='icon-database' />
 						</I>
-						<I beta={100} innerClassName='share-slide-view'>
-							<b className='icon-picture' />
+						<I beta={100} innerClassName='share-slide-view' style = {like_style}>
+							<b className='icon-heart' style={like_style}/>
 						</I>	
 					</I>
 				</div>
@@ -168,44 +184,25 @@ var UserWidget = React.createClass({
 
 	},
 
-	setLike: function(){
-		console.log("set like")
-		if(this.props.current_piece != null){
-			if(this.props.liked_pieces.indexOf(this.props.current_piece.id) != -1){
-				s.removeLike(this.props.current_piece)
-			}else{
-				s.setLike(this.props.current_piece)
-			}
-			
-		}
+
+	reset: function(){
+		s.showType(this.props.current_type)
 	},
 
 
 	render: function(){
-		var scale = 1;
-		var bg = ''
-		if(this.props.current_piece != null){
-			if(this.props.liked_pieces.indexOf(this.props.current_piece.id) != -1){
-				scale = 0.9
-				bg = 'active'
-			}
-			
-			
 		
-		}else{
-			scale = 0
-		}
-		
+	
 		return (
 			<div className = 'user-widget' ref = 'root'  >
 				<canvas  tabIndex='1' ref='canvas' className = 'user-widget-canvas' />
-				<C padding = {6} rootStyle={{top:'50%'}} rootClass = 'user-widget-dom' ref='root_node' expanded={this.state.expanded} onClick={this.toggleRoot} size={85} angle = {-Math.PI/2} >
+				<C padding = {-10} rootStyle={{top:'50%'}} rootClass = 'user-widget-dom' ref='root_node' expanded={this.state.expanded} onClick={this.toggleRoot} size={85} angle = {-Math.PI/2} >
 					<b className='icon-cog' />
-					<C distance={1.2}  beta = {45} scale={scale} selfClass={"love_node "+bg} ref='love_node' onClick={this.setLike}>
-						<b className='icon-heart' style={{color: ((this.props.current_piece != null && this.props.liked_pieces.indexOf(this.props.current_piece.id) != -1) ? '#FF0072' : 'black')}}/>
+					<C distance={1.2}  beta = {45}  ref='love_node' onClick={this.reset}>
+						<b className = 'icon-sunrise'/>
 					</C>
-					<ParamWidget distance={1.3} beta={100} ref='param_widget' expanded={ this.paramState() } params={this.props.params} current_type = {this.props.current_type} save_sharing={this.props.save_sharing} />
-					<SaveWidget distance={1.2} beta={45} ref='save_widget' saving_piece={this.props.saving_piece} current_piece={this.props.current_piece}/>
+					<ParamWidget distance={-0.5} hide = {!this.paramState()} scale={1}  beta={45} ref='param_widget' expanded={ this.state.expanded } params={this.props.params} current_type = {this.props.current_type} save_sharing={this.props.save_sharing} />
+					<SaveWidget distance={1.2} beta={45} ref='save_widget' liked_pieces = {this.props.liked_pieces} saving_piece={this.props.saving_piece} current_piece={this.props.current_piece}/>
 				</C>
 			</div>
 		)

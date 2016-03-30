@@ -212,7 +212,6 @@ var Browser = React.createClass({
 		}
 	},
 
-
 	shouldComponentUpdate: function(props,state){
 		if( ! props.piece_items[props.browser_tab] ) return true
 		
@@ -225,7 +224,6 @@ var Browser = React.createClass({
 		
 		return true
 	},
-
 
 	previousPage: function(){
 		this.setState({

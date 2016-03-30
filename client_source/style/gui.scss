@@ -16,6 +16,20 @@
 	
 }
 
+.gui-settings{
+	background: #111111;
+	color: #fff;
+	font-weight: 100;
+    text-transform: capitalize;
+	.gui-settings-option{
+		border-bottom: 1px solid #1F1F1F;
+	}
+	.gui-settings-option-slide{
+		@include center;
+		justify-content: flex-start;
+	}
+}
+
 
 
 
