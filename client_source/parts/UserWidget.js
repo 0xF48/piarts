@@ -1,5 +1,6 @@
+
 var C = require('circui').Circle;
-var I = require('intui').Slide;
+var I = require('intui/parts/Slide');
 var connect = require('react-redux').connect;
 var CLoader = require('circui').Loader;
 var s = require('../state');
@@ -194,7 +195,7 @@ var UserWidget = React.createClass({
 		
 	
 		return (
-			<div className = 'user-widget' ref = 'root'  >
+			<div className = 'user-widget'  ref = "root">
 				<canvas  tabIndex='1' ref='canvas' className = 'user-widget-canvas' />
 				<C padding = {-10} rootStyle={{top:'50%'}} rootClass = 'user-widget-dom' ref='root_node' expanded={this.state.expanded} onClick={this.toggleRoot} size={85} angle = {-Math.PI/2} >
 					<b className='icon-cog' />

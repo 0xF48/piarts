@@ -19,7 +19,7 @@
 
 .user-widget-dom{
 	-webkit-filter: url("#goo");
-	filter: url("./index.html#goo");
+	filter: unqoute("url(./index.html#goo)");
 	position: absolute;
 	top:50%;
 	left:0;

@@ -9,7 +9,6 @@
   },
   "auth": "Basic eXVyaXNpZG9AZ21haWwuY29tOnRlc3Q=",
   "maintenance": false,
-  "nw_path": "/Users/arxii/Documents/piarts/server_source/nwjs/nwjs.app/Contents/MacOS/nwjs",
   "type_build_path": "piece_modules/builds",
   "data_path": "data",
   "sizes": {
@@ -44,7 +43,6 @@
   },
   "dependencies": {
     "bluebird": "^3.3.3",
-    "canvas": "^1.3.10",
     "circui": "git+https://github.com/arxii/circui.git",
     "colors": "^1.1.2",
     "cookies": "^0.6.1",

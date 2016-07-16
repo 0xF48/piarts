@@ -1,14 +1,18 @@
-var intui = require('intui');
+
 var react_redux = require('react-redux');
 var connect = react_redux.connect;
-var I = require('intui').Slide;
-var SlideMixin = require('intui').Mixin;
-var G = require('intui').Grid;
-var GItem = require('intui').GridItem;
-var GMixin = require('intui').GridMixin;
-var Pager = require('intui').Pager;
+
+
+var I = require('intui/parts/Slide');
+var SlideMixin = require('intui/parts/SlideMixin');
+var G = require('intui/parts/Grid');
+var GItem = require('intui/parts/GridItem');
+var ITip = require('intui/parts/ToolTip');
+var GMixin = require('intui/parts/GridMixin');
+var UserWidget = require('./UserWidget');
+
 var s = require('../state')
-var Button = require('intui').Button;
+
 
 function getC(c){
 	return (c < 0 ? 0 : Math.round(c))
@@ -177,9 +181,10 @@ var Browser = React.createClass({
 		}
 	},
 
-	items: [],
+	
 
 	getInitialState: function(){
+		this.items = []
 		return {
 			list_offset: 0,
 			page_index: 0,
@@ -243,8 +248,16 @@ var Browser = React.createClass({
 
 	render: function(){
 		return (
-			<I beta = {this.props.beta} vertical outerClassName = 'piece_list_wrapper' scroll vertical ref="wrapper">
-				<G ref = "grid" ease= {Linear} offset = {this.state.list_offset} fill_up={true} fixed={true} w = {2} h={3} list_id = {this.props.browser_tab} className='piece_list' style = {{height: 'calc(100% - 50px)'}} >
+			<I beta = {this.props.beta} vertical outerClassName = 'piece_list_wrapper' scroll ref="wrapper">
+				<G 
+					ref = "grid"
+					fixed= {false}
+					w = {2}
+					h= {3}
+					list_id = {this.props.browser_tab}
+					className= 'piece_list'
+					style = {{height: 'calc(100% - 50px)'}} >
+					
 					{this.items}
 				</G>
 				<div className = 'list_refresh_button'>

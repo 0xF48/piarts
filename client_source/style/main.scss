@@ -1,18 +1,4 @@
-@font-face {
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 300;
-  src: local('Roboto Thin'), local('Roboto-Thin'),  url(/roboto-300.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-}
-
-@font-face {
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 100;
-  src: local('Roboto Thin'), local('Roboto-Thin'), url(/roboto-100.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-}
+@import url(https://fonts.googleapis.com/css?family=Roboto:100,200,300,400,500,700);
 
 html,*{
 	box-sizing: border-box;
@@ -22,7 +8,8 @@ html,*{
 }
 
 html{
-	overflow: hidden;
+	overflow-y: scroll;
+    overflow-x: hidden;
 	width: 100%;
 	height: 100%;
 }
@@ -38,7 +25,7 @@ body{
 
 #root{
 	width: 100%;
-    height: 100vh;
+    height: 100%;
     display: flex;
     flex-direction: row;
     align-items: stretch;
@@ -77,8 +64,5 @@ body{
 
 @import "./gui.scss";
 @import "./view.scss";
-@import "./intui.scss";
-@import "./splash.scss";
 @import "./widget.scss";
 @import "./browser.scss";
-@import "./store.scss";

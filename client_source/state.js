@@ -504,12 +504,12 @@ function toggleBrowserTab(tab){
 module.exports.loadType = loadType
 function loadType(type,cb){
 
-	if(type_modules[type.name]) return cb ? cb(type) : null
+	// if(type_modules[type.name]) return cb ? cb(type) : null
 
-	requirejs(['data/types/script/'+type.id],function(module){
-		type_modules[type.name] = module
-		cb(type)
-	})
+	// requirejs(['data/types/script/'+type.id],function(module){
+	// 	type_modules[type.name] = module
+	// 	cb(type)
+	// })
 }
 
 
@@ -564,7 +564,8 @@ function updatePieceList(filter,cb){
 	var arr = state.piece_items[filter];
 
 	return req.get('/data/pieces?filter='+filter+'&skip='+arr.length)
-	.end(function(err,res){
+	.then(function(res){
+		if(res.statusCode != 200) return cb ? cb(): null;
 
 		if(!res.body.length) return cb ? cb() : null
 		//console.log("GOT PIECE LIST BODY",res.body);

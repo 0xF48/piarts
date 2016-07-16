@@ -72,12 +72,12 @@ router
 			q = {picked: true}
 			break;
 		case 'saved':
+			if(!req.user.local.length) return res.sendStatus(404)
 			q = { _id: { $in: req.user.local} }
 		case 'recent':
 		default:
 			sort_q = {_id: -1}
 			break;
-		
 	}
 	
 	Piece.find(q)
@@ -86,6 +86,7 @@ router
 	.limit(LIMIT)
 	.populate('type')
 	.exec(function(err,pieces){
+		console.log(err)
 		if(err) return res.sendStatus(500);
 		res.json(pieces.map(function(piece){
 			var pub_json = piece.public()

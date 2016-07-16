@@ -1,7 +1,8 @@
 //parameters
+
 var C = require('circui').Circle;
-var connect = require('react-redux').connect;
 var CircleMixin = require('circui').Mixin;
+
 
 var s = require('../state')
 

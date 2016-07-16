@@ -1,20 +1,17 @@
-var intui = require('intui');
-
-
 var react_redux = require('react-redux');
 var connect = react_redux.connect;
 
-var I = require('intui').Slide;
-var SlideMixin = require('intui').Mixin;
-var Button = require('intui').Button;
-var G = require('intui').Grid;
-var GItem = require('intui').GridItem;
-var ITip = require('intui').ToolTip;
-var GMixin = require('intui').GridMixin;
+
+var I = require('intui/parts/Slide');
+var SlideMixin = require('intui/parts/SlideMixin');
+var IButton = require('intui/parts/Button');
+var G = require('intui/parts/Grid');
+var GItem = require('intui/parts/GridItem');
+var ITip = require('intui/parts/ToolTip');
+var GMixin = require('intui/parts/GridMixin');
 var UserWidget = require('./UserWidget');
 var s = require('../state');
-var Store = require('./Store');
-var IToggle = require('intui').ToggleField;
+var IToggle = require('intui/parts/Form').ToggleField;
 
 
 function getC(c){
@@ -39,6 +36,27 @@ function getC(c){
 
 
 
+var Button = React.createClass({
+	mixins: [SlideMixin],
+	render: function(){
+		var dir = null;
+		if(this.props.down) dir = 'down'
+		if(this.props.up) dir = 'up'
+		if(this.props.right) dir = 'right'
+		if(this.props.left) dir = 'left'
+
+		return(
+			<IButton beta = {this.props.beta} inverse = {this.props.inverse} dir={dir} onClick={this.props.onClick} height={this.props.height} width={this.props.width} active = {this.props.active} index_offset={4}>
+				<div className = {'gui-button-layer'} style = {{background:this.props.c1,color:this.props.c2}}>
+					<b className = {this.props.icon} />
+				</div>
+				<div className = {'gui-button-layer'} style = {{background:this.props.c2,color:this.props.c1}}>
+					<b className = {this.props.icon} />
+				</div>
+			</IButton>
+		)
+	}
+})
 
 
 
@@ -109,15 +127,14 @@ var Sidebar = React.createClass({
 	},
 	render: function(){
 		return (
-			<I {...this.props} id = 'sidebar' ref="sidebar" outerClassName="gui-sidebar" >
+			<I {...this.props} id = 'sidebar' ref="sidebar" c="gui-sidebar" >
 				<I vertical beta={100} offset={-this.props.width-this.props.width/2} ref = 'sidebar_top'>
-					<Button inverse c1 = '#00B7FF' c2 ='#003850' down 	onClick={s.toggleBrowserTab.bind(null,'saved')}  height={this.props.width} icon= 'icon-database' active = {this.state.active_button == 3} index_offset={4} bClassName={'gui-button-layer'} />
-					<Button inverse c1 = '#00FF76' c2 ='#003E1C' up 	onClick={s.toggleBrowserTab.bind(null,'recent')} height={this.props.width} icon= 'icon-leaf-1' active = {this.state.active_button == 0} index_offset={4} bClassName={'gui-button-layer'} />
-					<Button inverse c1 = '#FF0157' c2 ='#39000C' down 	onClick={s.toggleBrowserTab.bind(null,'liked')}  height={this.props.width} icon= 'icon-heart' active = {this.state.active_button == 1} index_offset={4} bClassName={'gui-button-layer'} />
-					<Button inverse c1 = '#FFCB00' c2 ='#3A2E00' up 	onClick={s.toggleBrowserTab.bind(null,'picked')} height={this.props.width} icon= 'icon-isight' active = {this.state.active_button == 2} index_offset={4} bClassName={'gui-button-layer'} />
+					<Button inverse c1 = '#00B7FF' c2 ='#003850' down 	onClick={s.toggleBrowserTab.bind(null,'saved')}  height={this.props.width} icon= 'icon-database' active = {this.state.active_button == 3} />
+					<Button inverse c1 = '#00FF76' c2 ='#003E1C' up 	onClick={s.toggleBrowserTab.bind(null,'recent')} height={this.props.width} icon= 'icon-leaf-1' active = {this.state.active_button == 0}  />
+					<Button inverse c1 = '#FF0157' c2 ='#39000C' down 	onClick={s.toggleBrowserTab.bind(null,'liked')}  height={this.props.width} icon= 'icon-heart' active = {this.state.active_button == 1} />
+					<Button inverse c1 = '#FFCB00' c2 ='#3A2E00' up 	onClick={s.toggleBrowserTab.bind(null,'picked')} height={this.props.width} icon= 'icon-isight' active = {this.state.active_button == 2} />
 					<I height={this.props.width} />
 					<Button down onMouseEnter={function(){console.log("test")}} ease={Bounce.easeOut} inverse c1 = '#D6D6D6' c2 ='#111111' onClick={s.toggleTypesList} height={this.props.width} icon= 'icon-th-thumb' active = {this.props.show_types} index_offset={4} bClassName={'gui-button-layer'} />
-					<Button inverse c1 = '#D6D6D6' c2 ='#111111' up onClick={s.toggleSettings.bind(null)} height={this.props.width} icon= 'icon-cog' active = {this.props.show_settings} index_offset={4} bClassName={'gui-button-layer'} />
 				</I>
 	
 				<Button inverse c1 = '#D6D6D6' c2 ='#111111' up 	onClick={this.toggleFullscreen} height={this.props.width/2} icon= 'icon-angle-up' icon_alt= 'icon-angle-down' active = {this.state.fullscreen} index_offset={4} bClassName={'gui-button-layer'} />
@@ -258,7 +275,7 @@ var TypeList = React.createClass({
 	render: function(){
 		return (
 			<I {...this.props} scroll vertical outerClassName='type_list' >
-				<G fill_up={true} fixed={true} list_id = "piece_types" w= {1} h = {3} >
+				<G fill_up={true} fixed={false} list_id = "piece_types" w= {1} h = {3} >
 					{this.items}
 				</G>
 			</I>
@@ -322,9 +339,13 @@ var Settings = React.createClass({
 
 
 
-
-
 var App = React.createClass({
+
+	getDefaultProps: function(){
+		return {
+
+		}
+	},
 
 	getInitialState: function(){
 		return {
@@ -332,6 +353,12 @@ var App = React.createClass({
 		}
 	},
 
+	componentDidMount: function(){
+
+		console.log("MOUNTED")
+		window.app = this;
+	
+	},
 
 	showView: function(ee,e){
 		console.log("SHOW VIEW")
@@ -362,11 +389,44 @@ var App = React.createClass({
 
 	render: function(){
 
+
 		
 
 		return (
-			<I ease={Power4.easeOut} slide vertical beta={100} ref="root" />
+			<I slide index_pos={this.props.show_info ? 1 : 0} vertical beta={100} ref = "root" >
+				<I slide beta={100} index_pos = {this.props.show_browser ? 0 : 1} ref = "top" >
+					
+					<Browser {...this.props} vertical beta = {40}/>
+					
+					<Sidebar slide show_settings = {this.props.show_settings} show_types = {this.props.show_types} show_browser = {this.props.show_browser} show_info ={this.props.show_info} browser_tab = {this.props.browser_tab} vertical width = {50} />
+					
+					<I ease = {Power4.easeOut}  outerClassName={'outer-view'} slide index_pos={this.props.show_settings || this.props.show_types ? 0 : 1} beta={100} offset={-50} >
+						
+						
+						<TypeList beta = {40} current_type = {this.props.current_type} type_items = {this.props.type_items} />
+						
+						
+						<I beta = {100} id = 'view' ref = "view_slide">
 
+							<canvas key = {this.props.current_type ? this.props.current_type.id : 0} id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />
+							<UserWidget {...this.props} />
+							
+							<div className='view-overlay' onClick={this.showView} style={{pointerEvents: (this.props.show_browser || this.props.show_types || this.props.show_settings ) ? 'all' : 'none', 'opacity':(this.props.show_settings || this.props.show_browser || this.props.show_types) ? 0.85 : 0}} >
+								<span className='icon-angle-left'></span>
+								<span className='icon-angle-right'></span>
+							</div>
+						</I>
+					</I>
+					
+					<div className='view-overlay'  onClick={this.showView} style={{pointerEvents: (this.props.show_store || this.props.show_info) ? 'all' : 'none', 'opacity':(this.props.show_store || this.props.show_info) ? 0.85 : 0}} >
+						<span className='icon-angle-up' style = {{left:'65%'}}></span>
+					</div>
+
+				</I>
+				<I beta = {100} offset = {-25} className='site-info'>
+					<p>this site allows you to create different variations of webgl visuals. it uses thrrejs, glsl, react, redux, and a ui component library called intui used to display the different slides and grid.</p>
+				</I>
+			</I>
 		)
 	}
 })

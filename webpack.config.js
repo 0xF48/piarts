@@ -1,12 +1,11 @@
 var webpack = require("webpack");
-var path = require('path');
-var colors = require('colors');
 
 var cfg = {
 	devtool: 'source-map',
 	module: {
 		loaders: [
 			{test: /\.js$/, loader: "jsx-loader" },
+			{ test: /\.scss$/, loaders: ["style", "css", "sass"] }
 		]
 	},
 	entry: {
@@ -23,27 +22,14 @@ var cfg = {
 		filename: "bundle.js"
 	},
 	plugins: [
-		new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js")
+		new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js"),
+		new webpack.ProvidePlugin({
+			React: "react",
+			"window.React": "react"
+		})
 	],
 
 }
-
-
-var gulp = require('gulp');
-var sass = require('gulp-sass');
-
-function runsass() {
-  return gulp.src('./client_source/style/main.scss')
-    .pipe(sass().on('error', sass.logError))
-    .pipe(gulp.dest('./client_static'))
-    .on('end',function(v1,v2){
-    	console.log("\n~~ css done ~~".bold.green)
-    })
-}
-
-gulp.task('sass',runsass);
-runsass()
-gulp.watch('./client_source/style/**/*.scss', ['sass']);
 
 
 module.exports = cfg;
