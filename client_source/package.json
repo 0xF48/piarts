@@ -11,7 +11,7 @@
   "dependencies": {
     "circui": "git+https://github.com/arxii/circui.git",
     "gsap": "git+https://github.com/arxii/GreenSock-JS.git",
-    "intui": "git+https://github.com/arxii/intui.git",
+    "intui": "git+https://github.com/arxii/intui.git#0.0.1",
     "jquery": "^2.2.3",
     "react": "^15.0.1",
     "react-dom": "^15.2.1",

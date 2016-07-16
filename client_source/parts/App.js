@@ -47,10 +47,10 @@ var Button = React.createClass({
 
 		return(
 			<IButton beta = {this.props.beta} inverse = {this.props.inverse} dir={dir} onClick={this.props.onClick} height={this.props.height} width={this.props.width} active = {this.props.active} index_offset={4}>
-				<div className = {'gui-button-layer'} style = {{background:this.props.c1,color:this.props.c2}}>
+				<div className = {'gui-button-layer'} style = {{background:this.props.c2,color:this.props.c1}}>
 					<b className = {this.props.icon} />
 				</div>
-				<div className = {'gui-button-layer'} style = {{background:this.props.c2,color:this.props.c1}}>
+				<div className = {'gui-button-layer'} style = {{background:this.props.c1,color:this.props.c2}}>
 					<b className = {this.props.icon} />
 				</div>
 			</IButton>
@@ -132,9 +132,9 @@ var Sidebar = React.createClass({
 					<Button inverse c1 = '#00B7FF' c2 ='#003850' down 	onClick={s.toggleBrowserTab.bind(null,'saved')}  height={this.props.width} icon= 'icon-database' active = {this.state.active_button == 3} />
 					<Button inverse c1 = '#00FF76' c2 ='#003E1C' up 	onClick={s.toggleBrowserTab.bind(null,'recent')} height={this.props.width} icon= 'icon-leaf-1' active = {this.state.active_button == 0}  />
 					<Button inverse c1 = '#FF0157' c2 ='#39000C' down 	onClick={s.toggleBrowserTab.bind(null,'liked')}  height={this.props.width} icon= 'icon-heart' active = {this.state.active_button == 1} />
-					<Button inverse c1 = '#FFCB00' c2 ='#3A2E00' up 	onClick={s.toggleBrowserTab.bind(null,'picked')} height={this.props.width} icon= 'icon-isight' active = {this.state.active_button == 2} />
+					<Button right onMouseEnter={function(){console.log("test")}} inverse c1 = '#D6D6D6' c2 ='#111111' onClick={s.toggleTypesList} height={this.props.width} icon= 'icon-th-thumb' active = {this.props.show_types} index_offset={4} bClassName={'gui-button-layer'} />
 					<I height={this.props.width} />
-					<Button down onMouseEnter={function(){console.log("test")}} ease={Bounce.easeOut} inverse c1 = '#D6D6D6' c2 ='#111111' onClick={s.toggleTypesList} height={this.props.width} icon= 'icon-th-thumb' active = {this.props.show_types} index_offset={4} bClassName={'gui-button-layer'} />
+					
 				</I>
 	
 				<Button inverse c1 = '#D6D6D6' c2 ='#111111' up 	onClick={this.toggleFullscreen} height={this.props.width/2} icon= 'icon-angle-up' icon_alt= 'icon-angle-down' active = {this.state.fullscreen} index_offset={4} bClassName={'gui-button-layer'} />
@@ -227,7 +227,7 @@ var TypeItem = connect(function(state){
 			<GItem {...this.props} onClick = {this.showType} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} >
 				<div className = 'type-item' style = {global_style}>
 					<div ref='bg' className = ' type-item-bg' style={bg} />
-					<span className='overlay-item type-item-symbol' style={symbol_style} >{item.symbol}</span>
+					<span className='overlay-item piece-item-symbol' style={symbol_style} >{item.symbol}</span>
 					<span className="overlay-item type-item-name" >{item.name}</span>
 					<div className = 'overlay-item type-item-count' >
 						<span style = {global_style}>
@@ -246,7 +246,6 @@ var TypeItem = connect(function(state){
 
 
 var TypeList = React.createClass({
-	mixins: [SlideMixin],
 	getInitialState: function(){
 		return {
 			
@@ -274,11 +273,11 @@ var TypeList = React.createClass({
 	items: [],
 	render: function(){
 		return (
-			<I {...this.props} scroll vertical outerClassName='type_list' >
-				<G fill_up={true} fixed={false} list_id = "piece_types" w= {1} h = {3} >
-					{this.items}
-				</G>
-			</I>
+			
+			<G fill_up={true} fixed={false} list_id = "piece_types" w= {1} h = {3} >
+				{this.items}
+			</G>
+		
 		)
 	}
 })
@@ -396,14 +395,23 @@ var App = React.createClass({
 			<I slide index_pos={this.props.show_info ? 1 : 0} vertical beta={100} ref = "root" >
 				<I slide beta={100} index_pos = {this.props.show_browser ? 0 : 1} ref = "top" >
 					
-					<Browser {...this.props} vertical beta = {40}/>
+					<Browser 
+						browser_tab = {this.props.browser_tab} 
+						type_items = {this.props.type_items} 
+						piece_items = {this.props.piece_items} 
+						current_type = {this.props.current_type} 
+						max_reached = {this.props.max_reached} 
+						vertical 
+						beta = {40} />
 					
 					<Sidebar slide show_settings = {this.props.show_settings} show_types = {this.props.show_types} show_browser = {this.props.show_browser} show_info ={this.props.show_info} browser_tab = {this.props.browser_tab} vertical width = {50} />
 					
-					<I ease = {Power4.easeOut}  outerClassName={'outer-view'} slide index_pos={this.props.show_settings || this.props.show_types ? 0 : 1} beta={100} offset={-50} >
+					<I outerClassName={'outer-view'} slide index_pos={this.props.show_types ? 0 : 1} beta={100} offset={-50} >
 						
+						<I beta = {40} c='type_list' >
+							<TypeList current_type = {this.props.current_type} type_items = {this.props.type_items} />
+						</I>
 						
-						<TypeList beta = {40} current_type = {this.props.current_type} type_items = {this.props.type_items} />
 						
 						
 						<I beta = {100} id = 'view' ref = "view_slide">

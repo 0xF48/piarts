@@ -541,7 +541,7 @@ var ParamWidget = React.createClass({
 
 
 		return (
-			<C {...this.props} expand_duration = {1}  ref = 'root' padding = {this.state.padding} size={50} angle = {Math.PI/2} expanded={this.props.expanded} onClick={this.toggleSelf} >
+			<C {...this.props} expand_duration = {0.5}  ref = 'root' padding = {this.state.padding} size={50} angle = {Math.PI/2} expanded={this.props.expanded} onClick={this.toggleSelf} >
 				<b className='icon-sliders' />
 				<C style = {{background:this.getC(5)}} beta = {c_beta} size={c_size} distance={this.getDist(4)} onClick={this.setDragger.bind(this,4)} ref = 'knob_4' scale = {this.getScale(4)}>
 					</C>

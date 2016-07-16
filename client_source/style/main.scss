@@ -1,6 +1,12 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:100,200,300,400,500,700);
 
+
+.filter{
+	display: none;
+}
+
 html,*{
+	
 	box-sizing: border-box;
 	padding:0;
 	margin:0;
@@ -8,8 +14,7 @@ html,*{
 }
 
 html{
-	overflow-y: scroll;
-    overflow-x: hidden;
+	overflow: hidden;
 	width: 100%;
 	height: 100%;
 }

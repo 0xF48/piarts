@@ -48,7 +48,7 @@ function getPiece(req,res,next,id){
 
 router
 .get('/',function(req,res){
-	var skip = req.query.skip;
+	var skip = Number(req.query.skip);
 	var filter = req.query.filter;
 	var sort_q = {};
 	var q = {};
@@ -56,16 +56,19 @@ router
 	if(skip == null) skip = 0;
 
 
+
 	if(req.query.type != null){
 		q.type = req.query.type
 	}
 
 	switch(filter){
-		case 'likes':
+		case 'liked':
 			sort_q = {likes: -1}
+			q = {likes: {$gt:0}}
 			break;
 		case 'views':
 			sort_q = {views: -1}
+			q = {views: {$gt:0}}
 			break;
 		case 'picked':
 			sort_q = {_id: -1}
@@ -80,16 +83,17 @@ router
 			break;
 	}
 	
+	console.log(skip,sort_q)
 	Piece.find(q)
 	.skip(skip)
 	.sort(sort_q)
 	.limit(LIMIT)
+	.lean()
 	.populate('type')
 	.exec(function(err,pieces){
-		console.log(err)
 		if(err) return res.sendStatus(500);
 		res.json(pieces.map(function(piece){
-			var pub_json = piece.public()
+			var pub_json = Piece.public(piece)
 			if(filter == 'saved') pub_json.local = true
 			return pub_json
 		}))
@@ -114,6 +118,7 @@ router
 })
 
 .put('/like/:piece_id',likeCheck,function(req,res){
+	console.log('LIKE',req.piece)
 	req.piece.update({likes:req.piece.likes+1}).then(function(){
 		res.sendStatus(200)
 	})

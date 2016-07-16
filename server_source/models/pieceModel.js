@@ -22,18 +22,19 @@ var Piece = new Schema({
 });
 
 
-Piece.methods.public = function(){
-	if(this.type == null) return null
+Piece.statics.public = function(self){
+	if(self.type == null) return null
 	return {
-		id: this._id,
-		likes: this.likes,
-		views: this.views,
-		params: this.params,
-		type_name: this.type.name,
-		type_id: this.type.id,
-		created_at: this.created,
-		picked: this.picked,
-		preview: this.preview
+		id: self._id,
+		likes: self.likes,
+		views: self.views,
+		params: self.params,
+		type: self.type,
+		type_name: self.type.name,
+		type_id: self.type._id,
+		created_at: self.created,
+		picked: self.picked,
+		preview: self.preview
 	}
 }
 

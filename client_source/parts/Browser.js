@@ -59,7 +59,7 @@ var PieceItem = React.createClass({
 		// console.log(this.props.item.created_at)
 
 		var item = this.props.item;
-		var type = this.props.type;
+		var type = this.props.item.type;
 		// var style = {
 		// 	background:  this.props.color
 		// }
@@ -93,11 +93,13 @@ var PieceItem = React.createClass({
 			boxShadow: 'inset rgba('+type.color[0]+','+type.color[1]+','+type.color[2]+',0.231373) 0px 0px 20px, rgba(0,0,0,0.3) 0px 0px 2px',
 		}
 
-		// console.log(item)
 		return (
 			<GItem {...this.props} >
 				<div className = 'piece-item' onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} onClick = {this.load}>
 					<div ref='bg' className = 'piece-item-bg' style={bg} />
+					<div className = {'piece-item-overlay ' + ( !this.state.toggle_bg ? 'piece-item-overlay-hidden' : '') }>
+						<b className='icon-isight'></b>
+					</div>
 					{picked}
 					<span className = 'overlay-item piece-item-symbol' style={symbol_style}>{type.symbol}</span>
 					<div className = 'overlay-item piece-item-date' >
@@ -213,15 +215,12 @@ var Browser = React.createClass({
 			}else{
 				h = Math.random()<0.25 ? 2 : 1
 			}
-			this.items.push(<PieceItem ease={Power1.easeOut} current_type={props.current_type} type={props.type_items[items[i].type_id]} browser_tab={props.browser_tab} index = {i} ease_dur={0.5} delay={0.1}  w={w} h={h} color = {color} item = {items[i]} key = {props.browser_tab+'_piece_item_'+items[i].id+(items[i].local ? '_local' : '_')} />)
+			this.items.push(<PieceItem current_type={props.current_type} type={props.type_items[items[i].type_id]} browser_tab={props.browser_tab} index = {i} w={w} h={h} color = {color} item = {items[i]} key = {props.browser_tab+'_piece_item_'+items[i].id+(items[i].local ? '_local' : '_')} />)
 		}
 	},
 
-	shouldComponentUpdate: function(props,state){
-		if( ! props.piece_items[props.browser_tab] ) return true
-		
-		// console.log(props.piece_items[props.browser_tab])
-
+	componentWillUpdate: function(props,state){
+		if( ! props.piece_items[props.browser_tab] ) return false
 		if(this.props.browser_tab != props.browser_tab || this.items.length != props.piece_items[props.browser_tab].length){
 			this.makeList(props,state,props.piece_items[props.browser_tab])
 			state.list_offset = 0;			
@@ -230,16 +229,8 @@ var Browser = React.createClass({
 		return true
 	},
 
-	previousPage: function(){
-		this.setState({
-			list_offset: this.state.list_offset - 1,
-		})
-	},
-
-	nextPage: function(){
-		this.setState({
-			list_offset: this.state.list_offset + 1,
-		})
+	update: function(){
+		s.updatePieceList(this.props.browser_tab)
 	},
 
 	componentDidMount: function(){
@@ -247,22 +238,25 @@ var Browser = React.createClass({
 	},
 
 	render: function(){
+		
 		return (
 			<I beta = {this.props.beta} vertical outerClassName = 'piece_list_wrapper' scroll ref="wrapper">
 				<G 
-					ref = "grid"
-					fixed= {false}
-					w = {2}
-					h= {3}
-					list_id = {this.props.browser_tab}
 					className= 'piece_list'
-					style = {{height: 'calc(100% - 50px)'}} >
+					list_id = {this.props.browser_tab}
+					key = {this.props.browser_tab}
+					update_offset_beta = {1}
+					max_grid_height_beta = {4}
+					max_reached = {this.props.max_reached[this.props.browser_tab]} 
+					native_scroll = {true}
+					ref = "grid"
+					beta = {100} 
+					w = {2} 
+					onUpdate = {this.update}
+					fixed = {false} >
 					
 					{this.items}
 				</G>
-				<div className = 'list_refresh_button'>
-					<div onClick={this.nextPage}>refresh button</div>
-				</div>
 			</I>
 		)
 	}

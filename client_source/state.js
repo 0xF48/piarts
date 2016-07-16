@@ -1,13 +1,14 @@
 //var p = require('bluebird');
 var req = require('superagent');
 var redux = require('redux');
+var _filter = require('lodash/collection/filter');
 var _uniq = require('lodash/array/uniq');
 var _sort = require('lodash/collection/sortBy');
 var createStore = require('redux').createStore;
 var merge = Object.assign;
 
 var DEV_PAUSE_RENDER = true
-
+var LIMIT = 20
 
 const MAX_PARAMS = 5;
 var type_modules = {};
@@ -24,6 +25,11 @@ var default_state = {
 	user: {
 		is_admin: true
 	},
+	max_reached: {
+		recent: false,
+		liked: 	false,
+		saved: false		
+	},
 	view_paused: false,
 	params: [1,1,1,1,1], //max 5.
 	current_type: null,
@@ -35,7 +41,6 @@ var default_state = {
 	saved_offset: 0,
 	piece_items: {
 		recent: [],
-		picked: [],
 		liked: 	[],
 		saved: []
 	},
@@ -72,34 +77,30 @@ function sortTime(a){
 	return -a.raw_time 
 }
 
-function mergeToFilters(state,pieces){
+function mergeToFilters(state,pieces,type){
 	// console.log("MERGE TO FILTERS",pieces)
 	if(pieces.length == null) pieces = [pieces];
+
 	pieces = pieces.filter(function(p){
 		return p != null
 	})
 
-	var all =  _uniq(pieces.concat(state.piece_items.recent),function(piece){
-		return piece.id;
+	pieces.forEach((piece)=>{
+		piece.created_at = new Date(piece.created_at)
+		piece.raw_time = Date.parse(piece.created_at)
 	})
+		
+	
 
-	for(var i in all){
-		all[i].created_at = new Date(all[i].created_at)
-		all[i].raw_time = Date.parse(all[i].created_at)
+	if(type == 'saved'){
+		state.piece_items.recent.shift(pieces),
+		state.piece_items.saved = state.piece_items.saved.concat(pieces)
+	}else if(type == 'liked'){
+		state.piece_items.liked = state.piece_items.saved.concat(pieces)
+	}else if(type == 'recent'){
+		state.piece_items.recent= state.piece_items.recent.concat(pieces)
 	}
 
-	return {
-		saved: _sort(all.filter(function(piece){
-			return (piece.local == true )
-		}),sortTime),
-		recent : _sort(all.slice(0, all.length),sortTime),
-		liked: _sort(all.slice(0, all.length),function(piece){
-			return -piece.likes
-		}),
-		picked: _sort(all.filter(function(piece){
-			return piece.picked == true
-		}),sortTime),
-	};
 }
 
 
@@ -230,8 +231,11 @@ function mainReducer(state, action){
 	        		error: "cant update list with no filter"
 	      		})
 			}
+			mergeToFilters(state,action.piece_items,action.filter)
+			console.log(state.piece_items)
 			return merge(n,state, {
-				piece_items: mergeToFilters(state,action.piece_items)
+				piece_items: Object.assign({},state.piece_items),
+				max_reached: Object.assign({},action.max_reached),
 			})
 
 
@@ -239,7 +243,7 @@ function mainReducer(state, action){
 		case 'ADD_PIECE_VIEW':
 			action.piece_item.views ++
 			return merge(n,state,{
-				piece_items: mergeToFilters(state,action.piece_item),
+				piece_items:  state.piece_items,
 			})
 
 
@@ -253,10 +257,8 @@ function mainReducer(state, action){
 			liked_pieces = liked_pieces.concat(action.piece_item.id)
 
 			localStorage.setItem('liked_pieces',JSON.stringify(liked_pieces))
-			
 			return merge(n,state,{
 				liked_pieces: liked_pieces,
-				piece_items: mergeToFilters(state,action.piece_item),
 			})
 		case 'REMOVE_PIECE_LIKE':
 			if(state.liked_pieces.indexOf(action.piece_item.id) == -1) return state
@@ -270,13 +272,12 @@ function mainReducer(state, action){
 
 			return merge(n,state,{
 				liked_pieces: liked_pieces,
-				piece_items: mergeToFilters(state,action.piece_item),
 			})
 
 		//add a new piece to the list after it is saved
 		case 'ADD_PIECE':
+			mergeToFilters(state,action.piece_item,'recent')
 			return merge(n,state,{
-				piece_items: mergeToFilters(state,action.piece_item),
 				saving_piece: action.saving_piece || state.saving_piece
 			});		
 
@@ -292,32 +293,15 @@ function mainReducer(state, action){
 		case 'SET_CURRENT_ITEM':
 			return merge(n,state,{
 				current_store_item: action.current_store_item,
-			})			
-
-
-		//show store
-		case 'SHOW_STORE':
-
-			/* load store items ? */
-			if(state.store_items.length == 0){
-				getStoreItems();
-			}
-
-
-			return merge(n,state,{
-				show_store: true,
-				show_browser: false,
-				current_piece: action.current_piece,
 			})
 
-
-
+		//
 		case 'ADD_SAVED_PIECE':
 			action.piece_item.local = true
+			mergeToFilters(state,action.piece_item,'saved')
 			return merge(n,state,{
 				saving_piece: false,
 				current_piece: action.piece_item,
-				piece_items: mergeToFilters(state,action.piece_item),
 			})
 	}
 	return state
@@ -475,22 +459,14 @@ function toggleBrowserTab(tab){
 	if(Date.now() - TAB_TIMEOUT < 500) return
 
 	var state = store.getState()
-	var piece_items = state.piece_items;
+	// var piece_items = state.piece_items;
 
-	
+
 	TAB_TIMEOUT = Date.now()
 	store.dispatch({
 		type: 'SET_BROWSER_TAB',
 		tab: tab, 
 	})
-
-	setTimeout(function() {
-		updatePieceList(tab,function(){
-			console.log('UPDATED PIECE LIST FOR TAB',tab)
-		});		
-	}, 500);
-	
-
 }
 
 
@@ -506,10 +482,10 @@ function loadType(type,cb){
 
 	// if(type_modules[type.name]) return cb ? cb(type) : null
 
-	// requirejs(['data/types/script/'+type.id],function(module){
-	// 	type_modules[type.name] = module
-	// 	cb(type)
-	// })
+	requirejs(['data/types/script/'+type.id],function(module){
+		type_modules[type.name] = module
+		cb(type)
+	})
 }
 
 
@@ -554,23 +530,36 @@ function clearView(){
 
 module.exports.updatePieceList = updatePieceList;
 function updatePieceList(filter,cb){
+	if(filter == null) return false
+	var state = store.getState();
+	
+	if(state.max_reached[filter]) return false;
 
 	store.dispatch({
 		type: 'UPDATE_LIST'
 	})
 
-	var state = store.getState();
+	
 	//console.log(arr.length)
 	var arr = state.piece_items[filter];
+
 
 	return req.get('/data/pieces?filter='+filter+'&skip='+arr.length)
 	.then(function(res){
 		if(res.statusCode != 200) return cb ? cb(): null;
-
+		var max_reached = state.max_reached;
+		if(res.body.length < LIMIT){
+			console.log("MAX REACHED",filter)
+			max_reached[filter] = true
+		}else{
+			max_reached[filter] = false
+		}
 		if(!res.body.length) return cb ? cb() : null
 		//console.log("GOT PIECE LIST BODY",res.body);
-		res.body
+		console.log('GOT',res.body.length)
+
 		store.dispatch({
+			max_reached: max_reached,
 			type: 'UPDATE_LIST',
 			filter: filter,
 			piece_items: res.body,
