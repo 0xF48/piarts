@@ -6,6 +6,7 @@ var I = require('intui/parts/Slide');
 var SlideMixin = require('intui/parts/SlideMixin');
 var IButton = require('intui/parts/Button');
 var G = require('intui/parts/Grid');
+var Overlay = require('intui/parts/Overlay');
 var GItem = require('intui/parts/GridItem');
 var ITip = require('intui/parts/ToolTip');
 var GMixin = require('intui/parts/GridMixin');
@@ -354,13 +355,18 @@ var App = React.createClass({
 
 	componentDidMount: function(){
 
-		console.log("MOUNTED")
+		// console.log("MOUNTED")
 		window.app = this;
 	
 	},
-
+	hideInfo: function(ee,e){
+		// console.log("SHOW VIEW")
+		s.hideInfo();
+		ee.stopPropagation();
+		// if(this.props.show_types && !this.props.show_browser) s.toggleTypesList();
+	},
 	showView: function(ee,e){
-		console.log("SHOW VIEW")
+		// console.log("SHOW VIEW")
 		s.showView();
 		ee.stopPropagation();
 		// if(this.props.show_types && !this.props.show_browser) s.toggleTypesList();
@@ -393,45 +399,41 @@ var App = React.createClass({
 
 		return (
 			<I slide index_pos={this.props.show_info ? 1 : 0} vertical beta={100} ref = "root" >
-				<I slide beta={100} index_pos = {this.props.show_browser ? 0 : 1} ref = "top" >
-					
-					<Browser 
-						browser_tab = {this.props.browser_tab} 
-						type_items = {this.props.type_items} 
-						piece_items = {this.props.piece_items} 
-						current_type = {this.props.current_type} 
-						max_reached = {this.props.max_reached} 
-						vertical 
-						beta = {40} />
-					
-					<Sidebar slide show_settings = {this.props.show_settings} show_types = {this.props.show_types} show_browser = {this.props.show_browser} show_info ={this.props.show_info} browser_tab = {this.props.browser_tab} vertical width = {50} />
-					
-					<I outerClassName={'outer-view'} slide index_pos={this.props.show_types ? 0 : 1} beta={100} offset={-50} >
+				<I>
+					<I slide beta={100} index_pos = {this.props.show_browser ? 0 : 1} ref = "top" >
 						
-						<I beta = {40} c='type_list' >
-							<TypeList current_type = {this.props.current_type} type_items = {this.props.type_items} />
-						</I>
+						<Browser 
+							browser_tab = {this.props.browser_tab} 
+							type_items = {this.props.type_items} 
+							piece_items = {this.props.piece_items} 
+							current_type = {this.props.current_type} 
+							max_reached = {this.props.max_reached} 
+							vertical 
+							beta = {40} />
 						
+						<Sidebar slide show_settings = {this.props.show_settings} show_types = {this.props.show_types} show_browser = {this.props.show_browser} show_info ={this.props.show_info} browser_tab = {this.props.browser_tab} vertical width = {50} />
 						
-						
-						<I beta = {100} id = 'view' ref = "view_slide">
-
-							<canvas key = {this.props.current_type ? this.props.current_type.id : 0} id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />
-							<UserWidget {...this.props} />
+						<I outerClassName={'outer-view'} slide index_pos={this.props.show_types ? 0 : 1} beta={100} offset={-50} >
 							
-							<div className='view-overlay' onClick={this.showView} style={{pointerEvents: (this.props.show_browser || this.props.show_types || this.props.show_settings ) ? 'all' : 'none', 'opacity':(this.props.show_settings || this.props.show_browser || this.props.show_types) ? 0.85 : 0}} >
-								<span className='icon-angle-left'></span>
-								<span className='icon-angle-right'></span>
-							</div>
+							<I width = {200} c='type_list' >
+								<TypeList current_type = {this.props.current_type} type_items = {this.props.type_items} />
+							</I>
+							
+							
+							
+							<I beta = {100} id = 'view' ref = "view_slide">
+
+								<canvas key = {this.props.current_type ? this.props.current_type.id : 0} id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />
+								<UserWidget {...this.props} />
+								<Overlay onClick={this.showView} show = {this.props.show_browser || this.props.show_types} dir = 'left' />
+								
+							</I>
 						</I>
 					</I>
-					
-					<div className='view-overlay'  onClick={this.showView} style={{pointerEvents: (this.props.show_store || this.props.show_info) ? 'all' : 'none', 'opacity':(this.props.show_store || this.props.show_info) ? 0.85 : 0}} >
-						<span className='icon-angle-up' style = {{left:'65%'}}></span>
-					</div>
-
+					<Overlay onClick={this.hideInfo} show = {this.props.show_info} dir = 'bottom' />
 				</I>
-				<I beta = {100} offset = {-25} className='site-info'>
+				
+				<I beta = {80} c='site-info'>
 					<p>this site allows you to create different variations of webgl visuals. it uses thrrejs, glsl, react, redux, and a ui component library called intui used to display the different slides and grid.</p>
 				</I>
 			</I>

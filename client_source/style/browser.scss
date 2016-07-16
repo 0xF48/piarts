@@ -35,7 +35,7 @@
 
 .piece_list{
 	overflow: scroll;
-	background: #111111;
+	background: #0c0c0c;
 	position: relative;
 	padding: 4px;
 	transform: translateZ(0);
@@ -43,16 +43,19 @@
 			
 	.piece-item{
 		
-		box-sizing : border-box;
-		margin: 4px;
+		box-sizing: border-box;
+		margin: 2px;
 		position: relative;
-		width: calc(100% - 8px);
-		height: calc(100% - 8px);
-		@include center;
+		width: calc(100% - 2px);
+		height: calc(100% - 2px);
+		align-items: center;
+		display: flex;
+		align-content: center;
+		justify-content: center;
 		overflow: hidden;
-		box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.4), inset 0px 0px 100px rgb(0, 0, 0);
-		border: 1px solid rgba(132, 132, 132, 0.1);
-		font-size: 10px;
+		box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.4), inset 0px 0px 100px black;
+		/* border: 1px solid rgba(132, 132, 132, 0.09); */
+		font-size: 12px;
 		.piece-item-overlay{
 			cursor: pointer;
 			position: absolute;

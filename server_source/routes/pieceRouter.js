@@ -106,7 +106,7 @@ router
 		if(piece == null || piece.errors) return res.sendStatus(500)
 		req.user.local.push(piece.id);
 		res.setHeader('Set-Cookie',"local="+JSON.stringify(req.user.local))
-		res.json(piece.public())
+		res.json(Piece.public(piece))
 	})
 })
 

@@ -96,7 +96,7 @@ function mergeToFilters(state,pieces,type){
 		state.piece_items.recent.shift(pieces),
 		state.piece_items.saved = state.piece_items.saved.concat(pieces)
 	}else if(type == 'liked'){
-		state.piece_items.liked = state.piece_items.saved.concat(pieces)
+		state.piece_items.liked = state.piece_items.liked.concat(pieces)
 	}else if(type == 'recent'){
 		state.piece_items.recent= state.piece_items.recent.concat(pieces)
 	}
@@ -440,6 +440,10 @@ module.exports.toggleBrowser = function(){
 	store.dispatch({ type: 'TOGGLE_BROWSER' })
 }
 
+function hideInfo(){
+	store.dispatch({ type: 'TOGGLE_INFO' })	
+}
+module.exports.hideInfo = hideInfo
 function showView(){
 	store.dispatch({ type: 'SHOW_VIEW' })	
 }

@@ -334,7 +334,7 @@ var	Dragger = function(canvas){
 		drawVal();
 
 		/* set param */
-		if(stage.active) s.setParam(param_index,stage.val);
+		// if(stage.active) s.setParam(param_index,stage.val);
 
 		/*remmember previous angle*/
 		stage.prev_a = stage.c_a
