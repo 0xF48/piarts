@@ -1,4 +1,56 @@
 
+.piece-item-symbol{
+	height: 20px;
+	width: 20px;
+	border-radius: 2px;
+	position: absolute;
+	font-size: 12px !important;
+	opacity: 0.7;
+	@include center;
+	left: 0;
+	top: 0;
+
+}
+
+.type-item-symbol{
+	height: 30px;
+	width: 30px;
+	border-radius: 0px !important;
+	position: absolute;
+	font-size: 14px !important;
+	opacity: 0.7;
+	@include center;
+	left: 0;
+	top: 0;	
+}
+
+.piece-item-bg{
+	z-index: -1;
+	position: absolute;
+	left:0;
+	top:0;
+	height:100%;
+	width: 100%;
+}
+
+.piece-item-overlay{
+	cursor: pointer;
+	position: absolute;
+	left:0;
+	top:0;
+	height:100%;
+	width: 100%;
+	background: rgba(0,0,0,0.6);
+	transition: opacity 0.3s ease;
+	color: #fff;
+	opacity: 1;
+	font-size: 30px;
+	@include center;
+}
+.piece-item-overlay-hidden{
+	opacity: 0;
+	pointer-events: none;
+}
 
 
 .list_refresh_button{
@@ -56,33 +108,6 @@
 		box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.4), inset 0px 0px 100px black;
 		/* border: 1px solid rgba(132, 132, 132, 0.09); */
 		font-size: 12px;
-		.piece-item-overlay{
-			cursor: pointer;
-			position: absolute;
-			left:0;
-			top:0;
-			height:100%;
-			width: 100%;
-			background: rgba(0,0,0,0.6);
-			transition: opacity 0.3s ease;
-			color: #fff;
-			opacity: 1;
-			font-size: 30px;
-			@include center;
-		}
-		.piece-item-overlay-hidden{
-			opacity: 0;
-			pointer-events: none;
-		}
-
-		.piece-item-bg{
-			z-index: -1;
-			position: absolute;
-			left:0;
-			top:0;
-			height:100%;
-			width: 100%;
-		}
 		.piece-item-view{
 			cursor: pointer;
 			position: absolute;
@@ -132,17 +157,6 @@
 			}
 		}
 
-		.piece-item-symbol{
-			height: 30px;
-			width: 30px;
-			border-radius: 2px;
-			position: absolute;
-			@include center;
-			left: 0;
-			top: 0;
-
-		}
-
 		.piece-item-stats{
 
 			.icon{
@@ -173,29 +187,11 @@
 	}
 }
 
-.type-item-symbol{
-	text-align: center;
-	font-weight: 100;
-	font-size: 13px;
-	line-height: 25px;
-	padding-right: 2px;
-	text-align: center;
-	padding: 0;
-	/* padding-left: 6px; */
-	border-radius: 2px 50% 50% 50%;
-	height: 25px;
-	width: 25px;
-}
 
 
 .type_list{
 
 	background: #0C0C0C;
-	.type-item-symbol{
-		position: absolute;
-		left: 0px;
-		top: 0;
-	}
 	.type-item{
 		transition: background 0.3s ease;
 		box-sizing : border-box;
@@ -208,18 +204,11 @@
 		overflow: hidden;
 		box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.4), inset 0px 0px 100px rgba(131, 132, 132, 0.4);
 		border: 1px solid rgba(132, 132, 132, 0.1);
-		.type-item-symbol{
-			position: absolute;
-			line-height: 26px;
-			padding: 4px;
-			font-size: 14px;
-			left: 0px;
-			top: 0;
-			border-radius: 2px 50% 50% 50%;
-		}
+
 		.type-item-bg{
 			transition: all 0.6s ;
 			z-index: -1;
+			position: absolute;
 			left:0;
 			top:0;
 			height:100%;

@@ -65,6 +65,17 @@ body{
     color: rgb(0, 0, 0);
 }
 
+.play-button{
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 50px;
+	width: 50px;
+	color: rgba(255,255,255,0.7);
+	@include center;
+	font-size: 21px;
+}
+
 
 @import "./gui.scss";
 @import "./view.scss";

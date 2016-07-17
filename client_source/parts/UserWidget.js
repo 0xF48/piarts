@@ -68,7 +68,7 @@ var SaveWidget = React.createClass({
 		if(!props.saving_piece && this.props.saving_piece){
 			this.refs.loader.setState({
 				d: 1,
-				c_r: 255, c_g: 0, c_b: 48,
+				c_r: 255, c_g: 255, c_b: 255,
 				angle_start:0, angle_end: Math.PI*2,
 			})
 
@@ -92,9 +92,9 @@ var SaveWidget = React.createClass({
 	},
 
 	render: function(){
-		var like_style = {color:'#FF0030',background:'#fff'} 
+		var like_style = {color:'#FF9295'} 
 		if(this.props.current_piece != null && this.props.liked_pieces.indexOf(this.props.current_piece.id) != -1){
-			like_style = {color:'#fff',background:'#FF0030'}
+			like_style = {color:'#FF0030'}
 		}
 
 		// console.log('curent piece ',this.props.current_piece)
@@ -168,6 +168,8 @@ var UserWidget = React.createClass({
 		if(this.props.save_sharing){
 			s.toggleSaveShare(false)
 		}
+
+		if(!this.state.expanded) s.disable_autoplay()
 
 		
 		this.setState({

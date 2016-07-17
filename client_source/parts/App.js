@@ -189,19 +189,22 @@ var TypeItem = connect(function(state){
 
 	getInitialState: function(){
 		return {
-			c_offset: 170
-			,toggle_modal: false
+			hover: false,
+			c_offset: 170,
+			toggle_modal: false
 		}
 	},
 
 	toggleHover: function(){
 		this.setState({
+			hover: !this.state.hover,
 			c_offset: this.state.c_offset == 170 ? 160 : 170,
-			toggle_modal: this.props.item.locked ? true : this.state.toggle_modal
+			
 		})
 	},
 
 	showType: function(){
+		console.log("SHOW TYPE")
 		s.showType(this.props.item)
 	},
 
@@ -212,6 +215,7 @@ var TypeItem = connect(function(state){
 			color: 'rgb('+item.color[0]+','+item.color[1]+','+item.color[2]+')',
 			background: 'rgb('+getC(item.color[0]-this.state.c_offset+(active ? 50 : 0))+','+getC(item.color[1]-this.state.c_offset+(active ? 50 : 0))+','+getC(item.color[2]-this.state.c_offset+(active ? 50 : 0))+')',
 			boxShadow: 'inset rgba('+item.color[0]+','+item.color[1]+','+item.color[2]+',0.231373) 0px 0px 20px, rgba(0,0,0,0.3) 0px 0px 2px',
+			border: '1px solid rgba('+item.color[0]+','+item.color[1]+','+item.color[2]+',0.7)',
 		}
 
 		var global_style = {
@@ -225,10 +229,13 @@ var TypeItem = connect(function(state){
 
 
 		return (
-			<GItem {...this.props} onClick = {this.showType} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} >
-				<div className = 'type-item' style = {global_style}>
-					<div ref='bg' className = ' type-item-bg' style={bg} />
-					<span className='overlay-item piece-item-symbol' style={symbol_style} >{item.symbol}</span>
+			<GItem {...this.props} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} >
+				<div className = 'type-item' onClick = {this.showType} style = {global_style}>
+					<div ref='bg' className = ' piece-item-bg' style={bg} />
+					<div className = {'piece-item-overlay ' + ( !this.state.hover ? 'piece-item-overlay-hidden' : '') }>
+						<b className='icon-isight'></b>
+					</div>
+					<span className='overlay-item type-item-symbol' style={symbol_style} >{item.symbol}</span>
 					<span className="overlay-item type-item-name" >{item.name}</span>
 					<div className = 'overlay-item type-item-count' >
 						<span style = {global_style}>
@@ -354,7 +361,15 @@ var App = React.createClass({
 	},
 
 	componentDidMount: function(){
+		window.addEventListener('resize',()=>{
+			this.refs.piece_canvas.width = this.refs.piece_canvas.parentElement.clientWidth;
+			this.refs.piece_canvas.height = this.refs.piece_canvas.parentElement.clientHeight;
+		})
 
+		if(this.refs.piece_canvas){
+			this.refs.piece_canvas.width = this.refs.piece_canvas.parentElement.clientWidth;
+			this.refs.piece_canvas.height = this.refs.piece_canvas.parentElement.clientHeight;
+		}
 		// console.log("MOUNTED")
 		window.app = this;
 	
@@ -375,14 +390,13 @@ var App = React.createClass({
 	componentDidUpdate: function(props){
 
 		
-
-		if(this.props.view_paused != props.view_paused){
-			s.toggleView(this.props.view_paused)
-		}
-
 		if(this.refs.piece_canvas){
 			this.refs.piece_canvas.width = this.refs.piece_canvas.parentElement.clientWidth;
 			this.refs.piece_canvas.height = this.refs.piece_canvas.parentElement.clientHeight;
+		}
+
+		if(this.props.view_paused != props.view_paused){
+			s.toggleView(this.props.view_paused)
 		}
 
 		if(this.props.current_type != props.current_type){
@@ -392,11 +406,12 @@ var App = React.createClass({
 	},
 
 
+	toggle_autoplay: function(){
+		s.toggleAutoplay();
+	},
+
+
 	render: function(){
-
-
-		
-
 		return (
 			<I slide index_pos={this.props.show_info ? 1 : 0} vertical beta={100} ref = "root" >
 				<I>
@@ -419,14 +434,11 @@ var App = React.createClass({
 								<TypeList current_type = {this.props.current_type} type_items = {this.props.type_items} />
 							</I>
 							
-							
-							
 							<I beta = {100} id = 'view' ref = "view_slide">
-
 								<canvas key = {this.props.current_type ? this.props.current_type.id : 0} id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />
 								<UserWidget {...this.props} />
 								<Overlay onClick={this.showView} show = {this.props.show_browser || this.props.show_types} dir = 'left' />
-								
+								<div className = 'play-button' onClick = {this.toggle_autoplay}><b className = {'icon-'+(this.props.autoplay ? 'stop' : 'play')}/></div>
 							</I>
 						</I>
 					</I>

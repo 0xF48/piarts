@@ -32,22 +32,21 @@ var PieceItem = React.createClass({
 		// 	toggle_modal: this.props.item.locked ? true : this.state.toggle_modal
 		// })
 	},
+
 	load: function(e){
 		s.showPiece(this.props.item);
 		e.stopPropagation();
 	},
 
-	toggleHover: function(){
+	toggleHover: function(toggle){
 		this.setState({
-			toggle_bg: !this.state.toggle_bg
+			toggle_bg: toggle
 		})
 		TweenLite.set(this.refs.bg,{
 			// rotationZ: !this.state.toggle_bg ? 10 * (Math.random()<0.5 ? -1 : 1):0,
 			// ease: Power2.easeOut,
-			webkitFilter: 'blur('+(!this.state.toggle_bg ? 5 : 0)+'px)'
-			
+			webkitFilter: 'blur('+(toggle ? 5 : 0)+'px)'
 		})
-		
 	},
 
 	showStore: function(e){
@@ -95,7 +94,7 @@ var PieceItem = React.createClass({
 
 		return (
 			<GItem {...this.props} >
-				<div className = 'piece-item' onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} onClick = {this.load}>
+				<div className = 'piece-item' onMouseEnter={this.toggleHover.bind(this,true)} onMouseLeave={this.toggleHover.bind(this,false)} onClick = {this.load}>
 					<div ref='bg' className = 'piece-item-bg' style={bg} />
 					<div className = {'piece-item-overlay ' + ( !this.state.toggle_bg ? 'piece-item-overlay-hidden' : '') }>
 						<b className='icon-isight'></b>
@@ -118,9 +117,6 @@ var PieceItem = React.createClass({
 		)
 	}
 })
-
-
-
 
 
 
@@ -238,7 +234,7 @@ var Browser = React.createClass({
 	},
 
 	render: function(){
-		
+		// console.log(this.props.max_reached[this.props.browser_tab])
 		return (
 			<I beta = {this.props.beta} vertical outerClassName = 'piece_list_wrapper' scroll ref="wrapper">
 				<G 

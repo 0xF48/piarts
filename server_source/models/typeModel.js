@@ -65,18 +65,19 @@ Type.statics.add = function(data){
 	try {
 		fs.statSync('./piece_modules/src/'+data.name)
 	}catch(e){
-		throw new Error(e)
+		return p.reject(e)
 	}
 
 
 
-	return Model.findOne({name:data.name}).then(function(found_same){
+	return Model.findOne({name:data.name})
+	.then(function(found_same){
 
 		if(found_same != null){
 			console.error('add type conflict -> '+found_same)
 			return prom.resolve(null)
 		}else{
-
+			console.log('render preview')
 			var type = new Model(data)
 			return type.renderPreview()
 		}

@@ -7,14 +7,14 @@ var _sort = require('lodash/collection/sortBy');
 var createStore = require('redux').createStore;
 var merge = Object.assign;
 
-var DEV_PAUSE_RENDER = true
+var DEV_PAUSE_RENDER = false
 var LIMIT = 20
 
 const MAX_PARAMS = 5;
 var type_modules = {};
 
 var TAB_TIMEOUT = 0
-
+var AUTOPLAY = true
 var params = [];
 module.exports.params = params;
 
@@ -22,6 +22,7 @@ module.exports.params = params;
 if(!localStorage.getItem('liked_pieces')) localStorage.setItem('liked_pieces',"[]")
 
 var default_state = {
+	autoplay: AUTOPLAY,
 	user: {
 		is_admin: true
 	},
@@ -118,7 +119,9 @@ function mainReducer(state, action){
   	switch (action.type) {
 
   		case 'SET_CURRENT_TYPE':
+  			AUTOPLAY = false
   			return merge(n, state, {
+  				autoplay: false,
 				current_type: action.type_item
       		})
 		
@@ -171,6 +174,16 @@ function mainReducer(state, action){
 				show_info:  !state.show_info
       		}) 
 
+  		case 'TOGGLE_AUTOPLAY':
+
+  			if(action.disable_autoplay) AUTOPLAY = false
+  			else AUTOPLAY = !state.autoplay;
+
+   			return merge(n, state, {
+				autoplay:  action.disable_autoplay  ?  false : !state.autoplay
+      		}) 
+
+
 
       	//show or hide the browser		
   		case 'TOGGLE_BROWSER':
@@ -207,7 +220,9 @@ function mainReducer(state, action){
 
       	//save the current params to the state.
   		case 'SAVE_PARAMS':
+  			AUTOPLAY = false
   			return merge(n, state, {
+  				autoplay: false,
   				current_piece: null,
 				params:  action.params
       		})
@@ -232,7 +247,7 @@ function mainReducer(state, action){
 	      		})
 			}
 			mergeToFilters(state,action.piece_items,action.filter)
-			console.log(state.piece_items)
+			// console.log(state.piece_items)
 			return merge(n,state, {
 				piece_items: Object.assign({},state.piece_items),
 				max_reached: Object.assign({},action.max_reached),
@@ -276,7 +291,7 @@ function mainReducer(state, action){
 
 		//add a new piece to the list after it is saved
 		case 'ADD_PIECE':
-			mergeToFilters(state,action.piece_item,'recent')
+			mergeToFilters(state,action.piece_item,'saved')
 			return merge(n,state,{
 				saving_piece: action.saving_piece || state.saving_piece
 			});		
@@ -366,8 +381,13 @@ module.exports.loops = loops;
 var RENDER_ACTIVE = true
 function render(){
 	requestAnimationFrame(render);
+
 	if( ! RENDER_ACTIVE || DEV_PAUSE_RENDER ) return
+	if(AUTOPLAY){
+		autoplay()
+	}
 	for(var i = 0;i<loops.length;i++){
+		// console.log('animate')
 		if(loops[i] != null) loops[i]();
 	}
 }
@@ -558,9 +578,9 @@ function updatePieceList(filter,cb){
 		}else{
 			max_reached[filter] = false
 		}
-		if(!res.body.length) return cb ? cb() : null
+		// if(!res.body.length) return cb ? cb() : null
 		//console.log("GOT PIECE LIST BODY",res.body);
-		console.log('GOT',res.body.length)
+		// console.log('GOT',res.body.length)
 
 		store.dispatch({
 			max_reached: max_reached,
@@ -617,11 +637,28 @@ function showType(type_item){
 
 module.exports.showPiece = showPiece
 function showPiece(piece){
-
+	console.log(piece.type_id)
 	//either set the current type or load the type from the server.
-	loadType(s.store.getState().type_items[piece.type_id],function(type_item){
+	var state = s.store.getState()
+	if(state.current_type == null || state.current_type._id != piece.type_id){
+		loadType(state.type_items[piece.type_id],function(type_item){
+
+			setType(type_item)
+			
+			//set the current piece.
+			setCurrentPiece(piece,type_item)
+
+			//add a view counte to the piece.
+			IncrementPieceView(piece)
+
+			//set the piece params
+			setParams(piece.params)
 		
-		//set the current piece.
+			//show the view
+			showView()
+
+		});		
+	}else{
 		setCurrentPiece(piece,type_item)
 
 		//add a view counte to the piece.
@@ -632,8 +669,7 @@ function showPiece(piece){
 	
 		//show the view
 		showView()
-
-	});
+	}
 }
 
 function savePiece(type,params,picked){
@@ -660,6 +696,9 @@ module.exports.setParams = setParams
 function setParams(new_params){
 	if(new_params != null){
 		params = new_params.slice(0,new_params.length)
+		auto_seed = params.map(function(par){
+			return Math.random()
+		})
 	}
 	
 	
@@ -682,11 +721,36 @@ function clearCurrentPiece(){
 }
 
 
+var auto_seed = []
+
+function autoplay(){
+	if(!current_view || !params) return false
+	for(var i = 0;i<params.length;i++){
+		params[i] = 0.1+auto_seed[i]*3+1*Math.sin(Date.now()/40000+auto_seed[i])
+	}
+	current_view.set(params)
+}
+
+module.exports.toggleAutoplay = function(){
+
+	auto_seed = params.map(function(par){
+		return Math.random()
+	})
+	store.dispatch({
+		type: 'TOGGLE_AUTOPLAY',
+	})
+
+}
+
 
 module.exports.setParam = setParam
 function setParam(i,x){
+	if(params[i] == x) return;
+	
 	params[i] = x
 	current_view.set(params)
+	// current_view.loop()
+
 }
 
 
@@ -859,7 +923,12 @@ function preload(){
 window.store = store //debug
 
 
-
+module.exports.disable_autoplay = function(){
+	store.dispatch({
+		type: 'TOGGLE_AUTOPLAY',
+		disable_autoplay: true
+	})
+}
 
 
 
