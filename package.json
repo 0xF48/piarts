@@ -51,17 +51,19 @@
     "express": "^4.13.4",
     "gl": "^2.1.5",
     "gm": "^1.21.1",
+    "gsap": "git+https://github.com/greensock/GreenSock-JS.git#1.19.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",
-    "intui": "git+https://github.com/arxii/intui.git",
+    "intui": "git+https://github.com/arxii/intui.git#v0.0.2b",
     "jsx-loader": "^0.13.2",
     "lodash": "^3.10.1",
     "lodash.assign": "^3.2.0",
     "mongoose": "^4.3.4",
+    "postcss-loader": "^0.9.1",
     "redux-tiny-router": "^0.6.1",
     "stripe": "^4.4.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "webpack": "^1.12.14"
+    "webpack": "^1.13.1"
   }
 }

@@ -8,7 +8,7 @@ var s = require('./state');
 
 
 require('./style/main.scss')
-require('./node_modules/intui/parts/intui.scss')
+require('intui/parts/intui.scss')
 
 window.s = s
 /* pass state in as props and diff down the tree */

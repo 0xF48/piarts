@@ -726,7 +726,7 @@ var auto_seed = []
 function autoplay(){
 	if(!current_view || !params) return false
 	for(var i = 0;i<params.length;i++){
-		params[i] = 0.1+auto_seed[i]*3+1*Math.sin(Date.now()/40000+auto_seed[i])
+		params[i] = 2.1-auto_seed[i]*2*Math.abs(Math.sin(Date.now()/(25000+5000*auto_seed[i])+auto_seed[i]))
 	}
 	current_view.set(params)
 }

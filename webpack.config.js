@@ -1,34 +1,33 @@
 var webpack = require("webpack");
-
 var cfg = {
 	devtool: 'source-map',
 	module: {
 		loaders: [
 			{test: /\.js$/, loader: "jsx-loader" },
-			{ test: /\.scss$/, loaders: ["style", "css", "sass"] }
+			{test: /\.scss/, loader: 'style-loader!css-loader!postcss-loader!sass-loader' }
 		]
 	},
+	externals: {
+		TweenLite: "TweenLite"
+	},
 	entry: {
-		app: "./client_source/main.js",
- 		vendor: [
- 			"./client_source/node_modules/react",
- 			"./client_source/node_modules/gsap/src/uncompressed/TweenMax.js",
- 			"./client_source/node_modules/gsap/src/uncompressed/easing/EasePack.js", 			
- 		],
- 	},
+		main: "./client_source/main.js",
+		vendor: [
+			"gsap/src/minified/TweenLite.min.js",
+			"gsap/src/uncompressed/easing/EasePack.js",			
+		],
+	},
 	output: {
 		path: './client_static',
 		publicPath: './client_static',
-		filename: "bundle.js"
+		filename: "[name].bundle.js"
 	},
 	plugins: [
-		new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js"),
 		new webpack.ProvidePlugin({
 			React: "react",
-			"window.React": "react"
-		})
+		}),
+		new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js")
 	],
-
 }
 
 
