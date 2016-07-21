@@ -1,9 +1,9 @@
 {
   "dev": true,
-  "name": "PiArts",
+  "name": "canvas",
   "version": "0.0.0",
-  "description": "digital art gallery and shop",
-  "main": "gulpfile.js",
+  "description": "digital art web app",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,26 +20,22 @@
   "db_url": "mongodb://localhost/piarts",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/arxii/teragrid.git"
+    "url": "git+ssh://git@github.com/arxii/piarts.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/arxii/teragrid/issues"
+    "url": "https://github.com/arxii/piarts/issues"
   },
-  "homepage": "https://github.com/arxii/teragrid#readme",
+  "homepage": "https://github.com/arxii/piarts#readme",
   "devDependencies": {
     "css-loader": "^0.23.1",
-    "gulp-browserify": "^0.5.1",
-    "gulp-sass": "^2.1.1",
-    "gulp-uglify": "^1.5.1",
-    "gulp-watch": "^4.3.5",
     "node-sass": "^3.4.2",
     "reactify": "^1.1.1",
     "sass-loader": "^3.1.2",
-    "scss-loader": "0.0.1",
     "style-loader": "^0.13.0",
-    "webpack": "^1.12.14"
+    "webpack": "^1.12.14",
+    "jsx-loader": "^0.13.2",
   },
   "dependencies": {
     "bluebird": "^3.3.3",
@@ -53,10 +49,7 @@
     "gl": "git+https://github.com/stackgl/headless-gl.git#v4.0.2",
     "gm": "^1.21.1",
     "gsap": "git+https://github.com/greensock/GreenSock-JS.git#1.19.0",
-    "gulp-sourcemaps": "^1.6.0",
-    "gulp-util": "^3.0.7",
     "intui": "git+https://github.com/arxii/intui.git#v0.0.2",
-    "jsx-loader": "^0.13.2",
     "lodash": "^3.10.1",
     "lodash.assign": "^3.2.0",
     "mongoose": "^4.3.4",
@@ -66,10 +59,6 @@
     "react-redux": "^4.4.5",
     "redux": "^3.5.2",
     "redux-tiny-router": "^0.6.1",
-    "stripe": "^4.4.0",
-    "superagent": "^2.1.0",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
-    "webpack": "^1.13.1"
+    "superagent": "^2.1.0"
   }
 }

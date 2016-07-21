@@ -4,7 +4,6 @@ var cfg = {
 	module: {
 		loaders: [
 			{test: /\.js$/, loader: "jsx-loader" },
-			{ test: /\.(txt|glsl)$/, loader: "raw" },
 			{test: /\.scss/, loader: 'style-loader!css-loader!postcss-loader!sass-loader' }
 		]
 	},
