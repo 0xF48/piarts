@@ -43,7 +43,9 @@
   },
   "dependencies": {
     "bluebird": "^3.3.3",
+    "body-parser": "^1.15.2",
     "colors": "^1.1.2",
+    "cookie-parser": "^1.4.3",
     "cookies": "^0.6.1",
     "debug": "^2.2.0",
     "ejs": "^2.3.4",

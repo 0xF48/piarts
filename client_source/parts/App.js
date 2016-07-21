@@ -361,10 +361,10 @@ var App = React.createClass({
 	},
 
 	componentDidMount: function(){
-		window.addEventListener('resize',()=>{
+		window.addEventListener('resize',function(){
 			this.refs.piece_canvas.width = this.refs.piece_canvas.parentElement.clientWidth;
 			this.refs.piece_canvas.height = this.refs.piece_canvas.parentElement.clientHeight;
-		})
+		}.bind(this))
 
 		if(this.refs.piece_canvas){
 			this.refs.piece_canvas.width = this.refs.piece_canvas.parentElement.clientWidth;

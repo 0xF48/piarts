@@ -86,7 +86,7 @@ function mergeToFilters(state,pieces,type){
 		return p != null
 	})
 
-	pieces.forEach((piece)=>{
+	pieces.forEach(function(piece){
 		piece.created_at = new Date(piece.created_at)
 		piece.raw_time = Date.parse(piece.created_at)
 	})
