@@ -1,6 +1,6 @@
 var m = require('mongoose')
 var Schema = m.Schema
-var render = require('../workers/renderer/renderController')
+var renderer = require('../renderer')
 var prom = require('bluebird')
 var PreviewSchema = require('./otherModels').PreviewSchema
 var path = require('path')
@@ -51,7 +51,7 @@ Type.methods.renderPreview = function(){
 	return prom.map(['small','medium','large'],function(size){
 		self.preview[size] = '/data/types/preview/'+self.id+'?size='+size
 		console.log("RENDER")
-		return render.renderType(self,size)
+		return renderer(self,size,true)
 	}).then(function(){
 		console.log("DONE TYPE RENDER PREVIEW")
 		return self.save()

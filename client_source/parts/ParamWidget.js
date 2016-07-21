@@ -1,7 +1,7 @@
 //parameters
 
-var C = require('circui').Circle;
-var CircleMixin = require('circui').Mixin;
+var C = require('./Circle');
+var CircleMixin = require('./CircleMixin');
 
 
 var s = require('../state')
@@ -512,7 +512,7 @@ var ParamWidget = React.createClass({
 	},
 
 	getC: function(i){
-		return rgba(255-205*Math.cos(i/2),255-205*Math.sin(i/3),255-205*Math.sin(i/4.5))
+		return rgba(255,255,255)
 	},
 
 	componentDidMount: function(){

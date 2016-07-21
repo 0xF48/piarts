@@ -4,7 +4,7 @@ var redux = require('redux');
 var _filter = require('lodash/collection/filter');
 var _uniq = require('lodash/array/uniq');
 var _sort = require('lodash/collection/sortBy');
-var createStore = require('redux').createStore;
+var createStore = require('react-redux').createStore;
 var merge = Object.assign;
 
 var DEV_PAUSE_RENDER = false

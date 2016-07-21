@@ -2,7 +2,7 @@ var m = require('mongoose')
 var Schema = m.Schema
 var model = m.model
 var prom = require('bluebird')
-var renderer = require('../workers/renderer/renderController')
+var renderer = require('../renderer')
 var path = require('path')
 var Type = require('./typeModel')
 var ObjectId = require('mongoose').Types.ObjectId
@@ -41,14 +41,10 @@ Piece.statics.public = function(self){
 Piece.methods.renderPreview = function(){
 	var self = this;
 	self.preview = {}
-	console.log('render piece preview')
-	return prom.map(['small','medium','large'],function(size){
-		console.log("RENDER",size)
+	return prom.map(['small','medium'],function(size){
 		self.preview[size] = '/data/pieces/preview/'+self.id+'?size='+size
-		console.log("PIECE RENDER",size)
-		return renderer.renderPiece(self,size)
+		return renderer(self,size,false)
 	}).then(function(){
-		console.log("DONE PIECE RENDER PREVIEW")
 		return self.save()
 	})
 }

@@ -1,11 +1,11 @@
 
-var C = require('circui').Circle;
+var C = require('./Circle');
 var I = require('intui/parts/Slide');
 var connect = require('react-redux').connect;
-var CLoader = require('circui').Loader;
+var CLoader = require('./CircleLoader');
 var s = require('../state');
 var ParamWidget = require('./ParamWidget');
-var CircleMixin = require('circui').Mixin;
+var CircleMixin = require('./CircleMixin');
 
 
 

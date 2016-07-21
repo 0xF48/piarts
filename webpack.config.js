@@ -4,6 +4,7 @@ var cfg = {
 	module: {
 		loaders: [
 			{test: /\.js$/, loader: "jsx-loader" },
+			{ test: /\.(txt|glsl)$/, loader: "raw" },
 			{test: /\.scss/, loader: 'style-loader!css-loader!postcss-loader!sass-loader' }
 		]
 	},
@@ -13,7 +14,7 @@ var cfg = {
 	entry: {
 		main: "./client_source/main.js",
 		vendor: [
-			"gsap/src/minified/TweenLite.min.js",
+			"gsap/src/minified/TweenMax.min.js",
 			"gsap/src/uncompressed/easing/EasePack.js",			
 		],
 	},
