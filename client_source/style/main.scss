@@ -76,6 +76,20 @@ body{
 	font-size: 21px;
 }
 
+.type-image{
+	height: 100%;
+	width: 100%;
+}
+
+.hint{
+	position: absolute;
+	color: #fff;
+	opacity: 0.5;
+	font-weight: 100;
+	padding: 5px;
+	left: 0px;
+	top: 0px;
+}
 
 @import "./gui.scss";
 @import "./view.scss";

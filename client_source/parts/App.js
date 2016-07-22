@@ -10,7 +10,7 @@ var Overlay = require('intui/parts/Overlay');
 var GItem = require('intui/parts/GridItem');
 var ITip = require('intui/parts/ToolTip');
 var GMixin = require('intui/parts/GridMixin');
-var UserWidget = require('./UserWidget');
+var Widget = require('./Widget');
 var s = require('../state');
 var IToggle = require('intui/parts/Form').ToggleField;
 
@@ -63,11 +63,6 @@ var Button = React.createClass({
 
 var Sidebar = React.createClass({
 	mixins: [SlideMixin],
-	// getDefaultProps: function(){
-	// 	return {
-	// 		width: null
-	// 	}
-	// },
 	getInitialState: function(){
 		return {
 			active_button: -1,
@@ -130,9 +125,9 @@ var Sidebar = React.createClass({
 		return (
 			<I {...this.props} id = 'sidebar' ref="sidebar" c="gui-sidebar" >
 				<I vertical beta={100} offset={-this.props.width-this.props.width/2} ref = 'sidebar_top'>
-					<Button inverse c1 = '#00B7FF' c2 ='#003850' down 	onClick={s.toggleBrowserTab.bind(null,'saved')}  height={this.props.width} icon= 'icon-database' active = {this.state.active_button == 3} />
-					<Button inverse c1 = '#00FF76' c2 ='#003E1C' up 	onClick={s.toggleBrowserTab.bind(null,'recent')} height={this.props.width} icon= 'icon-leaf-1' active = {this.state.active_button == 0}  />
+					<Button inverse c1 = '#00B7FF' c2 ='#003850' up 	onClick={s.toggleBrowserTab.bind(null,'saved')}  height={this.props.width} icon= 'icon-database' active = {this.state.active_button == 3} />
 					<Button inverse c1 = '#FF0157' c2 ='#39000C' down 	onClick={s.toggleBrowserTab.bind(null,'liked')}  height={this.props.width} icon= 'icon-heart' active = {this.state.active_button == 1} />
+					<Button inverse c1 = '#00FF76' c2 ='#003E1C' up 	onClick={s.toggleBrowserTab.bind(null,'recent')} height={this.props.width} icon= 'icon-leaf-1' active = {this.state.active_button == 0}  />
 					<Button right onMouseEnter={function(){console.log("test")}} inverse c1 = '#D6D6D6' c2 ='#111111' onClick={s.toggleTypesList} height={this.props.width} icon= 'icon-th-thumb' active = {this.props.show_types} index_offset={4} bClassName={'gui-button-layer'} />
 					<I height={this.props.width} />
 					
@@ -199,18 +194,19 @@ var TypeItem = connect(function(state){
 		this.setState({
 			hover: !this.state.hover,
 			c_offset: this.state.c_offset == 170 ? 160 : 170,
-			
 		})
 	},
 
 	showType: function(){
-		console.log("SHOW TYPE")
+		
 		s.showType(this.props.item)
 	},
 
 	render: function(){
-		var active = this.props.current_type != null && this.props.current_type.id == this.props.item.id;
+	
+		var active = this.props.current_type != null && this.props.current_type._id == this.props.item._id;
 		var item = this.props.item;
+		
 		var symbol_style = {
 			color: 'rgb('+item.color[0]+','+item.color[1]+','+item.color[2]+')',
 			background: 'rgb('+getC(item.color[0]-this.state.c_offset+(active ? 50 : 0))+','+getC(item.color[1]-this.state.c_offset+(active ? 50 : 0))+','+getC(item.color[2]-this.state.c_offset+(active ? 50 : 0))+')',
@@ -223,16 +219,20 @@ var TypeItem = connect(function(state){
 		}
 
 		var bg = {
-			background: 'url('+( (this.props.w == 1 && this.props.h == 1)  ? item.preview.small : item.preview.medium)+') center',
+			background: 'url("/'+this.props.item.preview+'") center',
 		}
+
+		var hover = this.state.hover || active;
+
+		
 
 
 
 		return (
 			<GItem {...this.props} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} >
 				<div className = 'type-item' onClick = {this.showType} style = {global_style}>
-					<div ref='bg' className = ' piece-item-bg' style={bg} />
-					<div className = {'piece-item-overlay ' + ( !this.state.hover ? 'piece-item-overlay-hidden' : '') }>
+					<div className = 'type-image' style = {bg} />
+					<div className = {'piece-item-overlay ' + ( !hover ? 'piece-item-overlay-hidden' : '') }>
 						<b className='icon-isight'></b>
 					</div>
 					<span className='overlay-item type-item-symbol' style={symbol_style} >{item.symbol}</span>
@@ -254,38 +254,25 @@ var TypeItem = connect(function(state){
 
 
 var TypeList = React.createClass({
-	getInitialState: function(){
-		return {
-			
-		}
-	},
-
 	componentDidMount: function(){
-		
+		this.forceUpdate();
 	},
-
-	shouldComponentUpdate: function(props,state){
-		if(Object.keys(this.props.type_items).length != Object.keys(props.type_items).length){
-			this.makeList(props.type_items)
-		}
-		return true
-	},
-
-	makeList: function(list){
-		this.items = [];
-		for(var i in list){
-			this.items.push(<TypeItem current_type = {this.props.current_type} item = {list[i]} key = {'type_item_'+i}  w = {1} h = {1} />)
-		}
-	},
-
-	items: [],
 	render: function(){
-		return (
-			
-			<G fill_up={true} fixed={false} list_id = "piece_types" w= {1} h = {3} >
-				{this.items}
-			</G>
+		var items = []
+
+		if(this.props.show){
+			for(var i in this.props.type_items){
+				items.push(<TypeItem current_type = {this.props.current_type} item = {this.props.type_items[i]} key = {i}  w = {1} h = {1} />)
+			}
+		}
+
+
 		
+		
+		return (
+			<G fill_up={true} fixed={false} list_id = "piece_types" w= {1} h = {3} >
+				{items}
+			</G>
 		)
 	}
 })
@@ -370,21 +357,27 @@ var App = React.createClass({
 			this.refs.piece_canvas.width = this.refs.piece_canvas.parentElement.clientWidth;
 			this.refs.piece_canvas.height = this.refs.piece_canvas.parentElement.clientHeight;
 		}
-		// console.log("MOUNTED")
+
+		this.refs.view_slide.refs.outer.addEventListener('mousedown',function(){
+			s.toggleRender(true)
+		})
+		this.refs.view_slide.refs.outer.addEventListener('mouseup',function(){
+			s.toggleRender(false)
+		})
 		window.app = this;
 	
 	},
 	hideInfo: function(ee,e){
-		// console.log("SHOW VIEW")
+	
 		s.hideInfo();
 		ee.stopPropagation();
-		// if(this.props.show_types && !this.props.show_browser) s.toggleTypesList();
+		
 	},
 	showView: function(ee,e){
-		// console.log("SHOW VIEW")
+		
 		s.showView();
 		ee.stopPropagation();
-		// if(this.props.show_types && !this.props.show_browser) s.toggleTypesList();
+		
 	},
 
 	componentDidUpdate: function(props){
@@ -400,7 +393,10 @@ var App = React.createClass({
 		}
 
 		if(this.props.current_type != props.current_type){
-			s.initCurrentType()
+			s.initCurrentType(this.refs.piece_canvas)
+			if(this.props.current_piece){
+				s.setParams(this.props.current_piece.params)
+			}
 		}
 
 	},
@@ -412,6 +408,8 @@ var App = React.createClass({
 
 
 	render: function(){
+
+
 		return (
 			<I slide index_pos={this.props.show_info ? 1 : 0} vertical beta={100} ref = "root" >
 				<I>
@@ -431,14 +429,15 @@ var App = React.createClass({
 						<I outerClassName={'outer-view'} slide index_pos={this.props.show_types ? 0 : 1} beta={100} offset={-50} >
 							
 							<I width = {200} c='type_list' >
-								<TypeList current_type = {this.props.current_type} type_items = {this.props.type_items} />
+								<TypeList show = {this.props.show_types} current_type = {this.props.current_type} type_items = {this.props.type_items} />
 							</I>
-							
+								
 							<I beta = {100} id = 'view' ref = "view_slide">
 								<canvas key = {this.props.current_type ? this.props.current_type.id : 0} id = 'view-canvas' className = 'view-canvas' ref='piece_canvas' />
-								<UserWidget {...this.props} />
+								<Widget liked_pieces = {this.props.liked_pieces} current_type = {this.props.current_type} current_piece = {this.props.current_piece} params = {this.props.params} />
 								<Overlay onClick={this.showView} show = {this.props.show_browser || this.props.show_types} dir = 'left' />
 								<div className = 'play-button' onClick = {this.toggle_autoplay}><b className = {'icon-'+(this.props.autoplay ? 'stop' : 'play')}/></div>
+								<div className = 'hint hint-drag'>drag to rotate</div>
 							</I>
 						</I>
 					</I>

@@ -9,7 +9,7 @@ var G = require('intui/parts/Grid');
 var GItem = require('intui/parts/GridItem');
 var ITip = require('intui/parts/ToolTip');
 var GMixin = require('intui/parts/GridMixin');
-var UserWidget = require('./UserWidget');
+
 
 var s = require('../state')
 
@@ -20,6 +20,7 @@ function getC(c){
 var PieceItem = React.createClass({
 	mixins: [GMixin],
 	getInitialState: function(){
+		this.image_set = false;
 		return {
 			// c_offset: 170
 			toggle_bg: false,
@@ -42,11 +43,11 @@ var PieceItem = React.createClass({
 		this.setState({
 			toggle_bg: toggle
 		})
-		TweenLite.set(this.refs.bg,{
-			// rotationZ: !this.state.toggle_bg ? 10 * (Math.random()<0.5 ? -1 : 1):0,
-			// ease: Power2.easeOut,
-			webkitFilter: 'blur('+(toggle ? 5 : 0)+'px)'
-		})
+		// TweenLite.set(this.refs.bg,{
+		// 	// rotationZ: !this.state.toggle_bg ? 10 * (Math.random()<0.5 ? -1 : 1):0,
+		// 	// ease: Power2.easeOut,
+		// 	webkitFilter: 'blur('+(toggle ? 5 : 0)+'px)'
+		// })
 	},
 
 	showStore: function(e){
@@ -54,17 +55,23 @@ var PieceItem = React.createClass({
 		e.stopPropagation();
 	},
 
+	componentDidMount: function(){
+		this.refs.canvas.height = 500
+		this.refs.canvas.width = 500
+		if(!this.image_set){
+			s.renderPiece(this.refs.canvas,this.props.item,500)
+			this.image_set = true
+		}
+		
+	},
+
 	render: function(){
 		// console.log(this.props.item.created_at)
 
 		var item = this.props.item;
 		var type = this.props.item.type;
-		// var style = {
-		// 	background:  this.props.color
-		// }
-		var bg = {
-			background: 'url('+( (this.props.w == 1 && this.props.h == 1)  ? item.preview.small : item.preview.medium)+') center',
-		}
+
+
 		var type_style = {
 			color: '#fff'
 		}
@@ -78,7 +85,7 @@ var PieceItem = React.createClass({
 			picked = <div className='overlay-item piece-item-picked' onClick={(function(e){s.toggleBrowserTab('picked');e.stopPropagation();})}><span className='icon-isight' /></div>
 		}
 
-		var active = this.props.current_type != null && this.props.current_type.id == type.id;
+		var active = this.props.current_type != null && this.props.current_type._id == type._id;
 
 		var symbol_style = {
 			color: 'rgb('+type.color[0]+','+type.color[1]+','+type.color[2]+')',
@@ -94,8 +101,9 @@ var PieceItem = React.createClass({
 
 		return (
 			<GItem {...this.props} >
-				<div className = 'piece-item' onMouseEnter={this.toggleHover.bind(this,true)} onMouseLeave={this.toggleHover.bind(this,false)} onClick = {this.load}>
-					<div ref='bg' className = 'piece-item-bg' style={bg} />
+				<div ref = 'item' className = 'piece-item' onMouseEnter={this.toggleHover.bind(this,true)} onMouseLeave={this.toggleHover.bind(this,false)} onClick = {this.load}>
+					<canvas ref = 'canvas'></canvas>
+					
 					<div className = {'piece-item-overlay ' + ( !this.state.toggle_bg ? 'piece-item-overlay-hidden' : '') }>
 						<b className='icon-isight'></b>
 					</div>

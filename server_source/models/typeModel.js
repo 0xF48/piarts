@@ -8,40 +8,32 @@ var fs = require('fs')
 
 var Type = new Schema({
 	name: {type:String,required:true},
-
 	color: [{type:Number,required:true}],
 	symbol: {type:String,required:true,unique:true},
-	
-
 	piece_count: {type:Number,default:0},
-
-
 	bounds: Array,
 	params: [{type:Number,required:true}],
-
-
-	locked: {type:Boolean,default:false},
-	preview: PreviewSchema
+	preview: {type: String},
 });
 
 
 
 
-//public json
-Type.methods.public = function(){
-	return {
-		id: this._id,
-		color:this.color,
-		symbol:this.symbol,
-		param_count: this.param_count,
-		bounds: this.bounds,
-		params: this.params,
-		piece_count: this.piece_count,
-		name: this.name,
-		locked: this.locked,
-		preview: this.preview
-	}
-}
+// //public json
+// Type.methods.public = function(){
+// 	return {
+// 		id: this._id,
+// 		color:this.color,
+// 		symbol:this.symbol,
+// 		param_count: this.param_count,
+// 		bounds: this.bounds,
+// 		params: this.params,
+// 		piece_count: this.piece_count,
+// 		name: this.name,
+// 		locked: this.locked,
+// 		preview: this.preview
+// 	}
+// }
 
 //render the preview
 Type.methods.renderPreview = function(){
@@ -60,6 +52,7 @@ Type.methods.renderPreview = function(){
 
 //add
 Type.statics.add = function(data){
+	console.log(data);
 	if(data.bounds == null || data.bounds.length != data.params.length) throw 'bad bounds'
 	
 	try {
@@ -79,7 +72,8 @@ Type.statics.add = function(data){
 		}else{
 			console.log('render preview')
 			var type = new Model(data)
-			return type.renderPreview()
+			console.log("[ADDED TYPE]",type.name)
+			return type.save()
 		}
 	})
 }

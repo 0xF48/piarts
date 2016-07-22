@@ -2,7 +2,6 @@ var m = require('mongoose')
 var Schema = m.Schema
 var model = m.model
 var prom = require('bluebird')
-var renderer = require('../renderer')
 var path = require('path')
 var Type = require('./typeModel')
 var ObjectId = require('mongoose').Types.ObjectId
@@ -38,21 +37,9 @@ Piece.statics.public = function(self){
 	}
 }
 
-Piece.methods.renderPreview = function(){
-	var self = this;
-	self.preview = {}
-	return prom.map(['small','medium'],function(size){
-		self.preview[size] = '/data/pieces/preview/'+self.id+'?size='+size
-		return renderer(self,size,false)
-	}).then(function(){
-		return self.save()
-	})
-}
-
-
+//add a new piece
 Piece.statics.add = function(body){
-	console.log('ADD PIECE',body)
-
+	
 	return new Promise(function(res,rej){
 		try {
 			var id = ObjectId(body.type_id)
@@ -64,15 +51,16 @@ Piece.statics.add = function(body){
 			if(err != null || found == null){
 				return res('type not found')
 			}
-			console.log("FOUND",err,found)
-
+		
 			var piece = new Model({
 				created: Date.now(),
 				params: body.params,
 				type: found
 			});
 
-			return res(piece.renderPreview())
+			piece.save()
+
+			return res(piece)
 		})
 	})
 }

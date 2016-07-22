@@ -2,7 +2,6 @@ var express = require('express')
 var router = express.Router();
 var typeRouter = require('./typeRouter')
 var pieceRouter = require('./pieceRouter')
-var storeRouter = require('./storeRouter')
 var pack = require('../../package.json')
 var _ = require('lodash')
 
@@ -27,7 +26,7 @@ router
 	if(ip_user){
 		req.user = ip_user
 	}else{
-		req.user = {verified:false,local:[],liked_pieces:[]}
+		req.user = {add_count: 0,verified:false,local:[],liked_pieces:[]}
 		ip_users[req.connection.remoteAddress] = req.user
 	}
 	if(req.cookies.liked_pieces && req.cookies.liked_pieces.length > req.user.liked_pieces){
@@ -51,5 +50,4 @@ module.exports = function(app){
 	app.use('/data',router);
 	app.use('/data/types',typeRouter);
 	app.use('/data/pieces',pieceRouter);
-	app.use('/data/store',storeRouter);
 }

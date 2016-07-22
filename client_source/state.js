@@ -65,6 +65,10 @@ var default_state = {
 	framerate: 60, //todo	
 }
 
+window.preload.type_items.forEach(function(type){
+	default_state.type_items[type._id] = type;
+})
+
 
 module.exports.default_state = default_state
 
@@ -94,12 +98,12 @@ function mergeToFilters(state,pieces,type){
 	
 
 	if(type == 'saved'){
-		state.piece_items.recent.shift(pieces),
+		state.piece_items.recent = pieces.concat(state.piece_items.recent);
 		state.piece_items.saved = state.piece_items.saved.concat(pieces)
 	}else if(type == 'liked'){
 		state.piece_items.liked = state.piece_items.liked.concat(pieces)
 	}else if(type == 'recent'){
-		state.piece_items.recent= state.piece_items.recent.concat(pieces)
+		state.piece_items.recent = state.piece_items.recent.concat(pieces)
 	}
 
 }
@@ -127,10 +131,10 @@ function mainReducer(state, action){
 		
   		//
 		case 'SET_CURRENT_PIECE':
+			console.log("SET CURRENT PIECE",action.piece_item)
 			return merge(n,state,{
 				current_piece: action.piece_item,
 				current_type: action.type_item != null ? action.type_item  : state.current_type,
-				params:  action.piece_item != null ? action.piece_item.params : state.params
 			})
 		
 		//set the store items.
@@ -227,6 +231,7 @@ function mainReducer(state, action){
 				params:  action.params
       		})
       	case 'SET_PARAMS':
+      		// console.log("SET PARAMS",action.params)
   			return merge(n, state, {
 				params:  action.params
       		})      		
@@ -249,7 +254,7 @@ function mainReducer(state, action){
 			mergeToFilters(state,action.piece_items,action.filter)
 			// console.log(state.piece_items)
 			return merge(n,state, {
-				piece_items: Object.assign({},state.piece_items),
+				// piece_items: Object.assign({},state.piece_items),
 				max_reached: Object.assign({},action.max_reached),
 			})
 
@@ -343,7 +348,7 @@ function checkRender(getState){
 			if(!new_state.show_store && !new_state.show_browser && !new_state.show_types && !new_state.show_info && (old_state.show_store || old_state.show_info || old_state.show_browser || old_state.show_types )){
 				setTimeout(function() {
 					console.log("RENDER ON")
-					RENDER_ACTIVE = true
+					RENDER_ACTIVE = new_state.autoplay
 				}, 400);
 			}else if( (new_state.show_store || new_state.show_browser || new_state.show_types || new_state.show_info) && (!old_state.show_store && !old_state.show_info && !old_state.show_browser && !old_state.show_types )){
 				console.log("RENDER OFF")
@@ -355,8 +360,12 @@ function checkRender(getState){
 }
 
 
-
-
+module.exports.toggleRender = toggleRender;
+function toggleRender(toggle){
+	if(store.getState().autoplay == true) return;
+	// console.log('toggle render')
+	RENDER_ACTIVE = toggle
+}
 
 
 
@@ -378,7 +387,7 @@ module.exports.loops = loops;
 
 
 // render all loops. pause rendering with store.render_active
-var RENDER_ACTIVE = true
+var RENDER_ACTIVE = false
 function render(){
 	requestAnimationFrame(render);
 
@@ -426,25 +435,24 @@ render();
 /*----------------------------------*/
 /*----------------------------------*/
 
-function getTypeList(){
-	return req.get('/data/types')
-	.end(function(err,res){
-		if(!res.body.length) throw "got bad type array : "+JSON.stringify(res.body)
-		var types = {}
+// 		if(!res.body.length) throw "got bad type array : "+JSON.stringify(res.body)
+// 		var types = {}
 		
-		for(var i in res.body){
-			types[res.body[i].id] = res.body[i]
-		}
+// 		for(var i in res.body){
+// 			types[res.body[i].id] = res.body[i]
+// 		}
 
-		store.dispatch({
-			type: 'SET_TYPE_ITEMS',
-			type_items: types,
-		})
+// 		console.log(types)
 
-		//preload
-		preload()		
-	})
-}
+// 		store.dispatch({
+// 			type: 'SET_TYPE_ITEMS',
+// 			type_items: types,
+// 		})
+
+// 		//preload
+// 		preload()		
+// 	})
+// }
 
 
 
@@ -495,7 +503,7 @@ function toggleBrowserTab(tab){
 
 
 
-
+var type_preloaded = {};
 
 
 
@@ -503,23 +511,32 @@ function toggleBrowserTab(tab){
 
 module.exports.loadType = loadType
 function loadType(type,cb){
+	
+	if(type_modules[type._id]) return cb ? cb(type) : null
+	type_modules[type._id] = {};
+	type_preloaded[type._id] = {};
+	requirejs(['data/types/script/'+type._id],function(mod){
+		type_modules[type._id] = mod;
+		
+		
+		var canvas = document.createElement('canvas');
 
-	// if(type_modules[type.name]) return cb ? cb(type) : null
+		canvas.width = 500
+		canvas.height = 500
+		
+		type_preloaded[type._id] = {
+			canvas: canvas,
+			mod: new mod(canvas)
+		}
 
-	requirejs(['data/types/script/'+type.id],function(module){
-		type_modules[type.name] = module
 		cb(type)
 	})
 }
 
 
 //set the current type to be rendered in the viewer
-module.exports.setType = setType
-function setType(type_item){
-	var current_type = store.getState().current_type
-	if(current_type && current_type.id == type_item.id){
-		return setParams(type_item.params)
-	}
+module.exports.setCurrentType = setCurrentType
+function setCurrentType(type_item){
 	store.dispatch({
 		type: 'SET_CURRENT_TYPE',
 		type_item: type_item,
@@ -527,18 +544,64 @@ function setType(type_item){
 }
 
 
+var pieces_data = {};
+// var gl = require('gl');
+
+
+module.exports.renderPiece = renderPiece
+function renderPiece(canvas,piece,size){
+	console.log("RENDER")
+	if(piece._id){
+		var id = piece._id
+	}else{
+		var id = piece.id
+	}
+	var size = size || 350
+	// console.log('render',piece.id)
+	if(pieces_data[id] != null){
+		var ctx = canvas.getContext('2d')
+		ctx.putImageData(pieces_data[piece.id],Math.floor(-(size-canvas.width)/2),Math.floor(-(size-canvas.height)/2))
+		return
+	}
+
+	var type_items = store.getState().type_items;
+	var type = piece.type_id ? type_items[piece.type_id] : piece;
+
+	console.log(type);
+
+
+	if(!type_preloaded[type._id]) throw 'cannot render piece, type not preloaded';
+	console.log(piece.params);
+	var pixels = new Uint8Array(size * size * 4);
+	// console.log(piece.params);
+	type_preloaded[type._id].mod.set(piece.params);
+	type_preloaded[type._id].mod.loop()
+	var gl = type_preloaded[type._id].canvas.getContext('experimental-webgl');
+	var left = Math.floor(gl.drawingBufferWidth/2-size/2)
+	var top =  Math.floor(gl.drawingBufferHeight/2-size/2)
+	gl.readPixels(left, top, size, size, gl.RGBA,gl.UNSIGNED_BYTE,pixels)
+	// console.log(gl);
+
+	var pixels2 = new Uint8ClampedArray(pixels)
+	var data = new ImageData(pixels2,size,size)
+	pieces_data[id] = data;
+	var ctx = canvas.getContext('2d')
+	ctx.putImageData(data,Math.floor(-(size-canvas.width)/2),Math.floor(-(size-canvas.height)/2))
+	
+	delete pixels2
+	delete pixels
+}
+
+
 module.exports.initCurrentType = initCurrentType
-function initCurrentType(){
+function initCurrentType(canvas){
 	type_item = store.getState().current_type
 	clearView();
 
-	if(!type_modules[type_item.name]) throw 'cannot set type, type module is not loaded'
-
-	var canvas = document.getElementById('view-canvas')
-	var module = type_modules[type_item.name]
-	current_view = module(canvas)
+	if(!type_modules[type_item._id]) throw 'cannot set type, type module is not loaded'
+	var mod = type_modules[type_item._id]
+	current_view = mod(canvas)
 	loops.push(current_view.loop)
-	setParams(type_item.params)
 }
 
 
@@ -554,6 +617,7 @@ function clearView(){
 
 module.exports.updatePieceList = updatePieceList;
 function updatePieceList(filter,cb){
+	console.log('UPDATE LIST',filter)
 	if(filter == null) return false
 	var state = store.getState();
 	
@@ -563,7 +627,8 @@ function updatePieceList(filter,cb){
 		type: 'UPDATE_LIST'
 	})
 
-	
+	var type_items = state.type_items
+	// console.log(type_items)
 	//console.log(arr.length)
 	var arr = state.piece_items[filter];
 
@@ -578,16 +643,42 @@ function updatePieceList(filter,cb){
 		}else{
 			max_reached[filter] = false
 		}
+
+		var done = 0;
+		var total = 0;
+		res.body.forEach(function(piece){
+			var type = type_items[piece.type_id];
+			// console.log(type_items,piece.type_id);
+			if(!type_preloaded[type._id]){
+				total += 1;
+				loadType(type,function(){
+					done += 1;
+					// console.log(done,total);
+					if(done == total){
+						store.dispatch({
+							max_reached: max_reached,
+							type: 'UPDATE_LIST',
+							filter: filter,
+							piece_items: res.body,
+						})
+					}
+				})
+			}
+		})
+
+		if( total == 0){
+			store.dispatch({
+				max_reached: max_reached,
+				type: 'UPDATE_LIST',
+				filter: filter,
+				piece_items: res.body,
+			})			
+		}
 		// if(!res.body.length) return cb ? cb() : null
 		//console.log("GOT PIECE LIST BODY",res.body);
 		// console.log('GOT',res.body.length)
 
-		store.dispatch({
-			max_reached: max_reached,
-			type: 'UPDATE_LIST',
-			filter: filter,
-			piece_items: res.body,
-		})
+		
 		if(cb != null) cb()
 	})
 }
@@ -601,7 +692,6 @@ function showStore(piece){
 
 module.exports.setCurrentPiece = setCurrentPiece
 function setCurrentPiece(piece,type){
-	if(store.getState().current_type.id != type.id) throw 'cant set current piece, current type differs from piece type'
 	store.dispatch({
 		type: 'SET_CURRENT_PIECE',
 		piece_item: piece,
@@ -628,8 +718,7 @@ function IncrementPieceView(piece){
 module.exports.showType = showType
 function showType(type_item){
 	s.loadType(type_item,function(item){
-		console.log("SET TYPE",item)
-		s.setType(item)
+		s.setCurrentType(item)
 		s.showView()
 		s.setParams(item.params)
 	});
@@ -637,37 +726,19 @@ function showType(type_item){
 
 module.exports.showPiece = showPiece
 function showPiece(piece){
-	console.log(piece.type_id)
+	// console.log(piece.type_id)
 	//either set the current type or load the type from the server.
 	var state = s.store.getState()
 	if(state.current_type == null || state.current_type._id != piece.type_id){
 		loadType(state.type_items[piece.type_id],function(type_item){
-
-			setType(type_item)
-			
-			//set the current piece.
-			setCurrentPiece(piece,type_item)
-
-			//add a view counte to the piece.
-			IncrementPieceView(piece)
-
-			//set the piece params
-			setParams(piece.params)
-		
-			//show the view
+			setCurrentPiece(piece,type_item) //set the current piece.
+			IncrementPieceView(piece) //add a view counter to the piece.
 			showView()
-
 		});		
 	}else{
 		setCurrentPiece(piece,type_item)
-
-		//add a view counte to the piece.
 		IncrementPieceView(piece)
-
-		//set the piece params
 		setParams(piece.params)
-	
-		//show the view
 		showView()
 	}
 }
@@ -686,7 +757,7 @@ function savePiece(type,params,picked){
 	})
 
 	return req.post('/data/pieces/add').send({
-		type_id : type.id,
+		type_id : type._id,
 		params: params,
 	})
 }
@@ -732,6 +803,8 @@ function autoplay(){
 }
 
 module.exports.toggleAutoplay = function(){
+
+	toggleRender(!store.getState().autoplay);
 
 	auto_seed = params.map(function(par){
 		return Math.random()
@@ -791,7 +864,7 @@ function makeCurrentPiece(canvas){
 
 
 module.exports.saveCurrentPiece = saveCurrentPiece;
-function saveCurrentPiece(){
+function saveCurrentPiece(cb){
 	
 	if(store.getState().current_piece != null){
 		throw 'cant save when there is a current_piece'
@@ -804,7 +877,7 @@ function saveCurrentPiece(){
 
 	savePiece(state.current_type,state.params)
 	.end(function(err,res){
-		console.log("SAVED PIECE",err,res)
+		console.log("SAVED PIECE",res.statusCode)
 		if(err) throw "UPLOAD ERROR";
 
 
@@ -816,6 +889,7 @@ function saveCurrentPiece(){
 
 		//mark as local
 		res.body.local = true
+		if(cb) cb();
 	});
 }
 
@@ -903,21 +977,20 @@ function toggleTipDisplay(toggle){
 
 
 /*START*/
-getTypeList();
-updatePieceList('saved');
+var example = window.preload.type_items[0]
+loadType(example,function(module){
+	setCurrentType(example)
+	setParams(example.params)
+	showView()
+	updatePieceList('saved');
+})
 
 
 
 
-function preload(){
-	var types = store.getState().type_items;
-	var example = types[Object.keys(types)[0]];
-	loadType(example,function(module){
-		setType(example)
-		setParams(example.params)
-		showView()
-	})
-}
+
+
+
 
 
 window.store = store //debug

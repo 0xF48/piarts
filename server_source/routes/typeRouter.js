@@ -28,7 +28,10 @@ router
 	
 	Type.add(req.body).then(function(type){
 		if(type == null) res.sendStatus(500)
-		else res.json(type.public())
+		else res.json(type)
+	}).catch((e)=>{
+		console.log(e);
+		res.sendStatus(500)
 	})
 })
 
@@ -76,14 +79,16 @@ router
 /* type id param prefill to req.type */
 .param('type_id',function(req,res,next,id){
 	if( ! id ) res.sendStatus(500);
-	Type.findOne( {'_id' : id }).populate('type').exec(function(err,type){
+	Type.findOne( {'_id' : id }).populate('type').then(function(type){
 		if(type == null) return res.sendStatus(404)
-		if(err){
-			console.log(err)
-			return res.sendStatus(500);
-		} 
+		
 		req.type = type;
 		next();
+	}).catch((e)=>{
+
+		console.log(e)
+		return res.sendStatus(500);
+	
 	})
 })
 

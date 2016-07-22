@@ -20,6 +20,9 @@
 	requirejs.config({
 		baseUrl: "/",
 	})
+	window.preload = {
+		type_items: <%- type_items %>
+	}
 </script>
 
 <script src="vendor.bundle.js"></script>

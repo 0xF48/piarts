@@ -9,7 +9,6 @@ var path = require('path')
 
 
 
-
 function addCheck(req,res,next){
 	next()
 }
@@ -104,11 +103,13 @@ router
 })
 
 .post('/add',addCheck,function(req,res){
+	if(req.user.add_count >= 20) return res.sendStatus(403);
 	Piece.add(req.body).then(function(piece){
 		if(typeof piece == "string") return res.send(piece).status(500)
 		if(piece == null || piece.errors) return res.sendStatus(500)
 		req.user.local.push(piece.id);
 		res.setHeader('Set-Cookie',"local="+JSON.stringify(req.user.local))
+		req.user.add_count += 1;
 		res.json(Piece.public(piece))
 	})
 })

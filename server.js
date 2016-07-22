@@ -19,9 +19,9 @@ process.on('unhandledRejection', function(error, promise) {
 
 
 
-
-
-db.connect(pack.db_url);
+var Type = require('./server_source/models/typeModel');
+var options = { promiseLibrary: require('bluebird') };
+db.connect(pack.db_url,options);
 db.connection.on('error',console.error.bind(console,'connection error'));	
 
 
@@ -42,11 +42,10 @@ var bodyParser = require('body-parser')
 
 
 
-require('./server_source/workers/viewer/viewController.js')
+// require('./server_source/workers/viewer/viewController.js')
 
 
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.post('/launch_email',function(req,res){
 	
@@ -73,7 +72,12 @@ if(pack.maintenance){
 	});
 }else{
 	app.get('/', function(req, res) {
-	    res.render('index');
+		Type.find().lean()
+		.exec(function(err,typelist){
+			res.render('index',{
+		    	type_items:JSON.stringify(typelist)
+		    });
+		})
 	});
 }
 
@@ -83,7 +87,7 @@ require('./server_source/routes')(app);
 
 // app.use(function(req, res, next) {
 //     var err = new Error('Not Found');
-//     err.status = 404;
+//     err.watus = 404;
 //     // print("TEST")
 //     next(err);
 // });

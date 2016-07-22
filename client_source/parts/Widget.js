@@ -1,10 +1,10 @@
-//parameters
-
-var C = require('./Circle');
-var CircleMixin = require('./CircleMixin');
+var s = require('../state');
 
 
-var s = require('../state')
+
+
+
+
 
 function rgba(r,g,b,a){
 	return 'rgba('+Math.abs(Math.floor(r))+','+Math.abs(Math.floor(g))+','+Math.abs(Math.floor(b))+','+(a != null ? a : 1)+')'
@@ -132,11 +132,11 @@ var	Dragger = function(canvas){
 		ctx.strokeStyle = 'rgba(255,255,255,0.2)'
 		ctx.stroke()
 		ctx.closePath();
-		ctx.moveTo(stage.client_x,stage.client_y)
-		ctx.lineTo(stage.from_x,stage.from_y)
-		ctx.strokeStyle = 'rgba(255,255,255,0.1)'
-		ctx.stroke()
-		ctx.closePath();
+		// ctx.moveTo(stage.client_x,stage.client_y)
+		// ctx.lineTo(stage.from_x,stage.from_y)
+		// ctx.strokeStyle = 'rgba(255,255,255,0.1)'
+		// ctx.stroke()
+		// ctx.closePath();
 	}
 
 	function checkDrawCycle(){
@@ -146,8 +146,6 @@ var	Dragger = function(canvas){
 		var a1 = (  stage.prev_angle + stage.offset_angle ) % (Math.PI*2)
 		var a2 = (  stage.angle + stage.offset_angle ) % (Math.PI*2)
 		var aa = null
-
-		//console.log('ang',stage.angle,'off',stage.offset_angle,'a2',a2,'c',stage.draw_cycles)
 
 		if(a2 > 0 && a1 < 0){
 			stage.draw_cycles += 1
@@ -168,13 +166,9 @@ var	Dragger = function(canvas){
 		
 		if(a1 > Math.PI && a2 < Math.PI/2 ){
 			stage.draw_cycles += 1
-			//console.log("ADD DRAW CYCLE",stage.draw_cycles)
-			
 			return 
 		}else if(a1 < Math.PI/2 && a2 > Math.PI){
 			stage.draw_cycles -= 1
-			//console.log("REMOVE DRAW CYCLE",stage.draw_cycles)
-
 			return 
 		}
 	}
@@ -182,9 +176,6 @@ var	Dragger = function(canvas){
 	function checkCycle(){
 		//console.log("CYCLE", stage.prev_a,stage.angle)
 		if(stage.prev_a == null) return
-
-		
-		
 
 		if(stage.prev_a > Math.PI && stage.c_a  < Math.PI/2){
 			//console.log("ADD CYCLE")
@@ -197,16 +188,11 @@ var	Dragger = function(canvas){
 			}else{
 				stage.cycles += 1
 			}
-			
-			
-			
-			
 			return true
 		}else if(stage.prev_a < Math.PI/2 && stage.c_a > Math.PI){
 
 			//console.log("REMOVE CYCLE")
 			if(stage.val >= stage.max_val){
-				//stage.cycles -= 1
 				stage.cycles -= stage.overflow_cycles
 				stage.overflow_cycles = 0
 			}else if(stage.val <= stage.min_val){
@@ -215,13 +201,9 @@ var	Dragger = function(canvas){
 			}else{
 				stage.cycles -= 1
 			}
-
-
 			return false
 		}
 	}
-
-
 
 	function getAngle(val){
 		return val * (Math.PI*2)/stage.cycles_per_unit 
@@ -231,58 +213,13 @@ var	Dragger = function(canvas){
 		return stage.cycles_per_unit/(Math.PI*2)*(a)
 	}
 
-
-
-
-	function drawFiller(){
-		var start_a = 0;
-		var end_a = 0;
-	
-		if(stage.draw_cycles < 0){
-			fillstyle = 'rgba(0, 0, 0, 0.5)'
-		}else{
-			fillstyle = stage.color
-		}
-
-		for(var i = (stage.draw_cycles < 0 ? stage.draw_cycles+1 : 0) ;i < (stage.draw_cycles < 0 ? 0 : stage.draw_cycles) ;i++){
-			ctx.beginPath();
-			ctx.arc(stage.client_x, stage.client_y,stage.filler_radius,stage.offset_angle, Math.PI*2+stage.offset_angle,false);
-			ctx.lineTo(stage.client_x, stage.client_y);
-			ctx.closePath();
-			ctx.fillStyle = fillstyle
-			ctx.fill();	
-		}
-
-		if(stage.draw_cycles < 0){
-			end_a = normalize(-stage.offset_angle % (Math.PI*2))
-			start_a = normalize(stage.angle % (Math.PI*2))
-		}else{
-			start_a = normalize(-stage.offset_angle % (Math.PI*2))
-			end_a = normalize(stage.angle % (Math.PI*2))
-		}
-		
-		ctx.beginPath();
-		ctx.arc(stage.client_x, stage.client_y,stage.filler_radius, start_a, end_a ,false);
-		ctx.lineTo(stage.client_x, stage.client_y);
-		ctx.closePath();
-		ctx.fillStyle = fillstyle
-		ctx.fill();
-	}
-
 	function getTotalAngle(a){
 		return  (a || stage.c_a) + stage.cycles*Math.PI*2
 	}
 
 	function getClientAngle(){
 		return (-Math.atan2(stage.client_y-stage.c_y,stage.c_x-stage.client_x) + Math.PI)
-		
-		// if(stage.cycles < 0){
-		// 	return (-Math.atan2(stage.client_y-stage.c_y,stage.c_x-stage.client_x) + Math.PI) + (stage.cycles-1*Math.PI*2)
-		// }else{
-			
-		// }
 	}
-
 
 	function setOffset(value){
 		stage.offset_value_angle = getAngle(value)
@@ -325,7 +262,7 @@ var	Dragger = function(canvas){
 		checkDrawCycle()
 
 		/* draw */
-		// drawFiller();
+		
 		drawCircle(stage.c_x,stage.c_y,stage.c_radius/2); 
 		drawCircle(stage.client_x,stage.client_y,stage.c_radius*3,'rgba(0,0,0,0.5)');
 		drawCircle(stage.client_x,stage.client_y,stage.c_radius*1.5);
@@ -431,46 +368,29 @@ var	Dragger = function(canvas){
 	}
 }
 
+var UserWidget = React.createClass({
 
-
-
-
-
-
-var ParamWidget = React.createClass({
-
-	mixins: [CircleMixin],
-
-	getDefaultProps: function(){
-		return {
-			hide: false
-		}
-	},
-	
 	getInitialState: function(){
-		return {
-			expanded: false,
+		return{
+			is_new: false,
+			show: false,
 			active_knob: -1,
-			padding: 10,
-			default_dist: 4
 		}
 	},
 
-	initDragger: function(canvas){
-		this.dragger = new Dragger(canvas);
-		window.dragger = this.dragger
+	componentDidMount: function(){
+		window.widget = this;
+		this.dragger = new Dragger(this.refs.canvas);
 	},
 
 	setDragger: function(i,e){
-		
-
-
-		var pos = this.refs.root.refs.root.getBoundingClientRect();
-		this.dragger.stage.from_x = pos.left+pos.width/2 - 50
-		this.dragger.stage.from_y = pos.top+pos.height/2
-		this.dragger.start(i,e.nativeEvent,this.props.params[i],this.props.current_type.bounds[i],this.getC(i+1));
-		document.addEventListener('mouseup',this.endDragger,false)
-
+		var pos = this.refs.root.getBoundingClientRect();
+		// this.dragger.stage.from_x = pos.left+pos.width/2 - 50
+		// this.dragger.stage.from_y = pos.top+pos.height/2
+		this.dragger.start(i,e.nativeEvent,this.props.params[i],this.props.current_type.bounds[i],rgba(255,255,255));
+		document.addEventListener('click',this.endDragger,false)
+		s.disable_autoplay();
+		s.toggleRender(true);
 		this.setState({
 			active_knob: i,
 		})
@@ -478,88 +398,132 @@ var ParamWidget = React.createClass({
 		e.preventDefault();		
 	},
 
-	endDragger: function(){
+	endDragger: function(e){
 		//console.log("END")
-		document.removeEventListener('mouseup',this.endDragger)
+		s.toggleRender(false)
+		document.removeEventListener('click',this.endDragger)
 		this.dragger.end();
 		this.setState({
 			active_knob: -1,
 		})
-	},
-
-	dragger: null,
-
-	getScale: function(index){
-		if(this.props.hide) return 0.5 
-		if(this.props.params[index] == null) return 0.5
-		if(this.state.active_knob == index) return 0.5
-		if(this.state.active_knob != index && this.state.active_knob != -1){
-			return 0.45
-		}else{
-			return 1
-		}
-	},
-
-	getDist: function(index){
-		
-		return this.state.default_dist
-		
-	},
-
-	getVal: function(index){
-		if(this.props.params[index] == null || this.props.params[index] == NaN) return null
-		else return Math.round(this.props.params[index]*100)/100
-	},
-
-	getC: function(i){
-		return rgba(255,255,255)
-	},
-
-	componentDidMount: function(){
-		window.param_widget = this;
-		this.refs['knob_0'].refs.root.addEventListener('click', function(){console.log('CLICKED')},false)
+		e.preventDefault();
 	},
 
 
-	componentWillReceiveProps: function(props){
-		if(this.state.expanded == false && props.expanded == true){
+	componentDidUpdate: function(props,state){
+		this.syncCanvasDragger();
+	},
+
+	syncCanvasDragger: function(){
+		var canvas_pos = this.refs.canvas.getBoundingClientRect();
+		this.refs.canvas.width = this.refs['root'].clientWidth;
+		this.refs.canvas.height = this.refs['root'].clientHeight;
+		this.dragger.stage['vertical'] = this.refs.canvas.height > this.refs.canvas.width ? true : false
+		this.dragger.stage['left'] = canvas_pos.left
+		this.dragger.stage['top'] = canvas_pos.top
+	},
+
+	save: function(){
+		s.saveCurrentPiece(function(){
 			this.setState({
-				expanded: true
-			})
-		}
+				saving: false
+			})			
+		}.bind(this))
+		this.setState({
+			saving: true
+		})
+	},
+	reset: function(){
+		s.showType(this.props.current_type);
+	},
+	like: function(){
+		s.setLike(this.props.current_piece);
+	},
+	show: function(){
+		this.setState({
+			show: !this.state.show
+		})
 	},
 
-
+	getAngle: function(angle,dist,radius,scale){
+		if(scale == null) scale = 1;
+		var off = -Math.PI;
+		var x = Math.cos(angle+off)*dist
+		var y = Math.sin(angle+off)*dist
+		if(!this.state.show){
+			return {
+				transform: 'translate('+radius*-1+'px,'+radius*-1+'px) scale('+(scale)+')'
+			}
+		}
+		return {
+			transform: 'translate('+(x-radius)+'px,'+(y-radius)+'px) scale('+(scale)+')'
+		}
+	},
 
 	render: function(){
-		// console.log(this.props.params)
 
-		var c_size = 30;
-		var c_beta = 10;
-		var c_style = {display: this.state.active_knob != -1 ? 'none' : 'initial'}
-		var k_style = {background: this.props.expanded ? '#DE5A00' : '#fff' }
+		var liked = false
+		if(this.props.current_piece){
+			liked = this.props.liked_pieces.indexOf(this.props.current_piece.id) != -1;
+		}
 
 
+
+		var save_class = 'circle widget-save ' + (this.props.current_piece ? 'widget-save-hide' : '');
+		var reset_class = 'circle widget-reset ' + (!this.props.current_piece ? 'widget-reset-hide' : '');
+		var like_class = 'circle widget-like ' + (this.props.current_piece ? 'widget-like-hide':'') + (liked ? ' widget-like-active':'');
+		var root_class = 'circle widget-root ' + (this.state.show ? 'widget-root-hide' :''); 
+
+		var save_scale = ( (this.state.saving || this.props.current_piece) ? 0 : 1)
+		var like_scale = (this.props.current_piece ? 1 : 0)
+		var root_scale = (!this.state.show ? 1 : 0.75);
+		var reset_scale = 1;
+		
+		var def = true
+		for(var i = 0;i<this.props.params.length;i++){
+			if(this.props.current_type){
+				if(this.props.params[i] != this.props.current_type.params[i]) def = false
+			}
+		}
+
+		if(def) reset_scale = save_scale = 0;
+		
+
+		var params = []	
+		var d = 0.6;
+		var l1 = 65;
+		var l2 = 120;
+		var save = <div onClick = {this.save} className = {save_class} style = {this.getAngle(Math.PI/2+d,l1,20,save_scale)}><b className = 'icon-database'/></div>
+		var reset = <div onClick = {this.reset} className = {reset_class} style = {this.getAngle(Math.PI/2-d,l1,20,reset_scale)}><b className = 'icon-ccw'/></div>
+		var like = <div onClick = {liked ? null : this.like} className = {like_class} style = {this.getAngle(Math.PI/2+d,l1,20,like_scale)}><b className = 'icon-heart'/></div>
+		var root = <div onClick = {this.show} className = {root_class} style = {this.getAngle(0,0,75/2,root_scale)}><b className='icon-cog' /></div>
+
+		var params = this.props.params.map(function(param,i){
+			var d2 = 0.5
+			var a = Math.PI/2-(d2*Math.floor(this.props.params.length/2))+(d2*i)
+			
+			var scale = 0
+			if(this.state.active_knob == -1) scale = 1;
+
+			return <div key = {'widget_param_'+i}className = {'circle widget-param'} style = {this.getAngle(a,l2,15,scale)} onClick = {this.setDragger.bind(this,i)} />
+		}.bind(this))
+
+		
 		return (
-			<C {...this.props} expand_duration = {0.5}  ref = 'root' padding = {this.state.padding} size={50} angle = {Math.PI/2} expanded={this.props.expanded} onClick={this.toggleSelf} >
-				<b className='icon-sliders' />
-				<C style = {{background:this.getC(5)}} beta = {c_beta} size={c_size} distance={this.getDist(4)} onClick={this.setDragger.bind(this,4)} ref = 'knob_4' scale = {this.getScale(4)}>
-					</C>
-				<C  style = {{background:this.getC(3)}} beta = {c_beta} size={c_size} distance={this.getDist(2)} onClick={this.setDragger.bind(this,2)} ref = 'knob_2' scale = {this.getScale(2)}>
-					</C>
-				<C  style = {{background:this.getC(1)}} beta = {c_beta} size={c_size} distance={this.getDist(0)}  onClick={this.setDragger.bind(this,0)} ref = 'knob_0' scale = {this.getScale(0)}>
-					</C>
-				<C  style = {{background:this.getC(2)}} beta = {c_beta} size={c_size} distance={this.getDist(1)} onClick={this.setDragger.bind(this,1)} ref = 'knob_1' scale = {this.getScale(1)}>
-					</C>
-				<C  style = {{background:this.getC(4)}} beta = {c_beta} size={c_size} distance={this.getDist(3)} onClick={this.setDragger.bind(this,3)} ref = 'knob_3' scale = {this.getScale(3)}>
-					</C>
-			</C>
+			<div className = 'user-widget'  ref = "root">
+				<canvas  tabIndex='1' ref='canvas' className = 'user-widget-canvas' />
+				<div className = 'user-widget-filter'>
+					<div className = 'user-widget-container'>
+						{reset}
+						{save}
+						{like}
+						{params}
+						{root}
+					</div>
+				</div>
+			</div>
 		)
 	}
-})
+});
 
-
-
-module.exports = ParamWidget;
-
-
+module.exports = UserWidget

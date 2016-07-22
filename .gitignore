@@ -30,7 +30,7 @@ client_static/*.map
 client_static/*.bundle.js
 
 
-piece_modules
+piece_modules/builds/**/*
 data
 server_source/nwjs/
 **/**/.DS_Store
