@@ -1,4 +1,5 @@
 var webpack = require("webpack");
+console.log('env: ',process.env.NODE_ENV);
 var cfg = {
 	devtool: 'source-map',
 	resolve: {
@@ -27,6 +28,9 @@ var cfg = {
 		filename: "[name].bundle.js"
 	},
 	plugins: [
+		new webpack.DefinePlugin({
+		    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+		}),
 		new webpack.ProvidePlugin({
 			React: "react",
 		}),
