@@ -38,7 +38,7 @@ router
 
 	if(req.headers.authorization != null && req.headers.authorization == pack.auth) req.user.admin = {}
 	else req.user.admin = null
-
+	// console.log(req.user.admin)
 
 	next()
 })

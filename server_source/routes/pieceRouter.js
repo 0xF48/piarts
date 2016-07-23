@@ -42,6 +42,13 @@ function getPiece(req,res,next,id){
 
 
 
+var bodyParser = require('body-parser')
+var jsonParser = bodyParser.json({
+	limit:'20kb',
+})
+
+
+
 
 
 
@@ -102,7 +109,7 @@ router
 	})
 })
 
-.post('/add',addCheck,function(req,res){
+.post('/add',jsonParser,function(req,res){
 	if(req.user.add_count >= 20) return res.sendStatus(403);
 	Piece.add(req.body).then(function(piece){
 		if(typeof piece == "string") return res.send(piece).status(500)
@@ -123,7 +130,7 @@ router
 
 .put('/like/:piece_id',likeCheck,function(req,res){
 	// console.log('LIKE',req.piece)
-	if(req.piece.likes >= 999) return res.sendStatus(200);
+	if(req.piece.likes >= 999) return res.sendStatus(403);
 	if(req.user.liked_pieces.indexOf(req.piece._id.toString()) != -1) return res.sendStatus(403);
 	req.piece.update({likes:req.piece.likes+1}).then(function(){
 		req.user.liked_pieces.push(req.piece._id)

@@ -36,8 +36,7 @@ var Creature = function(radius,edge_count,hair_segments,hair_length,cfg,max){
 
 	//console.log(g1,g2,g3);
 
-	var radius= 500 ,edge_count=16000
-	if(max) edge_count = 32000
+	var radius= 500 ,edge_count=10000
 		
 	var b_geometry = new THREE.BufferGeometry();
 	var b_pos = [];

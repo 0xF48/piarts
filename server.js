@@ -13,9 +13,7 @@ app.use('/static/',express.static('client_static'));
 
 var Promise = require('bluebird')
 
-process.on('unhandledRejection', function(error, promise) {
-  console.error(error)
-});
+db.Promise = Promise;
 
 
 
@@ -36,17 +34,7 @@ emailSchema.path('email').validate(function (email) {
 }, 'The e-mail field cannot be empty.')
 
 var Email = db.model('Email',emailSchema);
-
-var bodyParser = require('body-parser')
-
-
-
-
-// require('./server_source/workers/viewer/viewController.js')
-
-
-app.use(cookieParser());
-app.use(bodyParser.json())
+app.use(cookieParser())
 app.post('/launch_email',function(req,res){
 	
 	
@@ -81,6 +69,13 @@ if(pack.maintenance){
 	});
 }
 
+
+app.use(function(err, req, res, next) {
+  if(process.env.NODE_ENV != 'production'){
+	console.error(err.stack);
+  }
+  return res.status(500).send('internal error');
+});
 
 
 require('./server_source/routes')(app);
