@@ -51,6 +51,9 @@ Piece.statics.add = function(body){
 			if(err != null || found == null){
 				return res('type not found')
 			}
+
+			found.piece_count += 1;
+			found.save()
 		
 			var piece = new Model({
 				created: Date.now(),

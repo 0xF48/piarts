@@ -47,10 +47,12 @@ var default_params = {
 
 
 
-var init = function(el,default_params,gl,width,height){
+var init = function(el,default_params,max){
+	var gl = null
+	var width = el.clientWidth
+	var height = el.clientHeight	
 	var main_creature = null;
-	width = width || el.clientWidth
-	height = height || el.clientHeight	
+	
 
 	var loop = {};
 	var cam = new THREE.PerspectiveCamera(45,1.5,1,1000000);
@@ -154,8 +156,8 @@ var init = function(el,default_params,gl,width,height){
 	
 	var renderModel = new THREE.RenderPass( scene, cam );
 
-	var effectBloom2 = new THREE.BloomPass(1.0,25,6.0,256*2);
-	var effectBloom = new THREE.BloomPass(2.0,6,1.0,256*2);
+	var effectBloom2 = new THREE.BloomPass(2.0,25,4.0,256*2);
+	var effectBloom = new THREE.BloomPass(1.0,6,1.0,256*2);
 	var effectCopy = new THREE.ShaderPass( THREE.CopyShader );
 
 	// effectFXAA = new THREE.ShaderPass( THREE.FXAAShader );
@@ -173,6 +175,7 @@ var init = function(el,default_params,gl,width,height){
 	composer.addPass( renderModel );
 	composer.addPass( effectBloom );
 	composer.addPass( effectBloom2 );
+
 
 	composer.addPass( effectCopy );
 
@@ -206,9 +209,9 @@ var init = function(el,default_params,gl,width,height){
 
 
 
-module.exports = function(canvas,gl,width,height){
+module.exports = function(canvas,max){
 	
-	var opt = new init(canvas,default_params,gl,width,height);
+	var opt = new init(canvas,default_params,max);
 
 	//return setter and loop.
 	return {

@@ -127,7 +127,7 @@ var Sidebar = React.createClass({
 				<I vertical beta={100} offset={-this.props.width-this.props.width/2} ref = 'sidebar_top'>
 					<Button inverse c1 = '#00B7FF' c2 ='#003850' up 	onClick={s.toggleBrowserTab.bind(null,'saved')}  height={this.props.width} icon= 'icon-database' active = {this.state.active_button == 3} />
 					<Button inverse c1 = '#FF0157' c2 ='#39000C' down 	onClick={s.toggleBrowserTab.bind(null,'liked')}  height={this.props.width} icon= 'icon-heart' active = {this.state.active_button == 1} />
-					<Button inverse c1 = '#00FF76' c2 ='#003E1C' up 	onClick={s.toggleBrowserTab.bind(null,'recent')} height={this.props.width} icon= 'icon-leaf-1' active = {this.state.active_button == 0}  />
+					<Button inverse c1 = '#00FF76' c2 ='#003E1C' up 	onClick={s.toggleBrowserTab.bind(null,'recent')} height={this.props.width} icon= 'icon-leaf' active = {this.state.active_button == 0}  />
 					<Button right onMouseEnter={function(){console.log("test")}} inverse c1 = '#D6D6D6' c2 ='#111111' onClick={s.toggleTypesList} height={this.props.width} icon= 'icon-th-thumb' active = {this.props.show_types} index_offset={4} bClassName={'gui-button-layer'} />
 					<I height={this.props.width} />
 					
@@ -444,8 +444,9 @@ var App = React.createClass({
 					<Overlay onClick={this.hideInfo} show = {this.props.show_info} dir = 'bottom' />
 				</I>
 				
-				<I beta = {80} c='site-info'>
-					<p>this site allows you to create different variations of webgl visuals. it uses thrrejs, glsl, react, redux, and a ui component library called intui used to display the different slides and grid.</p>
+				<I beta = {80} c='site-info' vertical>
+					<p>create different variations of webgl visuals</p>
+					<a className = {'github'} href = 'http://github.com/arxii/piarts'><b className = 'icon-github-circled'></b></a>
 				</I>
 			</I>
 		)

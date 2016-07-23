@@ -38,11 +38,11 @@ var default_params = [0.5,0.5,0.5]
 
 
 
-var init = function(el,default_params,gl,width,height){
+var init = function(el,default_params){
 	var main_creature = null;
-
-	width = width || el.clientWidth
-	height = height || el.clientHeight	
+	var gl = null
+	var width = el.clientWidth
+	var height = el.clientHeight	
 	var loop = {};
 	var cam = new THREE.PerspectiveCamera(45,1.5,1,1000000);
 	var scene = new THREE.Scene();
@@ -98,7 +98,7 @@ var init = function(el,default_params,gl,width,height){
 
 	
 	
-	cam.position.z = 2000;
+	cam.position.z = 3000;
 	cam.lookAt(new THREE.Vector3(0,0,0));
 
 
@@ -140,16 +140,18 @@ var init = function(el,default_params,gl,width,height){
 	renderer.autoClear = false;
 	var composer = new THREE.EffectComposer( renderer );
 
+	var effectBloom2 = new THREE.BloomPass(2,25,4.0,256*2);
+	var effectBloom = new THREE.BloomPass(1,6,1.0,256*2);	
 
 	
 	var renderModel = new THREE.RenderPass( scene, cam );
+	// var effectBloom3 = new THREE.BloomPass(0.5,45,10.0,256*2);
 
-	var effectBloom2 = new THREE.BloomPass(2.0,25,6.0,256*2);
-	var effectBloom = new THREE.BloomPass(3.0,6,1.0,256*2);
 	var effectCopy = new THREE.ShaderPass( THREE.CopyShader );
 
 	// effectFXAA = new THREE.ShaderPass( THREE.FXAAShader );
-
+	// window.e1 = effectBloom2
+	// window.e2 = effectBloom
 
 	// effectFXAA.uniforms[ 'resolution' ].value.set( 1 / width, 1 / height );
 
@@ -157,12 +159,16 @@ var init = function(el,default_params,gl,width,height){
 
 	composer = new THREE.EffectComposer( renderer );
 	
-	
+	// window.comp = composer
 
-	// composer.addPass( effectCopy );
+
 	composer.addPass( renderModel );
 	composer.addPass( effectBloom );
+	
 	composer.addPass( effectBloom2 );
+	// if(max){
+	// 	composer.addPass( effectBloom2 );
+	// }	
 
 	composer.addPass( effectCopy );
 
@@ -198,9 +204,9 @@ var init = function(el,default_params,gl,width,height){
 
 
 
-module.exports = function(canvas,gl,width,height){
+module.exports = function(canvas,max){
 
-	var opt = new init(canvas,default_params,gl,width,height);
+	var opt = new init(canvas,default_params);
 
 	//return setter and loop.
 	return {

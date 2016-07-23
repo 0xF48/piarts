@@ -3,6 +3,12 @@ var s = require('../state');
 
 
 
+function downloadURI(uri, name) {
+  var link = document.createElement("a");
+  link.download = name;
+  link.href = uri;
+  link.click();
+}
 
 
 
@@ -460,6 +466,23 @@ var UserWidget = React.createClass({
 		}
 	},
 
+	download: function(){
+
+
+		s.getCurrentURI(1440,900,function(uri){
+			downloadURI(uri,this.props.current_type.name)
+			this.setState({
+				downloading: false
+			})
+		}.bind(this)); 
+
+		this.setState({
+			donwloading: true
+		})
+
+		
+	},
+
 	render: function(){
 
 		var liked = false
@@ -473,10 +496,12 @@ var UserWidget = React.createClass({
 		var reset_class = 'circle widget-reset ' + (!this.props.current_piece ? 'widget-reset-hide' : '');
 		var like_class = 'circle widget-like ' + (this.props.current_piece ? 'widget-like-hide':'') + (liked ? ' widget-like-active':'');
 		var root_class = 'circle widget-root ' + (this.state.show ? 'widget-root-hide' :''); 
+		var dl_class = 'circle widget-dl';
 
 		var save_scale = ( (this.state.saving || this.props.current_piece) ? 0 : 1)
 		var like_scale = (this.props.current_piece ? 1 : 0)
 		var root_scale = (!this.state.show ? 1 : 0.75);
+		var dl_scale = (1);
 		var reset_scale = 1;
 		
 		var def = true
@@ -490,13 +515,15 @@ var UserWidget = React.createClass({
 		
 
 		var params = []	
-		var d = 0.6;
+		var d = 0.9;
 		var l1 = 65;
 		var l2 = 120;
-		var save = <div onClick = {this.save} className = {save_class} style = {this.getAngle(Math.PI/2+d,l1,20,save_scale)}><b className = 'icon-database'/></div>
+		var save = <div onClick = {this.save} className = {save_class} style = {this.getAngle(Math.PI/2,l1,20,save_scale)}><b className = 'icon-database'/></div>
 		var reset = <div onClick = {this.reset} className = {reset_class} style = {this.getAngle(Math.PI/2-d,l1,20,reset_scale)}><b className = 'icon-ccw'/></div>
-		var like = <div onClick = {liked ? null : this.like} className = {like_class} style = {this.getAngle(Math.PI/2+d,l1,20,like_scale)}><b className = 'icon-heart'/></div>
+		var like = <div onClick = {liked ? null : this.like} className = {like_class} style = {this.getAngle(Math.PI/2,l1,20,like_scale)}><b className = 'icon-heart'/></div>
 		var root = <div onClick = {this.show} className = {root_class} style = {this.getAngle(0,0,75/2,root_scale)}><b className='icon-cog' /></div>
+		var dl =  <div  onClick = {this.download} className = {dl_class} style = {this.getAngle(Math.PI/2+d,l1,20,dl_scale)}><b className = 'icon-floppy'/></div>
+
 
 		var params = this.props.params.map(function(param,i){
 			var d2 = 0.5
@@ -517,6 +544,7 @@ var UserWidget = React.createClass({
 						{reset}
 						{save}
 						{like}
+						{dl}
 						{params}
 						{root}
 					</div>

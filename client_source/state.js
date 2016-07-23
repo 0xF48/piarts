@@ -547,6 +547,21 @@ function setCurrentType(type_item){
 var pieces_data = {};
 // var gl = require('gl');
 
+module.exports.getCurrentURI = getCurrentURI;
+var download_canvas = document.createElement('canvas');
+function getCurrentURI(width,height,cb){
+	download_canvas.width = width;
+	download_canvas.height = height;
+	var state = store.getState();
+	var view = type_modules[state.current_type._id](download_canvas,true)
+	view.set(state.params);
+	view.loop();
+
+	download_canvas.toBlob(function(blob) {
+		url = URL.createObjectURL(blob)
+		cb(url)
+	})
+}
 
 module.exports.renderPiece = renderPiece
 function renderPiece(canvas,piece,size){
