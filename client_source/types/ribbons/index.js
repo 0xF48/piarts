@@ -88,6 +88,7 @@ var init = function(el,default_params){
 	if(el){
 		cam.aspect = el.width/el.height;
 		controls = new THREE.OrbitControls( cam, el );
+		controls.enableZoom = false;
 	}else{
 		cam.aspect = width/height
 	}

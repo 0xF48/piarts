@@ -347,6 +347,8 @@ var App = React.createClass({
 		}
 	},
 
+
+
 	componentDidMount: function(){
 		window.addEventListener('resize',function(){
 			this.refs.piece_canvas.width = this.refs.piece_canvas.parentElement.clientWidth;
@@ -357,6 +359,8 @@ var App = React.createClass({
 			this.refs.piece_canvas.width = this.refs.piece_canvas.parentElement.clientWidth;
 			this.refs.piece_canvas.height = this.refs.piece_canvas.parentElement.clientHeight;
 		}
+
+
 
 		this.refs.view_slide.refs.outer.addEventListener('mousedown',function(){
 			s.toggleRender(true)
