@@ -1,2 +1,0 @@
-# pieces
-Pi Arts pieces

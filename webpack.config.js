@@ -7,13 +7,15 @@ var cfg = {
 	},
 	module: {
 		loaders: [
+			{test: /\.glsl$/, loader: 'raw-loader' },
 			{test: /\.jsx$/, loader: "jsx-loader" },
 			{test: /\.scss/, loader: 'style-loader!css-loader!postcss-loader!sass-loader' }
 		]
 	},
 
 	externals: {
-		TweenLite: "TweenLite"
+		TweenLite: "TweenLite",
+		THREE: "THREE"
 	},
 	entry: {
 		main: "./client_source/main.jsx",
@@ -23,8 +25,8 @@ var cfg = {
 		],
 	},
 	output: {
-		path: './client_static',
-		publicPath: './client_static',
+		path: './client_static/',
+		publicPath: '/static/',
 		filename: "[name].bundle.js"
 	},
 	plugins: [
@@ -33,6 +35,7 @@ var cfg = {
 		}),
 		new webpack.ProvidePlugin({
 			React: "react",
+			THREE: "three"
 		}),
 		new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js")
 	],

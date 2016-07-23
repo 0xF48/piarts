@@ -435,26 +435,6 @@ render();
 /*----------------------------------*/
 /*----------------------------------*/
 
-// 		if(!res.body.length) throw "got bad type array : "+JSON.stringify(res.body)
-// 		var types = {}
-		
-// 		for(var i in res.body){
-// 			types[res.body[i].id] = res.body[i]
-// 		}
-
-// 		console.log(types)
-
-// 		store.dispatch({
-// 			type: 'SET_TYPE_ITEMS',
-// 			type_items: types,
-// 		})
-
-// 		//preload
-// 		preload()		
-// 	})
-// }
-
-
 
 module.exports.toggleTypesList = function(){
 	store.dispatch({ type: 'TOGGLE_TYPELIST' })
@@ -515,7 +495,7 @@ function loadType(type,cb){
 	if(type_modules[type._id]) return cb ? cb(type) : null
 	type_modules[type._id] = {};
 	type_preloaded[type._id] = {};
-	requirejs(['data/types/script/'+type._id],function(mod){
+	require(['./types/'+type.name+'/index.js'],function(mod){
 		type_modules[type._id] = mod;
 		
 		
@@ -565,7 +545,7 @@ function getCurrentURI(width,height,cb){
 
 module.exports.renderPiece = renderPiece
 function renderPiece(canvas,piece,size){
-	console.log("RENDER")
+	
 	if(piece._id){
 		var id = piece._id
 	}else{
@@ -582,11 +562,11 @@ function renderPiece(canvas,piece,size){
 	var type_items = store.getState().type_items;
 	var type = piece.type_id ? type_items[piece.type_id] : piece;
 
-	console.log(type);
+	
 
 
 	if(!type_preloaded[type._id]) throw 'cannot render piece, type not preloaded';
-	console.log(piece.params);
+	
 	var pixels = new Uint8Array(size * size * 4);
 	// console.log(piece.params);
 	type_preloaded[type._id].mod.set(piece.params);
@@ -1017,20 +997,6 @@ module.exports.disable_autoplay = function(){
 		disable_autoplay: true
 	})
 }
-
-
-
-
-// /* stripe */
-// module.exports.stripe_handler = StripeCheckout.configure({
-// 	key: 'pk_test_6pRNASCoBOKtIshFeQd4XMUh',
-// 	image: '/stripe_logo.png',
-// 	locale: 'auto',
-// 	token: function(token) {
-// 		alert("GOT TOKEN")
-// 	}
-// });
-// // Stripe.setPublishableKey('pk_test_lr4wW6MKoacSUk98vkMbv4ap');
 
 
 

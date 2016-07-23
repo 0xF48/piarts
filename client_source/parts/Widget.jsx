@@ -109,9 +109,10 @@ var	Dragger = function(canvas){
 	function drawVal(a){
 		if(!stage.active) return
 
-		ctx.font = "13px Arial"
+		ctx.font = "100 20px Roboto"
+		ctx.fontW
 		ctx.fillStyle = stage.color
-		ctx.fillText( Math.round(stage.val * 1000)/1000 , stage.c_x+20, stage.c_y-20)
+		ctx.fillText( Math.round(stage.val * 1000)/1000 , stage.c_x*2-100, stage.c_y*2-20)
 	}
 
 	

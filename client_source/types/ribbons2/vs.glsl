@@ -10,7 +10,7 @@ varying float vOpacity;
 
 void main() {
 	vColor = customColor;
-	vOpacity = customOpacity;
+	vOpacity = customOpacity * 1.5;
 
-	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, time );
+	gl_Position = projectionMatrix * modelViewMatrix * vec4( position * time * 2.0, time );
 }

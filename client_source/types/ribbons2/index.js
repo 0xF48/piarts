@@ -1,12 +1,8 @@
-if( typeof global != 'undefined') global.THREE = require('three')
-else if(typeof window != 'undefined') window.THREE = require('three')
-
-
+var THREE = require('three');
 
 var Creature = require('./creature.js')
 require('three/examples/js/controls/OrbitControls.js');
 require('three/examples/js/shaders/CopyShader.js');
-require('three/examples/js/shaders/FXAAShader.js');
 require('three/examples/js/shaders/ConvolutionShader.js');
 require('three/examples/js/shaders/DigitalGlitch.js');
 require("three/examples/js/postprocessing/EffectComposer.js");
@@ -19,11 +15,17 @@ require("three/examples/js/postprocessing/BloomPass.js");
 
 
 
-
 // console.log(controls)
 var center = new THREE.Vector3(0,0,0);
 
-
+// var cam_play1 = function(){
+// 	var rad = 000;
+// 	return function(){
+// 		var time = Date.now() / ( 2000 * 2 );
+// 		cam.position.set(Math.cos(time/20)*rad,Math.sin(time/20)*rad,0)
+// 		cam.lookAt(center);
+// 	}
+// }
 var r = 0
 var rotate_piece = function(piece){
 	return function(){
@@ -33,16 +35,22 @@ var rotate_piece = function(piece){
 
 
 
-var default_params = [0.5,0.5,0.5]
+var default_params = {
+	a : 0.5,
+	b : 0.5,
+	c : 0.5,
+}
 
 
 
 
-var init = function(el,default_params){
-	var main_creature = null;
+var init = function(el,default_params,max){
 	var gl = null
 	var width = el.clientWidth
 	var height = el.clientHeight	
+	var main_creature = null;
+	
+
 	var loop = {};
 	var cam = new THREE.PerspectiveCamera(45,1.5,1,1000000);
 	var scene = new THREE.Scene();
@@ -50,6 +58,7 @@ var init = function(el,default_params){
 
 
 	var resolution = 1;
+
 	var cfg;
 	if(el){
 		cfg = {
@@ -72,9 +81,11 @@ var init = function(el,default_params){
 	}
 
 	var renderer = new THREE.WebGLRenderer(cfg);
+
 	renderer.setClearColor(0x000000, 1.0);
 
 	
+
 	if(typeof window !== 'undefined' && el && window != null){
 		window.addEventListener('resize',function(){
 
@@ -94,17 +105,14 @@ var init = function(el,default_params){
 
 	cam.updateProjectionMatrix();
 	
-	
+	//console.log(cam)
 
 	
 	
-	cam.position.z = 3000;
+	cam.position.z = 4000;
 	cam.lookAt(new THREE.Vector3(0,0,0));
 
 
-	
-
-	
 
 	var creatures = [];
 
@@ -114,11 +122,12 @@ var init = function(el,default_params){
 	
 	var creature_templ = new Creature();
 	
-	for(var i = 0;i<20;i++){
+	for(var i = 0;i<200;i++){
 		var creature = creature_templ(20,7,5,20,default_params)
 		creature.obj.position.set(-spread/2+Math.random(63125613414)*spread,-spread/2+Math.random(112312323)*spread,-spread/2+Math.random(767777777)*spread);
 		creature.obj.rotation.set(Math.PI*5*Math.random(),Math.PI*5*Math.random(),Math.PI*5*Math.random());
 		piece.add(creature.obj);
+
 		if(i == 0) main_creature = creature;
 	}
 
@@ -140,18 +149,16 @@ var init = function(el,default_params){
 	renderer.autoClear = false;
 	var composer = new THREE.EffectComposer( renderer );
 
-	var effectBloom2 = new THREE.BloomPass(3,25,4.0,256*2);
-	var effectBloom = new THREE.BloomPass(1,6,1.0,256*2);	
 
 	
 	var renderModel = new THREE.RenderPass( scene, cam );
-	// var effectBloom3 = new THREE.BloomPass(0.5,45,10.0,256*2);
 
+	var effectBloom2 = new THREE.BloomPass(2.0,25,4.0,256*2);
+	var effectBloom = new THREE.BloomPass(0.75,6,1.0,256*2);
 	var effectCopy = new THREE.ShaderPass( THREE.CopyShader );
 
 	// effectFXAA = new THREE.ShaderPass( THREE.FXAAShader );
-	// window.e1 = effectBloom2
-	// window.e2 = effectBloom
+
 
 	// effectFXAA.uniforms[ 'resolution' ].value.set( 1 / width, 1 / height );
 
@@ -159,23 +166,18 @@ var init = function(el,default_params){
 
 	composer = new THREE.EffectComposer( renderer );
 	
-	// window.comp = composer
+	
 
-
+	// composer.addPass( effectCopy );
 	composer.addPass( renderModel );
 	composer.addPass( effectBloom );
-	
 	composer.addPass( effectBloom2 );
-	// if(max){
-	// 	composer.addPass( effectBloom2 );
-	// }	
+
 
 	composer.addPass( effectCopy );
 
 
 
-	
-	
 
 
 	// composer.addPass( cPass );
@@ -195,7 +197,7 @@ var init = function(el,default_params){
 	
 	loop.main();
 
-	return {main_creature: main_creature, renderer: renderer,loop:loop.main};
+	return {creature: main_creature, renderer:renderer,loop:loop.main};
 }
 
 
@@ -205,19 +207,18 @@ var init = function(el,default_params){
 
 
 module.exports = function(canvas,max){
-
-	var opt = new init(canvas,default_params);
+	
+	var opt = new init(canvas,default_params,max);
 
 	//return setter and loop.
 	return {
 		//must return setter
 		set: function(params){
-			opt.main_creature.reset(params);
+			opt.creature.reset(params);
 		},
 		renderer: opt.renderer,
 		//must return
-		loop: opt.loop,
-		// renderer: opt.renderer 
+		loop: opt.loop
 	}
 }
 

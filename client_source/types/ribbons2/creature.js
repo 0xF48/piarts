@@ -1,6 +1,6 @@
 
-var vertexShader = require('raw!./vs.glsl')
-var fragmentShader = require('raw!./fs.glsl')
+var vertexShader = require('./vs.glsl')
+var fragmentShader = require('./fs.glsl')
 
 var Creature = function(radius,edge_count,hair_segments,hair_length,cfg){
 	
