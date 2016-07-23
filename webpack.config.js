@@ -1,17 +1,21 @@
 var webpack = require("webpack");
 var cfg = {
 	devtool: 'source-map',
+	resolve: {
+    	extensions: ['', '.js', '.jsx']
+	},
 	module: {
 		loaders: [
-			{test: /\.js$/, loader: "jsx-loader" },
+			{test: /\.jsx$/, loader: "jsx-loader" },
 			{test: /\.scss/, loader: 'style-loader!css-loader!postcss-loader!sass-loader' }
 		]
 	},
+
 	externals: {
 		TweenLite: "TweenLite"
 	},
 	entry: {
-		main: "./client_source/main.js",
+		main: "./client_source/main.jsx",
 		vendor: [
 			"gsap/src/minified/TweenMax.min.js",
 			"gsap/src/uncompressed/easing/EasePack.js",			

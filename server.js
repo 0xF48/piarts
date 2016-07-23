@@ -9,7 +9,7 @@ var cookieParser = require('cookie-parser')
 
 app.set('views','./client_views')
 app.set('view engine', 'ejs');
-app.use(express.static('client_static'));
+app.use('/static/',express.static('client_static'));
 
 var Promise = require('bluebird')
 

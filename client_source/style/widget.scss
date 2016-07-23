@@ -30,7 +30,7 @@
 
 .user-widget-filter{
 	-webkit-filter: url("#goo");
-	filter: unqoute("url(./index.html#goo)");
+	filter: unqoute("url(./static/index.html#goo)");
 	position: absolute;
 	top:0;
 	left:0;

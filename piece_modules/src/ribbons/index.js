@@ -140,7 +140,7 @@ var init = function(el,default_params){
 	renderer.autoClear = false;
 	var composer = new THREE.EffectComposer( renderer );
 
-	var effectBloom2 = new THREE.BloomPass(2,25,4.0,256*2);
+	var effectBloom2 = new THREE.BloomPass(3,25,4.0,256*2);
 	var effectBloom = new THREE.BloomPass(1,6,1.0,256*2);	
 
 	

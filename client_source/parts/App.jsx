@@ -219,7 +219,7 @@ var TypeItem = connect(function(state){
 		}
 
 		var bg = {
-			background: 'url("/'+this.props.item.preview+'") center',
+			background: 'url("static/types/'+this.props.item.preview+'") center',
 		}
 
 		var hover = this.state.hover || active;

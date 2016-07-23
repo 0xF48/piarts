@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "auth": "Basic eXVyaXNpZG9AZ21haWwuY29tOnRlc3Q=",
+  "auth": "Basic ZG5zOTFuMjNsbWM6YXMwZDkyamRsYXNk",
   "maintenance": false,
   "type_build_path": "piece_modules/builds",
   "data_path": "data",
@@ -49,7 +49,7 @@
     "gl": "git+https://github.com/stackgl/headless-gl.git#v4.0.2",
     "gm": "^1.21.1",
     "gsap": "git+https://github.com/greensock/GreenSock-JS.git#1.19.0",
-    "intui": "git+https://github.com/arxii/intui.git#v0.0.2",
+    "intui": "git+https://github.com/arxii/intui.git#v0.1",
     "lodash": "^3.10.1",
     "lodash.assign": "^3.2.0",
     "mongoose": "^4.3.4",
