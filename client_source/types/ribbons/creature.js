@@ -80,8 +80,8 @@ var Creature = function(radius,edge_count,hair_segments,hair_length,cfg,max){
 			var rad = (radius + 30)
 
 
-			var x = Math.cos(a*Math.cos(Math.sin(multi_circle)*Math.cos(multi_circle))) * rad * Math.sin(a) +  Math.cos(a*Math.sin(Math.cos(multi_circle)*Math.cos(multi_circle))) * rad * Math.sin(a*Math.sin(multi_circle)) + x_variation
-			var y =	Math.sin(a*Math.sin(Math.cos(multi_circle2)*Math.tan(multi_circle2)*Math.cos(multi_circle))) * rad * Math.sin(a) + y_variation +  Math.sin(a*Math.cos(Math.sin(multi_circle)*Math.cos(multi_circle))) * rad * Math.cos(a*Math.sin(multi_circle)) + x_variation
+			var x = Math.cos(a*Math.cos(Math.sin(multi_circle3)*Math.cos(multi_circle))) * rad * Math.sin(a) + x_variation;
+			var y =	Math.sin(a*Math.sin(Math.cos(multi_circle2)*Math.sin(multi_circle2)*Math.cos(multi_circle))) * rad * Math.sin(a) + y_variation;
 			// var x = x + 10*Math.cos(y)
 			// var y = y + 10*Math.sin(x)
 
