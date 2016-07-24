@@ -18,11 +18,11 @@ router
 .get('/',function(req,res){
 	Type
 	.find()
-	.exec(function(err,typelist){
+	.then(function(typelist){
 		res.json(typelist.map(function(type){
 			return (req.user.admin ? type : type.public())
 		}))
-	})
+	}).catch(next)
 })
 
 /* add a type */
@@ -31,7 +31,7 @@ router
 	return Type.add(req.body).then(function(type){
 		if(type == null) res.sendStatus(500)
 		else res.json(type)
-	})
+	}).catch(next)
 })
 
 /*delete type*/
@@ -53,14 +53,7 @@ router
 	type.color = req.body.color || type.color
 	return type.save().then((doc)=>{
 		res.send(doc)
-	});
-
-	// 	console.log(req.params._type_id)
-	// if(!req.params._type_id) return res.status(500).send('bad id')
-	// Type.findOneAndUpdate({'_id':db.Types.ObjectId(req.params._type_id)}, req.body, {upsert:true})
-	// .then((doc)=>{
- //    	return res.send(doc);
-	// })
+	}).catch(next)
 })
 
 /* get type script */
@@ -68,24 +61,6 @@ router
 	if(req.type.locked && !req.user.admin) return res.sendStatus(403)
 	res.sendFile(path.join(__dirname,'..','..','/piece_modules/builds/'+req.type.name+'.amd.js'));
 })
-
-
-
-// /* get type by id */
-// .get('/:type_id',function(req,res){
-// 	if(req.type.locked && !req.user.admin) return res.sendStatus(403)
-// 	var dat = req.type.public();
-// 	res.json(dat);
-// })
-
-
-
-// /* get type preview */
-// .get('/preview/:type_id',function(req,res){
-// 	var size = 'small'
-// 	if(req.query.size == 'medium') var size = 'medium'
-// 	res.sendFile(path.join(__dirname,'..','..',pack.data_path,'types',size,req.type.id+'.png'));
-// })
 
 /* type id param prefill to req.type */
 .param('type_id',function(req,res,next,id){

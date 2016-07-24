@@ -18,8 +18,8 @@ db.Promise = Promise;
 
 
 var Type = require('./server_source/models/typeModel');
-var options = { promiseLibrary: require('bluebird') };
-db.connect(pack.db_url,options);
+
+db.connect(pack.db_url);
 db.connection.on('error',console.error.bind(console,'connection error'));	
 
 

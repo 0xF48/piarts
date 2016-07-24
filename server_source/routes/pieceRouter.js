@@ -96,17 +96,13 @@ router
 	.limit(LIMIT)
 	.lean()
 	.populate('type')
-	.exec(function(err,pieces){
-		if(err){
-			console.log(err)
-			return res.sendStatus(500);
-		} 
+	.then(function(pieces){
 		res.json(pieces.map(function(piece){
 			var pub_json = Piece.public(piece)
 			if(filter == 'saved') pub_json.local = true
 			return pub_json
 		}))
-	})
+	}).catch(next)
 })
 
 .post('/add',jsonParser,function(req,res){
@@ -118,25 +114,24 @@ router
 		res.setHeader('Set-Cookie',"local="+JSON.stringify(req.user.local))
 		req.user.add_count += 1;
 		res.json(Piece.public(piece))
-	})
+	}).catch(next)
 })
 
 .put('/view/:piece_id',viewCheck,function(req,res){
 
 	req.piece.update({views:req.piece.views+1}).then(function(){
 		res.sendStatus(200)
-	})
+	}).catch(next)
 })
 
 .put('/like/:piece_id',likeCheck,function(req,res){
-	// console.log('LIKE',req.piece)
 	if(req.piece.likes >= 999) return res.sendStatus(403);
 	if(req.user.liked_pieces.indexOf(req.piece._id.toString()) != -1) return res.sendStatus(403);
 	req.piece.update({likes:req.piece.likes+1}).then(function(){
 		req.user.liked_pieces.push(req.piece._id)
 		res.setHeader('Set-Cookie',"liked_pieces="+JSON.stringify(req.user.liked_pieces))
 		res.sendStatus(200)
-	})
+	}).catch(next)
 })
 
 .put('/pick/:piece_id',likeCheck,function(req,res){
@@ -144,7 +139,7 @@ router
 	req.piece.picked = true
 	req.piece.save().then(function(){
 		res.sendStatus(200)
-	})
+	}).catch(next)
 })
 
 .get('/preview/:piece_id',function(req,res){
