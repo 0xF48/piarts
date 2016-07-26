@@ -18,7 +18,7 @@ var cfg = {
 		THREE: "THREE"
 	},
 	entry: {
-		main: "./client_source/main.jsx",
+		main: ["babel-polyfill","./client_source/main.jsx"],
 		vendor: [
 			"gsap/src/minified/TweenMax.min.js",
 			"gsap/src/uncompressed/easing/EasePack.js",			

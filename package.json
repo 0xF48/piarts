@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/arxii/piarts#readme",
   "devDependencies": {
+    "babel-polyfill": "^6.9.1",
     "css-loader": "^0.23.1",
     "jsx-loader": "^0.13.2",
     "node-sass": "^3.8.0",
