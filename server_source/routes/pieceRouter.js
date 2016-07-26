@@ -53,7 +53,7 @@ var jsonParser = bodyParser.json({
 
 
 router
-.get('/',function(req,res){
+.get('/',function(req,res,next){
 	var skip = Number(req.query.skip);
 	var filter = req.query.filter;
 	var sort_q = {};
@@ -105,7 +105,7 @@ router
 	}).catch(next)
 })
 
-.post('/add',jsonParser,function(req,res){
+.post('/add',jsonParser,function(req,res,next){
 	if(req.user.add_count >= 20) return res.sendStatus(403);
 	Piece.add(req.body).then(function(piece){
 		if(typeof piece == "string") return res.send(piece).status(500)
@@ -117,14 +117,14 @@ router
 	}).catch(next)
 })
 
-.put('/view/:piece_id',viewCheck,function(req,res){
+.put('/view/:piece_id',viewCheck,function(req,res,next){
 
 	req.piece.update({views:req.piece.views+1}).then(function(){
 		res.sendStatus(200)
 	}).catch(next)
 })
 
-.put('/like/:piece_id',likeCheck,function(req,res){
+.put('/like/:piece_id',likeCheck,function(req,res,next){
 	if(req.piece.likes >= 999) return res.sendStatus(403);
 	if(req.user.liked_pieces.indexOf(req.piece._id.toString()) != -1) return res.sendStatus(403);
 	req.piece.update({likes:req.piece.likes+1}).then(function(){
@@ -134,7 +134,7 @@ router
 	}).catch(next)
 })
 
-.put('/pick/:piece_id',likeCheck,function(req,res){
+.put('/pick/:piece_id',likeCheck,function(req,res,next){
 	if( !req.user.admin ) return res.setState(403)
 	req.piece.picked = true
 	req.piece.save().then(function(){
@@ -142,7 +142,7 @@ router
 	}).catch(next)
 })
 
-.get('/preview/:piece_id',function(req,res){
+.get('/preview/:piece_id',function(req,res,next){
 	var size = 'small';
 	if(req.query.size == 'medium') var size = 'medium'
 	res.sendFile(path.join(__dirname,'..','..',pack.data_path,'pieces',size,req.piece.id+'.png'));

@@ -91,8 +91,9 @@ app.set('port', process.env.PORT || pack.port);
 
 
 
-
 var server = app.listen(app.get('port'), function() {
-	console.log('on port '.green + String(server.address().port).magenta);
+	console.log('- canvas.pi -'.bold.green);
+	console.log('mode:',(process.env.NODE_ENV||'development').bold);
+	console.log('port:',String(server.address().port).bold);
 });
 
