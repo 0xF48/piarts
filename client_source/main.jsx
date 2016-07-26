@@ -1,4 +1,5 @@
 /*deps*/
+require('babel-polyfill');
 var react_redux = require('react-redux');
 var Provider = react_redux.Provider;
 var render = require('react-dom').render;
