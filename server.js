@@ -80,12 +80,6 @@ app.use(function(err, req, res, next) {
 
 require('./server_source/routes')(app);
 
-// app.use(function(req, res, next) {
-//     var err = new Error('Not Found');
-//     err.watus = 404;
-//     // print("TEST")
-//     next(err);
-// });
 
 app.set('port', process.env.PORT || pack.port);
 

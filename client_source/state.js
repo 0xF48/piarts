@@ -98,12 +98,11 @@ function mergeToFilters(state,pieces,type){
 	
 
 	if(type == 'saved'){
-		state.piece_items.recent = pieces.concat(state.piece_items.recent);
-		state.piece_items.saved = state.piece_items.saved.concat(pieces)
+		state.piece_items.saved = _uniq(state.piece_items.saved.concat(pieces),'id')
 	}else if(type == 'liked'){
-		state.piece_items.liked = state.piece_items.liked.concat(pieces)
+		state.piece_items.liked = _uniq(state.piece_items.liked.concat(pieces),'id')
 	}else if(type == 'recent'){
-		state.piece_items.recent = state.piece_items.recent.concat(pieces)
+		state.piece_items.recent = _uniq(state.piece_items.recent.concat(pieces),'id')
 	}
 
 }
