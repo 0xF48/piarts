@@ -12,34 +12,16 @@ var ip_users = {};
 router
 .use(function(req,res,next){
 	// console.log('use data route')
-	if(req.cookies.liked_pieces){
-		req.cookies.liked_pieces = JSON.parse(req.cookies.liked_pieces)
+	if(!req.session.user){
+		req.session.user = {
+			liked_pieces: [],
+			local: []
+		}
+		
 	}
-	if(req.cookies.local){
-		req.cookies.local = JSON.parse(req.cookies.local)
-	}
-	
-
-
-	
-	var ip_user = ip_users[req.connection.remoteAddress];
-	if(ip_user){
-		req.user = ip_user
-	}else{
-		req.user = {add_count: 0,verified:false,local:[],liked_pieces:[]}
-		ip_users[req.connection.remoteAddress] = req.user
-	}
-	if(req.cookies.liked_pieces && req.cookies.liked_pieces.length > req.user.liked_pieces){
-		req.user.liked_pieces = req.cookies.liked_pieces
-	}
-	if(req.cookies.local && req.cookies.local.length > req.user.local){
-		req.user.local = req.cookies.local
-	}
-
-	if(req.headers.authorization != null && req.headers.authorization == pack.auth) req.user.admin = {}
-	else req.user.admin = null
-	// console.log(req.user.admin)
-
+	if(req.headers.authorization != null && req.headers.authorization == pack.auth) req.session.user.admin = {}
+	else req.session.user.admin = null
+	req.session.save()
 	next()
 })
 

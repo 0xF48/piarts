@@ -5,16 +5,18 @@ var colors = require('colors');
 var db = require('mongoose');
 var pack = require('./package');
 var app  = express();
+var redis   = require("redis");
 var cookieParser = require('cookie-parser')
-
+var session = require('express-session')
 app.set('views','./client_views')
 app.set('view engine', 'ejs');
 app.use('/static/',express.static('client_static'));
-
+var redisStore = require('connect-redis')(session);
 var Promise = require('bluebird')
 
 db.Promise = Promise;
 
+var redis_client  = redis.createClient();
 
 
 var Type = require('./server_source/models/typeModel');
@@ -35,7 +37,16 @@ emailSchema.path('email').validate(function (email) {
 
 var Email = db.model('Email',emailSchema);
 app.use(cookieParser())
-app.post('/launch_email',function(req,res){
+.use(session({
+	genid: function(req) {
+		return uuid.v1()
+	},
+	resave: false,
+	store: new redisStore({ host: 'localhost', port: 6379, client: redis_client,ttl :  260}),
+	saveUninitialized: false,
+	secret: 'LAS41jSD923jxc2'
+}))
+.post('/launch_email',function(req,res){
 	
 	
 	var email = new Email({

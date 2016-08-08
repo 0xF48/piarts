@@ -20,14 +20,14 @@ router
 	.find()
 	.then(function(typelist){
 		res.json(typelist.map(function(type){
-			return (req.user.admin ? type : type.public())
+			return (req.session.user.admin ? type : type.public())
 		}))
 	}).catch(next)
 })
 
 /* add a type */
 .post('/add',jsonParser,function(req,res,next){
-	if(!req.user.admin) return res.sendStatus(403)
+	if(!req.session.user.admin) return res.sendStatus(403)
 	return Type.add(req.body).then(function(type){
 		if(type == null) res.sendStatus(500)
 		else res.json(type)
@@ -36,15 +36,15 @@ router
 
 /*delete type*/
 .delete('/:type_id',function(req,res,next){
-	if(!req.user.admin) return res.sendStatus(403)
+	if(!req.session.user.admin) return res.sendStatus(403)
 	req.type.remove();
-	console.log('removed type',req.type.id)
+	// console.log('removed type',req.type.id)
 	res.send('deleted').status(200)
 })
 
 /* edit type */
 .put('/:type_id',jsonParser,function(req,res,next){
-	if(!req.user.admin) return res.sendStatus(403)
+	if(!req.session.user.admin) return res.sendStatus(403)
 	var type = req.type;
 	type.params = req.body.params || type.params
 	type.bounds = req.body.bounds || type.bounds
@@ -58,7 +58,7 @@ router
 
 /* get type script */
 .get('/script/:type_id.js',function(req,res,next){
-	if(req.type.locked && !req.user.admin) return res.sendStatus(403)
+	if(req.type.locked && !req.session.user.admin) return res.sendStatus(403)
 	res.sendFile(path.join(__dirname,'..','..','/piece_modules/builds/'+req.type.name+'.amd.js'));
 })
 
