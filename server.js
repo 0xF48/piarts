@@ -24,6 +24,7 @@ var Type = require('./server_source/models/typeModel');
 db.connect(pack.db_url);
 db.connection.on('error',console.error.bind(console,'connection error'));	
 
+var uuid = require('node-uuid');
 
 
 
