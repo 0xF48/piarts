@@ -55,12 +55,6 @@ Type.statics.add = function(data){
 	console.log(data);
 	if(data.bounds == null || data.bounds.length != data.params.length) throw 'bad bounds'
 	
-	try {
-		fs.statSync('./piece_modules/src/'+data.name)
-	}catch(e){
-		return p.reject(e)
-	}
-
 
 
 	return Model.findOne({name:data.name})

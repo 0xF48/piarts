@@ -107,8 +107,6 @@ var Creature = function(radius,edge_count,hair_segments,hair_length,cfg,max){
 		}
 	}
 
-
-
 	setB();
 
 	var b_vertices = new Float32Array( b_pos.length * 3 )
@@ -145,12 +143,6 @@ var Creature = function(radius,edge_count,hair_segments,hair_length,cfg,max){
 	b_geometry.addAttribute( 'customOpacity',  oAttr);
 
 	var color = new THREE.Color( 0xffffff );
-	// var d = Date.now();
-	// for( var i = 0, l =  cAttr.count; i < l; i ++ ) {
-	// 	color.setHSL( 0.5,0.5,0.5 );
-	// 	color.toArray(  cAttr.array, i *  cAttr.itemSize );
-	// }
-
 	b_geometry.addAttribute( 'displacement', dAttr);
 
 	//console.log(b_geometry)
@@ -202,20 +194,6 @@ var Creature = function(radius,edge_count,hair_segments,hair_length,cfg,max){
 				setG(cfg);
 
 				var array = dAttr.array;
-				// TweenLite.fromTo(stage,2,{a:0},{
-				// 	a: 5,
-				// 	ease: Cubic.EaseIn,
-				// 	onUpdate: function(){
-				// 		var time = Date.now();
-				// 		for ( var i = 0, l = b_pos.length; i < l; i ++ ) {
-				// 			array[ i*3 + 0 ] += (-0.5+Math.random())*((i/l))*stage.a
-				// 			array[ i*3 + 1 ] += (-0.5+Math.random())*((i/l))*stage.a
-				// 			array[ i*3 + 2 ] += (-0.5+Math.random())*((i/l))*stage.a					
-				// 		}
-				// 		dAttr.needsUpdate = true;
-				// 	},
-				// 	onComplete: creat.fazein
-				// });
 				TweenLite.fromTo(stage,2,{a:0},{
 					a: 1,
 					ease: Power1.easeIn,

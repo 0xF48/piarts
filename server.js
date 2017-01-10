@@ -30,15 +30,14 @@ var uuid = require('node-uuid');
 
 
 
-var emailSchema = new db.Schema({ email: {type:String,unique : true},date:{type:Date,default:Date.now()} })
-emailSchema.path('email').validate(function (email) {
-   var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,10})?$/;
-   return emailRegex.test(email);
-}, 'The e-mail field cannot be empty.')
+// var emailSchema = new db.Schema({ email: {type:String,unique : true},date:{type:Date,default:Date.now()} })
+// emailSchema.path('email').validate(function (email) {
+//    var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,10})?$/;
+//    return emailRegex.test(email);
+// }, 'The e-mail field cannot be empty.')
 
-var Email = db.model('Email',emailSchema);
-app.use(cookieParser())
-.use(session({
+// var Email = db.model('Email',emailSchema);
+app.use(cookieParser()).use(session({
 	genid: function(req) {
 		return uuid.v1()
 	},
@@ -47,23 +46,23 @@ app.use(cookieParser())
 	saveUninitialized: false,
 	secret: 'LAS41jSD923jxc2'
 }))
-.post('/launch_email',function(req,res){
+// .post('/launch_email',function(req,res){
 	
 	
-	var email = new Email({
-		email: req.body.email
-	})
+// 	var email = new Email({
+// 		email: req.body.email
+// 	})
 
-	email.save(function(err){
-		if(err){
-			res.sendStatus(500);
-		}else{
-			res.redirect('/');
-		}
-		console.log("SAVED",email.email)
-	});
+// 	email.save(function(err){
+// 		if(err){
+// 			res.sendStatus(500);
+// 		}else{
+// 			res.redirect('/');
+// 		}
+// 		console.log("SAVED",email.email)
+// 	});
 	
-});
+// });
 
 
 if(pack.maintenance){

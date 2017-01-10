@@ -19,6 +19,7 @@ coverage
 # node-waf configuration
 .lock-wscript
 
+dump.rdb
 
 
 # Dependency directory

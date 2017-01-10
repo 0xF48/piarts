@@ -17,7 +17,7 @@
     "large": 1000
   },
   "port": "4000",
-  "db_url": "mongodb://localhost/piarts",
+  "db_url": "mongodb://localhost:7227/piarts",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/arxii/piarts.git"
