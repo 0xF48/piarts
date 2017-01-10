@@ -8,7 +8,8 @@ var app  = express();
 var redis   = require("redis");
 var cookieParser = require('cookie-parser')
 var session = require('express-session')
-app.set('views','./client_views')
+var path = require('path')
+app.set('views',path.join(__dirname,'client_views'))
 app.set('view engine', 'ejs');
 app.use('/static/',express.static('client_static'));
 var redisStore = require('connect-redis')(session);
