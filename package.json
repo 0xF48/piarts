@@ -5,7 +5,8 @@
   "description": "digital art web app",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack --watch"
   },
   "auth": "Basic MTJqM2xrOmFzZA==",
   "maintenance": false,
@@ -20,7 +21,7 @@
   "db_url": "mongodb://localhost:7227/piarts",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/arxii/piarts.git"
+    "url": "git+ssh://git@github.com/0xF48/piarts.git"
   },
   "author": "",
   "license": "ISC",
@@ -32,7 +33,6 @@
     "babel-polyfill": "^6.9.1",
     "css-loader": "^0.23.1",
     "jsx-loader": "^0.13.2",
-    "node-sass": "^3.8.0",
     "reactify": "^1.1.1",
     "sass-loader": "^3.1.2",
     "style-loader": "^0.13.0",
@@ -50,18 +50,21 @@
     "ejs": "^2.3.4",
     "express": "^4.13.4",
     "express-session": "^1.14.0",
-    "gl": "git+https://github.com/stackgl/headless-gl.git#v4.0.2",
+    "gl": "git+https://github.com/stackgl/headless-gl.git",
     "gm": "^1.21.1",
     "gsap": "git+https://github.com/greensock/GreenSock-JS.git#1.19.0",
-    "intui": "git+https://github.com/arxii/intui.git#v0.1",
+    "intui": "git+https://github.com/0xF48/intui-old.git",
     "lodash": "^3.10.1",
     "lodash.assign": "^3.2.0",
     "mongoose": "^4.3.4",
+    "node-sass": "^5.0.0",
     "node-uuid": "^1.4.7",
     "pngjs": "^2.3.1",
     "postcss-loader": "^0.9.1",
     "raw-loader": "^0.5.1",
-    "react-dom": "^15.2.1",
+    "re-slide": "^1.2.2",
+    "react": "^15.7.0",
+    "react-dom": "^15.7.0",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2",
     "redux-tiny-router": "^0.6.1",

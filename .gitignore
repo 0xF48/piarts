@@ -27,9 +27,6 @@ deploy.sh
 node_modules
 
 
-client_static/*.map
-client_static/*.bundle.js
-
 
 piece_modules/builds/**/*
 data

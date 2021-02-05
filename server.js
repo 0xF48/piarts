@@ -18,7 +18,10 @@ var Promise = require('bluebird')
 db.Promise = Promise;
 
 var redis_client  = redis.createClient();
-
+redis_client.on("error", function(error) {
+	console.error('REDIS ERROR')
+	console.error(error);
+  })
 
 var Type = require('./server_source/models/typeModel');
 
@@ -38,7 +41,8 @@ var uuid = require('node-uuid');
 // }, 'The e-mail field cannot be empty.')
 
 // var Email = db.model('Email',emailSchema);
-app.use(cookieParser()).use(session({
+app.use(cookieParser())
+app.use(session({
 	genid: function(req) {
 		return uuid.v1()
 	},

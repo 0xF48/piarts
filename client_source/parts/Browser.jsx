@@ -2,12 +2,10 @@
 var react_redux = require('react-redux');
 var connect = react_redux.connect;
 
-
 var I = require('intui/parts/Slide');
 var SlideMixin = require('intui/parts/SlideMixin');
 var G = require('intui/parts/Grid');
 var GItem = require('intui/parts/GridItem');
-var ITip = require('intui/parts/ToolTip');
 var GMixin = require('intui/parts/GridMixin');
 
 
@@ -56,10 +54,10 @@ var PieceItem = React.createClass({
 	},
 
 	componentDidMount: function(){
-		this.refs.canvas.height = 500
-		this.refs.canvas.width = 500
+		this.refs.canvas.height = 800
+		this.refs.canvas.width = 800
 		if(!this.image_set){
-			s.renderPiece(this.refs.canvas,this.props.item,500)
+			s.renderPiece(this.refs.canvas,this.props.item,800)
 			this.image_set = true
 		}
 		
@@ -70,7 +68,8 @@ var PieceItem = React.createClass({
 
 		var item = this.props.item;
 		var type = this.props.item.type;
-
+		
+		// console.log(type)
 
 		var type_style = {
 			color: '#fff'

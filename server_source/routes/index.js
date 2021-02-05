@@ -11,7 +11,6 @@ var ip_users = {};
 
 router
 .use(function(req,res,next){
-	// console.log('use data route')
 	if(!req.session.user){
 		req.session.user = {
 			liked_pieces: [],

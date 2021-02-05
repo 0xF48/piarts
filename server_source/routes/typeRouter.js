@@ -1,4 +1,5 @@
 var Type = require('../models').Type;
+var Piece = require('../models').Piece;
 var express = require('express');
 var router = express.Router();
 var pack = require('../../package');
@@ -11,7 +12,21 @@ var jsonParser = bodyParser.json({
 	limit:'20kb',
 })
 
-
+TYPES = [{
+	name: 'ribbons',
+	color: [255,255,0],
+	symbol: 'R',
+	bounds: [[-10,10],[-10,10],[-10,10]],
+	params: [0.4,0.4,0.5],
+	preview: 'canvas-1.png'
+},{
+	name: 'ribbons2',
+	color: [255,155,0],
+	symbol: 'G',
+	bounds: [[-10,10],[-10,10],[-10,10]],
+	params: [0.4,0.4,0.5],
+	preview: 'canvas-2.png'
+}]
 
 router
 /* get all types */
@@ -22,6 +37,26 @@ router
 		res.json(typelist.map(function(type){
 			return (req.session.user.admin ? type : type.public())
 		}))
+	}).catch(next)
+})
+
+.get('/init',jsonParser,function(req,res,next){
+	
+	Piece.deleteMany({}).then(function(res){
+		console.log('deleted all pieces')
+	})
+	Type
+	.find()
+	.then(function(list){
+		list.forEach(function(type){
+			type.remove()
+		})
+		if(list.length == 0){
+			TYPES.map(function(type){
+				Type.add(type).then()
+			})
+		}
+		res.send('done')
 	}).catch(next)
 })
 
@@ -67,7 +102,6 @@ router
 	if(!id ) res.sendStatus(403);
 	Type.findOne( {'_id' : id }).then(function(type){
 		if(type == null) return res.sendStatus(404)
-		
 		req.type = type;
 		next();
 	}).catch(next)

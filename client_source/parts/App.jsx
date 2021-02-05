@@ -8,7 +8,6 @@ var IButton = require('intui/parts/Button');
 var G = require('intui/parts/Grid');
 var Overlay = require('intui/parts/Overlay');
 var GItem = require('intui/parts/GridItem');
-var ITip = require('intui/parts/ToolTip');
 var GMixin = require('intui/parts/GridMixin');
 var Widget = require('./Widget');
 var s = require('../state');

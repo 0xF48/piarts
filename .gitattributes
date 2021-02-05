@@ -1,2 +1,3 @@
-client_source/*.bundle.js binary
-client_source/*.map binary
+client_static/**/* binary
+client_static/* binary
+client_static/*/** binary

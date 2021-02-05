@@ -500,8 +500,8 @@ function loadType(type,cb){
 		
 		var canvas = document.createElement('canvas');
 
-		canvas.width = 500
-		canvas.height = 500
+		canvas.width = 800
+		canvas.height = 800
 		
 		type_preloaded[type._id] = {
 			canvas: canvas,
@@ -972,13 +972,17 @@ function toggleTipDisplay(toggle){
 
 /*START*/
 var example = window.preload.type_items[0]
-loadType(example,function(module){
-	setCurrentType(example)
-	setParams(example.params)
+if(example){
+	loadType(example,function(module){
+		setCurrentType(example)
+		setParams(example.params)
+		showView()
+		updatePieceList('saved');
+	})
+}else{
 	showView()
 	updatePieceList('saved');
-})
-
+}
 
 
 

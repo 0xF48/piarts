@@ -53,7 +53,9 @@ Type.methods.renderPreview = function(){
 //add
 Type.statics.add = function(data){
 	console.log(data);
-	if(data.bounds == null || data.bounds.length != data.params.length) throw 'bad bounds'
+	if(data.bounds == null || data.bounds.length != data.params.length){
+		throw new Error('bad bounds')
+	}
 	
 
 
