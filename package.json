@@ -54,7 +54,7 @@
     "gm": "^1.21.1",
     "gsap": "git+https://github.com/greensock/GreenSock-JS.git#1.19.0",
     "intui": "git+https://github.com/0xF48/intui-old.git",
-    "lodash": "^3.10.1",
+    "lodash": "^4.17.21",
     "lodash.assign": "^3.2.0",
     "mongoose": "^4.3.4",
     "node-sass": "^5.0.0",
