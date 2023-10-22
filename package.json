@@ -31,7 +31,7 @@
   "homepage": "https://github.com/arxii/piarts#readme",
   "devDependencies": {
     "babel-polyfill": "^6.9.1",
-    "css-loader": "^0.23.1",
+    "css-loader": "^6.8.1",
     "jsx-loader": "^0.13.2",
     "reactify": "^1.1.1",
     "sass-loader": "^3.1.2",
@@ -60,7 +60,7 @@
     "node-sass": "^5.0.0",
     "node-uuid": "^1.4.7",
     "pngjs": "^2.3.1",
-    "postcss-loader": "^0.9.1",
+    "postcss-loader": "^7.3.3",
     "raw-loader": "^0.5.1",
     "re-slide": "^1.2.2",
     "react": "^15.7.0",
